@@ -54,3 +54,7 @@ else:
         prompt = f"أنشئ تمرين عام على {unit} باللغة العربية الفصحى لمستوى المبتدئين مع تصحيح الإجابات بعد الحل."
         result = generate_ai_response(prompt)
         st.write(result)
+
+prompts = st.secrets["lessons"]
+
+lesson_prompt = prompts["lesson1"]
