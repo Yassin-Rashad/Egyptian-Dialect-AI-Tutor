@@ -2,112 +2,136 @@ import streamlit as st
 from openai import OpenAI
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-
-st.title("🎓 تطبيق تعليم اللهجة المصرية")
+st.title("Learn Egyptian dialect with ai-Tutor🎓")
 
 prompts = st.secrets["lessons"]
 
-unit_choice = st.selectbox("اختر الوحدة", ["الوحدة 1"], key="unit_select")
-lesson_choice = st.selectbox("اختر الدرس", ["الدرس 1", "تمارين عامة"], key="lesson_select")
+unit_choice = st.selectbox("Choose Unit", ["Unit 1"], key="unit_select")
+lesson_choice = st.selectbox("Choose Lesson", ["Lesson 1", "General Exercises"], key="lesson_select")
 
-tab1, tab2, tab3 = st.tabs(["📘 الشرح", "💬 التمارين الحوارية", "❓اختيار من متعدد"])
+# ====== دوال تقسيم النصوص ======
+def split_text(text, chunk_size=600):
+    chunks = []
+    while len(text) > chunk_size:
+        split_index = text.rfind('.', 0, chunk_size)
+        if split_index == -1:
+            split_index = chunk_size
+        chunks.append(text[:split_index+1].strip())
+        text = text[split_index+1:].strip()
+    if text:
+        chunks.append(text)
+    return chunks
 
-# تعريف دالة الذكاء الاصطناعي
-def get_ai_response(prompt, user_input=None):
+def get_ai_response_chunks(prompt, user_input=None):
     messages = [{"role": "system", "content": "You are a friendly Egyptian Arabic teacher for English speakers."}]
     messages.append({"role": "user", "content": prompt})
     if user_input:
-        messages.append({"role": "user", "content": f"الطالب قال: {user_input}"})
+        messages.append({"role": "user", "content": f"Student said: {user_input}"})
+    
     response = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=messages
+        messages=messages,
+        max_tokens=600
     )
-    return response.choices[0].message.content
+    text = response.choices[0].message.content
+    return split_text(text, chunk_size=600)
 
-# 🟦 الدرس 1
-if lesson_choice == "الدرس 1":
-    # تبويب الشرح
+# ====== تبويبات الدرس 1 ======
+if lesson_choice == "Lesson 1":
+    tab1, tab2, tab3 = st.tabs(["📘 Explanation", "💬  Answer qustions", "❓  Multiple Choice"])
+
+    # ====== الشرح ======
     with tab1:
-        st.subheader("📘 الشرح")
-        if "lesson1_chat" not in st.session_state:
-            st.session_state.lesson1_chat = []
+        st.subheader("📘 Explanation")
+        chat_key = "lesson1_explain_chat"
+        if chat_key not in st.session_state:
+            st.session_state[chat_key] = []
 
-        for msg in st.session_state.lesson1_chat:
+        for msg in st.session_state[chat_key]:
             st.chat_message(msg["role"]).markdown(msg["content"])
 
-        if st.button("ابدأ الشرح", key="lesson1_explain_btn"):
-            ai_response = get_ai_response(prompts["lesson1_explanation"])
-            st.session_state.lesson1_chat.append({"role": "assistant", "content": ai_response})
+        if st.button("Explain", key="start_explain"):
+            chunks = get_ai_response_chunks(prompts["lesson1_explanation"])
+            for chunk in chunks:
+                st.session_state[chat_key].append({"role": "assistant", "content": chunk})
             st.rerun()
 
-        user_input = st.chat_input("اكتب ردّك أو سؤالك هنا...")
+        user_input = st.chat_input("Interact with the Tutor for more explanation")
         if user_input:
-            ai_response = get_ai_response(prompts["lesson1_explanation"], user_input)
-            st.session_state.lesson1_chat.append({"role": "user", "content": user_input})
-            st.session_state.lesson1_chat.append({"role": "assistant", "content": ai_response})
+            chunks = get_ai_response_chunks(prompts["lesson1_explanation"], user_input)
+            st.session_state[chat_key].append({"role": "user", "content": user_input})
+            for chunk in chunks:
+                st.session_state[chat_key].append({"role": "assistant", "content": chunk})
             st.rerun()
 
-    # تبويب التمارين الحوارية
+    # ====== التمارين الحوارية ======
     with tab2:
-        st.subheader("💬 التمارين الحوارية")
-        if "lesson1_dialogue" not in st.session_state:
-            st.session_state.lesson1_dialogue = []
+        st.subheader("💬  Answer qustions")
+        chat_key = "lesson1_dialogue_chat"
+        if chat_key not in st.session_state:
+            st.session_state[chat_key] = []
 
-        for msg in st.session_state.lesson1_dialogue:
+        for msg in st.session_state[chat_key]:
             st.chat_message(msg["role"]).markdown(msg["content"])
 
-        if st.button("ابدأ التمرين", key="lesson1_dialogue_btn"):
-            ai_response = get_ai_response(prompts["lesson1_dialogue"])
-            st.session_state.lesson1_dialogue.append({"role": "assistant", "content": ai_response})
+        if st.button("Start Questions", key="start_dialogue"):
+            chunks = get_ai_response_chunks(prompts["lesson1_dialogue"])
+            for chunk in chunks:
+                st.session_state[chat_key].append({"role": "assistant", "content": chunk})
             st.rerun()
 
-        user_input = st.chat_input("اكتب ردّك في التمرين هنا...")
+        user_input = st.chat_input("Write your answer here ....")
         if user_input:
-            ai_response = get_ai_response(prompts["lesson1_dialogue"], user_input)
-            st.session_state.lesson1_dialogue.append({"role": "user", "content": user_input})
-            st.session_state.lesson1_dialogue.append({"role": "assistant", "content": ai_response})
+            chunks = get_ai_response_chunks(prompts["lesson1_dialogue"], user_input)
+            st.session_state[chat_key].append({"role": "user", "content": user_input})
+            for chunk in chunks:
+                st.session_state[chat_key].append({"role": "assistant", "content": chunk})
             st.rerun()
 
-    # تبويب اختيار من متعدد
+    # ====== أسئلة اختيار من متعدد ======
     with tab3:
-        st.subheader("❓ أسئلة اختيار من متعدد")
-        if "lesson1_mcq" not in st.session_state:
-            st.session_state.lesson1_mcq = []
+        st.subheader("❓  Multiple Choice")
+        chat_key = "lesson1_mcq_chat"
+        if chat_key not in st.session_state:
+            st.session_state[chat_key] = []
 
-        for msg in st.session_state.lesson1_mcq:
+        for msg in st.session_state[chat_key]:
             st.chat_message(msg["role"]).markdown(msg["content"])
 
-        if st.button("ابدأ الأسئلة", key="lesson1_mcq_btn"):
-            ai_response = get_ai_response(prompts["lesson1_mcq"])
-            st.session_state.lesson1_mcq.append({"role": "assistant", "content": ai_response})
+        if st.button("Start MSQ Questions", key="start_mcq"):
+            chunks = get_ai_response_chunks(prompts["lesson1_mcq"])
+            for chunk in chunks:
+                st.session_state[chat_key].append({"role": "assistant", "content": chunk})
             st.rerun()
 
-        user_input = st.chat_input("اكتب إجابتك هنا...")
+        user_input = st.chat_input("Write your answer here ....")
         if user_input:
-            ai_response = get_ai_response(prompts["lesson1_mcq"], user_input)
-            st.session_state.lesson1_mcq.append({"role": "user", "content": user_input})
-            st.session_state.lesson1_mcq.append({"role": "assistant", "content": ai_response})
+            chunks = get_ai_response_chunks(prompts["lesson1_mcq"], user_input)
+            st.session_state[chat_key].append({"role": "user", "content": user_input})
+            for chunk in chunks:
+                st.session_state[chat_key].append({"role": "assistant", "content": chunk})
             st.rerun()
 
+# ====== تمارين عامة ======
+elif lesson_choice == "General Exercises":
+    st.subheader("💡 General Exercises")
+    chat_key = "general_chat"
+    if chat_key not in st.session_state:
+        st.session_state[chat_key] = []
 
-# 🟩 تمارين عامة
-elif lesson_choice == "تمارين عامة":
-    with tab1:
-        st.subheader("💡 تمرين عام")
-        if "general_chat" not in st.session_state:
-            st.session_state.general_chat = []
+    for msg in st.session_state[chat_key]:
+        st.chat_message(msg["role"]).markdown(msg["content"])
 
-        for msg in st.session_state.general_chat:
-            st.chat_message(msg["role"]).markdown(msg["content"])
+    if st.button("Start General Exercises", key="general_exercises_btn"):
+        chunks = get_ai_response_chunks(prompts["general_exercises"])
+        for chunk in chunks:
+            st.session_state[chat_key].append({"role": "assistant", "content": chunk})
+        st.rerun()
 
-        if st.button("ابدأ التمرين العام", key="general_practice_btn"):
-            ai_response = get_ai_response(prompts["general_practice"])
-            st.session_state.general_chat.append({"role": "assistant", "content": ai_response})
-            st.rerun()
-
-        user_input = st.chat_input("شارك إجابتك أو سؤالك هنا...")
-        if user_input:
-            ai_response = get_ai_response(prompts["general_practice"], user_input)
-            st.session_state.general_chat.append({"role": "user", "content": user_input})
-            st.session_state.general_chat.append({"role": "assistant", "content": ai_response})
-            st.rerun()
+    user_input = st.chat_input("Write your answer here...")
+    if user_input:
+        chunks = get_ai_response_chunks(prompts["general_exercises"], user_input)
+        st.session_state[chat_key].append({"role": "user", "content": user_input})
+        for chunk in chunks:
+            st.session_state[chat_key].append({"role": "assistant", "content": chunk})
+        st.rerun()
