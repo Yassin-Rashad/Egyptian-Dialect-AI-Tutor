@@ -22,25 +22,33 @@ def split_text(text, chunk_size=600):
         chunks.append(text)
     return chunks
 
-def get_ai_response_chunks(prompt, user_input=None):
+def get_ai_response(user_input=None, chat_history=[], initial_prompt=None):
     messages = [{"role": "system", "content": "You are a friendly Egyptian Arabic teacher for English speakers."}]
-    messages.append({"role": "user", "content": prompt})
+    
+    # إضافة المحادثة السابقة
+    messages.extend(chat_history)
+    
+    # إذا في input جديد من الطالب
     if user_input:
-        messages.append({"role": "user", "content": f"Student said: {user_input}"})
+        messages.append({"role": "user", "content": user_input})
+    elif initial_prompt:
+        # أول مرة نرسل الـprompt الأصلي
+        messages.append({"role": "user", "content": initial_prompt})
     
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=messages,
         max_tokens=600
     )
+    
     text = response.choices[0].message.content
     return split_text(text, chunk_size=600)
 
-# ====== تبويبات الدرس 1 ======
+# ====== Lesson 1 ======
 if lesson_choice == "Lesson 1":
-    tab1, tab2, tab3 = st.tabs(["📘 Explanation", "💬  Answer qustions", "❓  Multiple Choice"])
+    tab1, tab2, tab3 = st.tabs(["📘 Explanation", "💬 Answer Questions", "❓ Multiple Choice"])
 
-    # ====== الشرح ======
+    # ====== Explanation ======
     with tab1:
         st.subheader("📘 Explanation")
         chat_key = "lesson1_explain_chat"
@@ -51,22 +59,22 @@ if lesson_choice == "Lesson 1":
             st.chat_message(msg["role"]).markdown(msg["content"])
 
         if st.button("Explain", key="start_explain"):
-            chunks = get_ai_response_chunks(prompts["lesson1_explanation"])
+            chunks = get_ai_response(chat_history=st.session_state[chat_key], initial_prompt=prompts["lesson1_explanation"])
             for chunk in chunks:
                 st.session_state[chat_key].append({"role": "assistant", "content": chunk})
             st.rerun()
 
         user_input = st.chat_input("Interact with the Tutor for more explanation", key="lesson1_explain_input")
         if user_input:
-            chunks = get_ai_response_chunks(prompts["lesson1_explanation"], user_input)
+            chunks = get_ai_response(user_input=user_input, chat_history=st.session_state[chat_key])
             st.session_state[chat_key].append({"role": "user", "content": user_input})
             for chunk in chunks:
                 st.session_state[chat_key].append({"role": "assistant", "content": chunk})
             st.rerun()
 
-    # ====== التمارين الحوارية ======
+    # ====== Answer Questions ======
     with tab2:
-        st.subheader("💬  Answer qustions")
+        st.subheader("💬 Answer Questions")
         chat_key = "lesson1_dialogue_chat"
         if chat_key not in st.session_state:
             st.session_state[chat_key] = []
@@ -75,22 +83,22 @@ if lesson_choice == "Lesson 1":
             st.chat_message(msg["role"]).markdown(msg["content"])
 
         if st.button("Start Questions", key="start_dialogue"):
-            chunks = get_ai_response_chunks(prompts["lesson1_dialogue"])
+            chunks = get_ai_response(chat_history=st.session_state[chat_key], initial_prompt=prompts["lesson1_dialogue"])
             for chunk in chunks:
                 st.session_state[chat_key].append({"role": "assistant", "content": chunk})
             st.rerun()
 
         user_input = st.chat_input("Write your answer here ....", key="lesson1_dialogue_input")
         if user_input:
-            chunks = get_ai_response_chunks(prompts["lesson1_dialogue"], user_input)
+            chunks = get_ai_response(user_input=user_input, chat_history=st.session_state[chat_key])
             st.session_state[chat_key].append({"role": "user", "content": user_input})
             for chunk in chunks:
                 st.session_state[chat_key].append({"role": "assistant", "content": chunk})
             st.rerun()
 
-    # ====== أسئلة اختيار من متعدد ======
+    # ====== Multiple Choice ======
     with tab3:
-        st.subheader("❓  Multiple Choice")
+        st.subheader("❓ Multiple Choice")
         chat_key = "lesson1_mcq_chat"
         if chat_key not in st.session_state:
             st.session_state[chat_key] = []
@@ -98,21 +106,21 @@ if lesson_choice == "Lesson 1":
         for msg in st.session_state[chat_key]:
             st.chat_message(msg["role"]).markdown(msg["content"])
 
-        if st.button("Start MSQ Questions", key="start_mcq"):
-            chunks = get_ai_response_chunks(prompts["lesson1_mcq"])
+        if st.button("Start MCQ Questions", key="start_mcq"):
+            chunks = get_ai_response(chat_history=st.session_state[chat_key], initial_prompt=prompts["lesson1_mcq"])
             for chunk in chunks:
                 st.session_state[chat_key].append({"role": "assistant", "content": chunk})
             st.rerun()
 
         user_input = st.chat_input("Write your answer here ....", key="lesson1_mcq_input")
         if user_input:
-            chunks = get_ai_response_chunks(prompts["lesson1_mcq"], user_input)
+            chunks = get_ai_response(user_input=user_input, chat_history=st.session_state[chat_key])
             st.session_state[chat_key].append({"role": "user", "content": user_input})
             for chunk in chunks:
                 st.session_state[chat_key].append({"role": "assistant", "content": chunk})
             st.rerun()
 
-# ====== تمارين عامة ======
+# ====== General Exercises ======
 elif lesson_choice == "General Exercises":
     st.subheader("💡 General Exercises")
     chat_key = "general_chat"
@@ -123,14 +131,14 @@ elif lesson_choice == "General Exercises":
         st.chat_message(msg["role"]).markdown(msg["content"])
 
     if st.button("Start General Exercises", key="general_exercises_btn"):
-        chunks = get_ai_response_chunks(prompts["general_exercises"])
+        chunks = get_ai_response(chat_history=st.session_state[chat_key], initial_prompt=prompts["general_exercises"])
         for chunk in chunks:
             st.session_state[chat_key].append({"role": "assistant", "content": chunk})
         st.rerun()
 
     user_input = st.chat_input("Write your answer here...", key="general_exercises_input")
     if user_input:
-        chunks = get_ai_response_chunks(prompts["general_exercises"], user_input)
+        chunks = get_ai_response(user_input=user_input, chat_history=st.session_state[chat_key])
         st.session_state[chat_key].append({"role": "user", "content": user_input})
         for chunk in chunks:
             st.session_state[chat_key].append({"role": "assistant", "content": chunk})
