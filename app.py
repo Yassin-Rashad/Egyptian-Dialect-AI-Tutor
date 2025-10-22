@@ -24,10 +24,8 @@ def split_text(text, chunk_size=600):
 
 # ====== استدعاء الـAI مع الاحتفاظ بالمحادثة ======
 def get_ai_response(user_input=None, chat_history=[], initial_prompt=None):
-    # system prompt ثابت لكل تبويب
-    messages = []
-    if not chat_history and initial_prompt:
-        messages.append({"role": "system", "content": initial_prompt})
+    system_content = st.secrets["lessons"]["system_prompt"]
+    messages = [{"role": "system", "content": system_content}]
     
     # إضافة المحادثة السابقة
     messages.extend(chat_history)
