@@ -9,7 +9,7 @@ prompts = st.secrets["lessons"]
 unit_choice = st.selectbox("Choose Unit", ["Unit 1"], key="unit_select")
 lesson_choice = st.selectbox("Choose Lesson", ["Lesson 1", "General Exercises"], key="lesson_select")
 
-# ====== دوال تقسيم النصوص ======
+# ====== تقسيم النصوص ======
 def split_text(text, chunk_size=600):
     chunks = []
     while len(text) > chunk_size:
@@ -22,8 +22,19 @@ def split_text(text, chunk_size=600):
         chunks.append(text)
     return chunks
 
+# ====== استدعاء الـAI مع الاحتفاظ بالمحادثة ======
 def get_ai_response(user_input=None, chat_history=[], initial_prompt=None):
-    messages = [{"role": "system", "content": "You are a friendly Egyptian Arabic teacher for English speakers."}]
+    # الـprompt المفصل للتعليم
+    base_system_prompt = """
+You are a professional Egyptian Arabic teacher for English speakers. 
+Speak only in English. 
+Use only the words and sentence structures in the lesson text provided.
+Do not introduce new words or structures. 
+If the student's answer is correct, encourage them and move to the next question. 
+If the answer is wrong, repeat the question and explain the mistake without giving the correct answer or translating.
+Always keep a friendly, patient tone.
+"""
+    messages = [{"role": "system", "content": base_system_prompt}]
     
     # إضافة المحادثة السابقة
     messages.extend(chat_history)
@@ -32,7 +43,6 @@ def get_ai_response(user_input=None, chat_history=[], initial_prompt=None):
     if user_input:
         messages.append({"role": "user", "content": user_input})
     elif initial_prompt:
-        # أول مرة نرسل الـprompt الأصلي
         messages.append({"role": "user", "content": initial_prompt})
     
     response = client.chat.completions.create(
