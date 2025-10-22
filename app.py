@@ -194,7 +194,7 @@ def lesson_three_tabs(explain_key, dialogue_key, mcq_key, lesson_label):
                     # We call the model with the stored system prompt as first message
                     assistant_text = get_model_response(st.session_state[explain_history_key])
                     st.session_state[explain_history_key].append({"role": "assistant", "content": assistant_text})
-                    st.experimental_rerun()
+                    st.rerun()
 
         with col2:
             user_input = st.chat_input("Ask a question about the lesson...", key=f"explain_input_{lesson_label}")
@@ -202,7 +202,7 @@ def lesson_three_tabs(explain_key, dialogue_key, mcq_key, lesson_label):
                 # append user and call model
                 chunks = append_and_get_chunks(explain_history_key, user_input)
                 # show last user and assistant immediately
-                st.experimental_rerun()
+                st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
     # ---------- Dialogue Tab ----------
@@ -223,13 +223,13 @@ def lesson_three_tabs(explain_key, dialogue_key, mcq_key, lesson_label):
                 with st.spinner("Preparing dialogue practice..."):
                     assistant_text = get_model_response(st.session_state[dialogue_history_key])
                     st.session_state[dialogue_history_key].append({"role": "assistant", "content": assistant_text})
-                    st.experimental_rerun()
+                    st.rerun()
 
         with col2:
             user_input = st.chat_input("Reply as the student...", key=f"dialogue_input_{lesson_label}")
             if user_input:
                 append_and_get_chunks(dialogue_history_key, user_input)
-                st.experimental_rerun()
+                st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
     # ---------- MCQ Tab ----------
@@ -250,13 +250,13 @@ def lesson_three_tabs(explain_key, dialogue_key, mcq_key, lesson_label):
                 with st.spinner("Generating multiple choice questions..."):
                     assistant_text = get_model_response(st.session_state[mcq_history_key])
                     st.session_state[mcq_history_key].append({"role": "assistant", "content": assistant_text})
-                    st.experimental_rerun()
+                    st.rerun()
 
         with col2:
             user_input = st.chat_input("Answer the MCQ (type your choice)...", key=f"mcq_input_{lesson_label}")
             if user_input:
                 append_and_get_chunks(mcq_history_key, user_input)
-                st.experimental_rerun()
+                st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------------------------
@@ -283,12 +283,12 @@ def general_exercises_tab(general_key):
             with st.spinner("Generating exercises..."):
                 assistant_text = get_model_response(st.session_state[history_key])
                 st.session_state[history_key].append({"role": "assistant", "content": assistant_text})
-                st.experimental_rerun()
+                st.rerun()
     with col2:
         user_input = st.chat_input("Answer or practice here...", key="general_input")
         if user_input:
             append_and_get_chunks(history_key, user_input)
-            st.experimental_rerun()
+            st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------------------------
