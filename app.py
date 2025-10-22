@@ -1,18 +1,15 @@
 import streamlit as st
 from openai import OpenAI
 
-# ====== OpenAI client ======
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-
 st.title("Learn Egyptian dialect with ai-Tutor🎓")
 
-# ====== Prompts from secrets ======
 prompts = st.secrets["lessons"]
 
 unit_choice = st.selectbox("Choose Unit", ["Unit 1"], key="unit_select")
 lesson_choice = st.selectbox("Choose Lesson", ["Lesson 1", "General Exercises"], key="lesson_select")
 
-# ====== Split text ======
+# ====== تقسيم النصوص ======
 def split_text(text, chunk_size=600):
     chunks = []
     while len(text) > chunk_size:
@@ -25,22 +22,27 @@ def split_text(text, chunk_size=600):
         chunks.append(text)
     return chunks
 
-# ====== AI response with history ======
+# ====== استدعاء الـAI مع الاحتفاظ بالمحادثة ======
 def get_ai_response(user_input=None, chat_history=[], initial_prompt=None):
-    messages = [{"role": "system", "content": prompts["lesson1_explanation"]}]
+    # system prompt ثابت لكل تبويب
+    system_content = "You are a professional Egyptian Arabic teacher for English speakers. Stick only to the text structures in the lesson, do NOT translate questions to English."
+    messages = [{"role": "system", "content": system_content}]
+    
+    # إضافة المحادثة السابقة
     messages.extend(chat_history)
-
+    
+    # إضافة input جديد أو initial prompt
     if user_input:
         messages.append({"role": "user", "content": user_input})
     elif initial_prompt:
         messages.append({"role": "user", "content": initial_prompt})
-
+    
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=messages,
         max_tokens=600
     )
-
+    
     text = response.choices[0].message.content
     return split_text(text, chunk_size=600)
 
@@ -104,42 +106,3 @@ if lesson_choice == "Lesson 1":
             st.session_state[chat_key] = []
 
         for msg in st.session_state[chat_key]:
-            st.chat_message(msg["role"]).markdown(msg["content"])
-
-        if st.button("Start MCQ Questions", key="start_mcq"):
-            chunks = get_ai_response(chat_history=st.session_state[chat_key], initial_prompt=prompts["lesson1_mcq"])
-            for chunk in chunks:
-                st.session_state[chat_key].append({"role": "assistant", "content": chunk})
-            st.rerun()
-
-        user_input = st.chat_input("Write your answer here ....", key="lesson1_mcq_input")
-        if user_input:
-            chunks = get_ai_response(user_input=user_input, chat_history=st.session_state[chat_key])
-            st.session_state[chat_key].append({"role": "user", "content": user_input})
-            for chunk in chunks:
-                st.session_state[chat_key].append({"role": "assistant", "content": chunk})
-            st.rerun()
-
-# ====== General Exercises ======
-elif lesson_choice == "General Exercises":
-    st.subheader("💡 General Exercises")
-    chat_key = "general_chat"
-    if chat_key not in st.session_state:
-        st.session_state[chat_key] = []
-
-    for msg in st.session_state[chat_key]:
-        st.chat_message(msg["role"]).markdown(msg["content"])
-
-    if st.button("Start General Exercises", key="general_exercises_btn"):
-        chunks = get_ai_response(chat_history=st.session_state[chat_key], initial_prompt=prompts["general_exercises"])
-        for chunk in chunks:
-            st.session_state[chat_key].append({"role": "assistant", "content": chunk})
-        st.rerun()
-
-    user_input = st.chat_input("Write your answer here...", key="general_exercises_input")
-    if user_input:
-        chunks = get_ai_response(user_input=user_input, chat_history=st.session_state[chat_key])
-        st.session_state[chat_key].append({"role": "user", "content": user_input})
-        for chunk in chunks:
-            st.session_state[chat_key].append({"role": "assistant", "content": chunk})
-        st.rerun()
