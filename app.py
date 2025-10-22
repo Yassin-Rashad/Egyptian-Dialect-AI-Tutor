@@ -93,3 +93,25 @@ if lesson_choice == "الدرس 1":
             st.session_state[chat_key].append({"role": "user", "content": user_input})
             st.session_state[chat_key].append({"role": "assistant", "content": ai_response})
             st.rerun()
+
+# 🟩 تمارين عامة
+elif lesson_choice == "تمارين عامة":
+    with tab1:
+        st.subheader("💡 تمرين عام")
+        if "general_chat" not in st.session_state:
+            st.session_state.general_chat = []
+
+        for msg in st.session_state.general_chat:
+            st.chat_message(msg["role"]).markdown(msg["content"])
+
+        if st.button("ابدأ التمرين العام", key="general_practice_btn"):
+            ai_response = get_ai_response(prompts["general_practice"])
+            st.session_state.general_chat.append({"role": "assistant", "content": ai_response})
+            st.rerun()
+
+        user_input = st.chat_input("شارك إجابتك أو سؤالك هنا...")
+        if user_input:
+            ai_response = get_ai_response(prompts["general_practice"], user_input)
+            st.session_state.general_chat.append({"role": "user", "content": user_input})
+            st.session_state.general_chat.append({"role": "assistant", "content": ai_response})
+            st.rerun()
