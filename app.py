@@ -25,16 +25,7 @@ def split_text(text, chunk_size=600):
 # ====== استدعاء الـAI مع الاحتفاظ بالمحادثة ======
 def get_ai_response(user_input=None, chat_history=[], initial_prompt=None):
     # الـprompt المفصل للتعليم
-    base_system_prompt = """
-You are a professional Egyptian Arabic teacher for English speakers. 
-Speak only in English. 
-Use only the words and sentence structures in the lesson text provided.
-Do not introduce new words or structures. 
-If the student's answer is correct, encourage them and move to the next question. 
-If the answer is wrong, repeat the question and explain the mistake without giving the correct answer or translating.
-Always keep a friendly, patient tone.
-"""
-    messages = [{"role": "system", "content": base_system_prompt}]
+    messages = [{"role": "system", "content": prompts["lesson1_explanation"]}]
     
     # إضافة المحادثة السابقة
     messages.extend(chat_history)
