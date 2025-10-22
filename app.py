@@ -27,14 +27,16 @@ def get_ai_response(user_input=None, chat_history=[], initial_prompt=None):
     system_content = st.secrets["lessons"]["system_prompt"]
     messages = [{"role": "system", "content": system_content}]
     
+    # أول مرة: نضيف initial_prompt
+    if not chat_history and initial_prompt:
+        messages.append({"role": "user", "content": initial_prompt})
+    
     # إضافة المحادثة السابقة
     messages.extend(chat_history)
     
-    # إضافة input جديد أو initial prompt
+    # إضافة input جديد
     if user_input:
         messages.append({"role": "user", "content": user_input})
-    elif initial_prompt:
-        messages.append({"role": "user", "content": initial_prompt})
     
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -44,7 +46,6 @@ def get_ai_response(user_input=None, chat_history=[], initial_prompt=None):
     
     text = response.choices[0].message.content
     return split_text(text, chunk_size=600)
-
 
 # ====== Lesson 1 ======
 if lesson_choice == "Lesson 1":
