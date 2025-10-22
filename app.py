@@ -106,3 +106,42 @@ if lesson_choice == "Lesson 1":
             st.session_state[chat_key] = []
 
         for msg in st.session_state[chat_key]:
+            st.chat_message(msg["role"]).markdown(msg["content"])
+
+        if st.button("Start MCQ Questions", key="start_mcq"):
+            chunks = get_ai_response(chat_history=st.session_state[chat_key], initial_prompt=prompts["lesson1_mcq"])
+            for chunk in chunks:
+                st.session_state[chat_key].append({"role": "assistant", "content": chunk})
+            st.rerun()
+
+        user_input = st.chat_input("Write your answer here ....", key="lesson1_mcq_input")
+        if user_input:
+            chunks = get_ai_response(user_input=user_input, chat_history=st.session_state[chat_key])
+            st.session_state[chat_key].append({"role": "user", "content": user_input})
+            for chunk in chunks:
+                st.session_state[chat_key].append({"role": "assistant", "content": chunk})
+            st.rerun()
+
+# ====== General Exercises ======
+elif lesson_choice == "General Exercises":
+    st.subheader("💡 General Exercises")
+    chat_key = "general_chat"
+    if chat_key not in st.session_state:
+        st.session_state[chat_key] = []
+
+    for msg in st.session_state[chat_key]:
+        st.chat_message(msg["role"]).markdown(msg["content"])
+
+    if st.button("Start General Exercises", key="general_exercises_btn"):
+        chunks = get_ai_response(chat_history=st.session_state[chat_key], initial_prompt=prompts["general_exercises"])
+        for chunk in chunks:
+            st.session_state[chat_key].append({"role": "assistant", "content": chunk})
+        st.rerun()
+
+    user_input = st.chat_input("Write your answer here...", key="general_exercises_input")
+    if user_input:
+        chunks = get_ai_response(user_input=user_input, chat_history=st.session_state[chat_key])
+        st.session_state[chat_key].append({"role": "user", "content": user_input})
+        for chunk in chunks:
+            st.session_state[chat_key].append({"role": "assistant", "content": chunk})
+        st.rerun()
