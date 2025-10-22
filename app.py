@@ -57,4 +57,24 @@ else:
 
 prompts = st.secrets["lessons"]
 
-lesson_prompt = prompts["lesson1"]
+lesson_choice = st.selectbox("اختر الدرس", ["الدرس 1", "الدرس 2"])
+tab1, tab2, tab3 = st.tabs(["📘 الشرح", "💬 التمارين الحوارية", "❓اختيار من متعدد"])
+
+if lesson_choice == "الدرس 1":
+    with tab1:
+        if st.button("ابدأ الشرح"):
+            response = get_ai_response(prompts["lesson1_explanation"])
+            st.write(response)
+
+    with tab2:
+        if st.button("ابدأ التمرين الحواري"):
+            response = get_ai_response(prompts["lesson1_dialogue"])
+            st.write(response)
+
+    with tab3:
+        if st.button("ابدأ أسئلة الاختيار"):
+            response = get_ai_response(prompts["lesson1_mcq"])
+            st.write(response)
+
+elif lesson_choice == "تمارين عامة":
+    prompt = prompts["general_exercises"]
