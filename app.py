@@ -1,15 +1,18 @@
 import streamlit as st
 from openai import OpenAI
 
+# ====== OpenAI client ======
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+
 st.title("Learn Egyptian dialect with ai-Tutor🎓")
 
+# ====== Prompts from secrets ======
 prompts = st.secrets["lessons"]
 
 unit_choice = st.selectbox("Choose Unit", ["Unit 1"], key="unit_select")
 lesson_choice = st.selectbox("Choose Lesson", ["Lesson 1", "General Exercises"], key="lesson_select")
 
-# ====== تقسيم النصوص ======
+# ====== Split text ======
 def split_text(text, chunk_size=600):
     chunks = []
     while len(text) > chunk_size:
@@ -22,26 +25,22 @@ def split_text(text, chunk_size=600):
         chunks.append(text)
     return chunks
 
-# ====== استدعاء الـAI مع الاحتفاظ بالمحادثة ======
+# ====== AI response with history ======
 def get_ai_response(user_input=None, chat_history=[], initial_prompt=None):
-    # الـprompt المفصل للتعليم
     messages = [{"role": "system", "content": prompts["lesson1_explanation"]}]
-    
-    # إضافة المحادثة السابقة
     messages.extend(chat_history)
-    
-    # إذا في input جديد من الطالب
+
     if user_input:
         messages.append({"role": "user", "content": user_input})
     elif initial_prompt:
         messages.append({"role": "user", "content": initial_prompt})
-    
+
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=messages,
         max_tokens=600
     )
-    
+
     text = response.choices[0].message.content
     return split_text(text, chunk_size=600)
 
