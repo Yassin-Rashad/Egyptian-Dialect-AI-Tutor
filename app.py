@@ -25,7 +25,7 @@ def split_text(text, chunk_size=600):
 # ====== استدعاء الـAI مع الاحتفاظ بالمحادثة ======
 def get_ai_response(user_input=None, chat_history=[], initial_prompt=None):
     # system prompt ثابت لكل تبويب
-    system_content = "You are a professional Egyptian Arabic teacher for English speakers. Stick only to the text structures in the lesson, do NOT translate questions to English."
+    system_content = "You are a professional Egyptian Arabic teacher for English speakers."
     messages = [{"role": "system", "content": system_content}]
     
     # إضافة المحادثة السابقة
