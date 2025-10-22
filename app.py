@@ -10,8 +10,6 @@ prompts = st.secrets["lessons"]
 unit_choice = st.selectbox("اختر الوحدة", ["الوحدة 1"], key="unit_select")
 lesson_choice = st.selectbox("اختر الدرس", ["الدرس 1", "تمارين عامة"], key="lesson_select")
 
-tab1, tab2, tab3 = st.tabs(["📘 الشرح", "💬 التمارين الحوارية", "❓اختيار من متعدد"])
-
 def get_ai_response(prompt, user_input=None):
     messages = [{"role": "system", "content": "You are a friendly Egyptian Arabic teacher for English speakers."}]
     messages.append({"role": "user", "content": prompt})
@@ -25,6 +23,7 @@ def get_ai_response(prompt, user_input=None):
 
 
 if lesson_choice == "الدرس 1":
+    tab1, tab2, tab3 = st.tabs(["📘 الشرح", "💬 التمارين الحوارية", "❓اختيار من متعدد"])
     # ====== تبويب الشرح ======
     with tab1:
         st.subheader("📘 الشرح")
@@ -96,22 +95,21 @@ if lesson_choice == "الدرس 1":
 
 # 🟩 تمارين عامة
 elif lesson_choice == "تمارين عامة":
-    with tab1:
-        st.subheader("💡 تمرين عام")
-        if "general_chat" not in st.session_state:
-            st.session_state.general_chat = []
+    st.subheader("💡 تمرين عام")
+    if "general_chat" not in st.session_state:
+        st.session_state.general_chat = []
 
-        for msg in st.session_state.general_chat:
-            st.chat_message(msg["role"]).markdown(msg["content"])
+    for msg in st.session_state.general_chat:
+        st.chat_message(msg["role"]).markdown(msg["content"])
 
-        if st.button("ابدأ التمرين العام", key="general_practice_btn"):
-            ai_response = get_ai_response(prompts["general_practice"])
-            st.session_state.general_chat.append({"role": "assistant", "content": ai_response})
-            st.rerun()
+    if st.button("ابدأ التمرين العام", key="general_exercises_btn"):
+        ai_response = get_ai_response(prompts["general_exercises"])
+        st.session_state.general_chat.append({"role": "assistant", "content": ai_response})
+        st.rerun()
 
-        user_input = st.chat_input("شارك إجابتك أو سؤالك هنا...")
-        if user_input:
-            ai_response = get_ai_response(prompts["general_practice"], user_input)
-            st.session_state.general_chat.append({"role": "user", "content": user_input})
-            st.session_state.general_chat.append({"role": "assistant", "content": ai_response})
-            st.rerun()
+    user_input = st.chat_input("شارك إجابتك أو سؤالك هنا...")
+    if user_input:
+        ai_response = get_ai_response(prompts["general_exercises"], user_input)
+        st.session_state.general_chat.append({"role": "user", "content": user_input})
+        st.session_state.general_chat.append({"role": "assistant", "content": ai_response})
+        st.rerun()
