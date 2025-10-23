@@ -295,7 +295,7 @@ def general_exercises_tab(general_key):
     with st.expander("📋 How to use this practice", expanded=True):
         st.markdown("""
         **Follow these simple steps before starting:**
-        1️⃣ **Click "Start General Exercises"** to begin the conversation.  
+        1️⃣ **\nClick "Start General Exercises"** to begin the conversation.  
         2️⃣ **Answer in Arabic script or Latin letters** (Latin is accepted, Arabic is preferred).  
         3️⃣ If the AI Tutor asks you to write in Arabic but you can’t — just say:  
         _"I can’t write in Arabic, I’ll use Latin instead."_  
