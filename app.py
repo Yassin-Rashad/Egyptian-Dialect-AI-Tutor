@@ -175,63 +175,77 @@ def lesson_two_tabs(explain_key, lesson_key, lesson_label):
     tab1, tab2 = st.tabs(["📘 Explanation", "🧩 Practice Exercises"])
 
     # ---------------------- Tab 1: Explanation ----------------------
-    with tab1:
-        st.markdown("### 📘 Explanation")
-        st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
-        for msg in st.session_state[explain_history_key]:
-            if msg["role"] == "system":
-                continue
-            st.chat_message(msg["role"]).markdown(msg["content"])
+    # ---------------------- Tab 1: Explanation ----------------------
+with tab1:
+    with st.expander("💡 How to use this explanation", expanded=True):
+        st.markdown("""
+        **Follow these simple steps before starting:**
 
-        col1, col2 = st.columns([1, 2])
-        with col1:
-            if st.button("Start Explanation", key=f"start_explain_{lesson_label}"):
-                with st.spinner("Generating explanation..."):
-                    assistant_text = get_model_response(st.session_state[explain_history_key])
-                    st.session_state[explain_history_key].append({"role": "assistant", "content": assistant_text})
-                    st.rerun()
+        1️⃣ **Click "Start Explanation"** to generate the full lesson explanation.  
+        2️⃣ The tutor will explain the dialogue in English with Arabic + Latin pronunciation.  
+        3️⃣ You can **ask about any word, phrase, or pronunciation** using the chat below.  
+        4️⃣ If you don’t understand something, just ask — the tutor will rephrase it kindly.  
+        5️⃣ Stay relaxed and interactive — this is your private Arabic learning space 🎧  
+        """)
 
-        with col2:
-            user_input = st.chat_input("Ask about the lesson explanation...", key=f"explain_input_{lesson_label}")
-            if user_input:
-                append_and_get_chunks(explain_history_key, user_input)
+    st.markdown("### 📘 Explanation")
+    st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
+    for msg in st.session_state[explain_history_key]:
+        if msg["role"] == "system":
+            continue
+        st.chat_message(msg["role"]).markdown(msg["content"])
+
+    col1, col2 = st.columns([1, 2])
+    with col1:
+        if st.button("Start Explanation", key=f"start_explain_{lesson_label}"):
+            with st.spinner("Generating explanation..."):
+                assistant_text = get_model_response(st.session_state[explain_history_key])
+                st.session_state[explain_history_key].append({"role": "assistant", "content": assistant_text})
                 st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
 
-    # ---------------------- Tab 2: Practice Exercises ----------------------
-    with tab2:
-        with st.expander("📋 How to use this practice", expanded=True):
-            st.markdown("""
-            **Follow these simple steps before starting:**
-            1️⃣ Click **"Start Practice"** to begin the exercises.  
-            2️⃣ You can answer in Arabic or Latin letters (Arabic is preferred).  
-            3️⃣ If the AI Tutor asks for Arabic but you can’t, reply:  
-               _"I’ll use Latin instead."_  
-            4️⃣ Feel free to ask if you don’t understand something.  
-            5️⃣ The AI Tutor will guide you kindly step by step 💬  
-            """)
+    with col2:
+        user_input = st.chat_input("Ask about the lesson explanation...", key=f"explain_input_{lesson_label}")
+        if user_input:
+            append_and_get_chunks(explain_history_key, user_input)
+            st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
 
-        st.markdown("### 🧩 Practice Exercises")
-        st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
-        for msg in st.session_state[practice_history_key]:
-            if msg["role"] == "system":
-                continue
-            st.chat_message(msg["role"]).markdown(msg["content"])
+# ---------------------- Tab 2: Practice Exercises ----------------------
+with tab2:
+    with st.expander("📋 How to use this practice", expanded=True):
+        st.markdown("""
+        **Follow these simple steps before starting:**
 
-        col1, col2 = st.columns([1, 2])
-        with col1:
-            if st.button("Start Practice", key=f"start_practice_{lesson_label}"):
-                with st.spinner("Preparing exercises..."):
-                    assistant_text = get_model_response(st.session_state[practice_history_key])
-                    st.session_state[practice_history_key].append({"role": "assistant", "content": assistant_text})
-                    st.rerun()
+        1️⃣ **Click "Start Practice"** to begin the exercises.  
+        2️⃣ You can answer in **Arabic or Latin letters** (Arabic is preferred).  
+        3️⃣ If the AI Tutor asks for Arabic but you can’t, reply:  
+           _"I’ll use Latin instead."_  
+        4️⃣ **Feel free to ask questions** if you don’t understand something.  
+        5️⃣ The AI Tutor will guide you kindly **step by step** 💬  
+        """)
 
-        with col2:
-            user_input = st.chat_input("Answer or ask for help...", key=f"practice_input_{lesson_label}")
-            if user_input:
-                append_and_get_chunks(practice_history_key, user_input)
+    st.markdown("### 🧩 Practice Exercises")
+    st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
+    for msg in st.session_state[practice_history_key]:
+        if msg["role"] == "system":
+            continue
+        st.chat_message(msg["role"]).markdown(msg["content"])
+
+    col1, col2 = st.columns([1, 2])
+    with col1:
+        if st.button("Start Practice", key=f"start_practice_{lesson_label}"):
+            with st.spinner("Preparing exercises..."):
+                assistant_text = get_model_response(st.session_state[practice_history_key])
+                st.session_state[practice_history_key].append({"role": "assistant", "content": assistant_text})
                 st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
+
+    with col2:
+        user_input = st.chat_input("Answer or ask for help...", key=f"practice_input_{lesson_label}")
+        if user_input:
+            append_and_get_chunks(practice_history_key, user_input)
+            st.rerun()
+    st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 # ---------------------------
