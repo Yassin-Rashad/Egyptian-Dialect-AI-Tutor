@@ -158,106 +158,81 @@ explain_key, dialogue_key, mcq_key = get_keys_for_lesson(lesson_choice)
 # ---------------------------
 #  LESSON: Explanation / Dialogue / MCQ
 # ---------------------------
-def lesson_three_tabs(explain_key, dialogue_key, mcq_key, lesson_label):
-    # system prompt default
+# ---------------------------
+#  LESSON: 2 Tabs (Explanation + Practice)
+# ---------------------------
+def lesson_two_tabs(explain_key, lesson_key, lesson_label):
     system_prompt = prompts.get("system_prompt", "You are a professional Egyptian Arabic teacher for English speakers.")
-    # unique history keys per tab
+
+    # --- EXPLANATION TAB ---
     explain_history_key = f"{lesson_label}_explain_history"
-    dialogue_history_key = f"{lesson_label}_dialogue_history"
-    mcq_history_key = f"{lesson_label}_mcq_history"
-
-    # Ensure histories exist
     ensure_history(explain_history_key, prompts.get(explain_key, system_prompt))
-    ensure_history(dialogue_history_key, prompts.get(dialogue_key, system_prompt))
-    ensure_history(mcq_history_key, prompts.get(mcq_key, system_prompt))
 
-    tab1, tab2, tab3 = st.tabs(["📘 Explanation", "💬 Dialogue Practice", "❓ Multiple Choice"])
+    # --- PRACTICE TAB ---
+    practice_history_key = f"{lesson_label}_practice_history"
+    ensure_history(practice_history_key, prompts.get(lesson_key, system_prompt))
 
-    # ---------- Explanation Tab ----------
+    tab1, tab2 = st.tabs(["📘 Explanation", "🧩 Practice Exercises"])
+
+    # ---------------------- Tab 1: Explanation ----------------------
     with tab1:
         st.markdown("### 📘 Explanation")
         st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
-        # show existing messages
         for msg in st.session_state[explain_history_key]:
             if msg["role"] == "system":
                 continue
-            if msg["role"] == "assistant":
-                st.chat_message("assistant").markdown(msg["content"])
-            else:
-                st.chat_message("user").markdown(msg["content"])
+            st.chat_message(msg["role"]).markdown(msg["content"])
 
-        # Buttons area
         col1, col2 = st.columns([1, 2])
         with col1:
-            if st.button("Generate Explanation", key=f"gen_explain_{lesson_label}"):
+            if st.button("Start Explanation", key=f"start_explain_{lesson_label}"):
                 with st.spinner("Generating explanation..."):
-                    # We call the model with the stored system prompt as first message
                     assistant_text = get_model_response(st.session_state[explain_history_key])
                     st.session_state[explain_history_key].append({"role": "assistant", "content": assistant_text})
                     st.rerun()
 
         with col2:
-            user_input = st.chat_input("Ask a question about the lesson...", key=f"explain_input_{lesson_label}")
+            user_input = st.chat_input("Ask about the lesson explanation...", key=f"explain_input_{lesson_label}")
             if user_input:
-                # append user and call model
-                chunks = append_and_get_chunks(explain_history_key, user_input)
-                # show last user and assistant immediately
+                append_and_get_chunks(explain_history_key, user_input)
                 st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ---------- Dialogue Tab ----------
+    # ---------------------- Tab 2: Practice Exercises ----------------------
     with tab2:
-        st.markdown("### 💬 Dialogue Practice")
+        with st.expander("📋 How to use this practice", expanded=True):
+            st.markdown("""
+            **Follow these simple steps before starting:**
+            1️⃣ Click **"Start Practice"** to begin the exercises.  
+            2️⃣ You can answer in Arabic or Latin letters (Arabic is preferred).  
+            3️⃣ If the AI Tutor asks for Arabic but you can’t, reply:  
+               _"I’ll use Latin instead."_  
+            4️⃣ Feel free to ask if you don’t understand something.  
+            5️⃣ The AI Tutor will guide you kindly step by step 💬  
+            """)
+
+        st.markdown("### 🧩 Practice Exercises")
         st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
-        for msg in st.session_state[dialogue_history_key]:
+        for msg in st.session_state[practice_history_key]:
             if msg["role"] == "system":
                 continue
-            if msg["role"] == "assistant":
-                st.chat_message("assistant").markdown(msg["content"])
-            else:
-                st.chat_message("user").markdown(msg["content"])
+            st.chat_message(msg["role"]).markdown(msg["content"])
 
         col1, col2 = st.columns([1, 2])
         with col1:
-            if st.button("Start Dialogue Practice", key=f"start_dialogue_{lesson_label}"):
-                with st.spinner("Preparing dialogue practice..."):
-                    assistant_text = get_model_response(st.session_state[dialogue_history_key])
-                    st.session_state[dialogue_history_key].append({"role": "assistant", "content": assistant_text})
+            if st.button("Start Practice", key=f"start_practice_{lesson_label}"):
+                with st.spinner("Preparing exercises..."):
+                    assistant_text = get_model_response(st.session_state[practice_history_key])
+                    st.session_state[practice_history_key].append({"role": "assistant", "content": assistant_text})
                     st.rerun()
 
         with col2:
-            user_input = st.chat_input("Reply as the student...", key=f"dialogue_input_{lesson_label}")
+            user_input = st.chat_input("Answer or ask for help...", key=f"practice_input_{lesson_label}")
             if user_input:
-                append_and_get_chunks(dialogue_history_key, user_input)
+                append_and_get_chunks(practice_history_key, user_input)
                 st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # ---------- MCQ Tab ----------
-    with tab3:
-        st.markdown("### ❓ Multiple Choice")
-        st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
-        for msg in st.session_state[mcq_history_key]:
-            if msg["role"] == "system":
-                continue
-            if msg["role"] == "assistant":
-                st.chat_message("assistant").markdown(msg["content"])
-            else:
-                st.chat_message("user").markdown(msg["content"])
-
-        col1, col2 = st.columns([1, 2])
-        with col1:
-            if st.button("Start MCQ", key=f"start_mcq_{lesson_label}"):
-                with st.spinner("Generating multiple choice questions..."):
-                    assistant_text = get_model_response(st.session_state[mcq_history_key])
-                    st.session_state[mcq_history_key].append({"role": "assistant", "content": assistant_text})
-                    st.rerun()
-
-        with col2:
-            user_input = st.chat_input("Answer the MCQ (type your choice)...", key=f"mcq_input_{lesson_label}")
-            if user_input:
-                append_and_get_chunks(mcq_history_key, user_input)
-                st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------------------------
 #  GENERAL EXERCISES (single tab)
@@ -313,8 +288,8 @@ if "general" in lesson_choice.lower() or explain_key == "general_exercises":
     # show only general exercises tab
     general_exercises_tab("general_exercises")
 else:
-    # lesson with three tabs
-    lesson_three_tabs(explain_key, dialogue_key, mcq_key, lesson_choice)
+    # lesson with 2 tabs (Explanation + Practice)
+    lesson_two_tabs(explain_key, f"{lesson_choice.lower()}", lesson_choice)
 
 # ---------------------------
 #  Footer: small tips and progress summary (basic)
