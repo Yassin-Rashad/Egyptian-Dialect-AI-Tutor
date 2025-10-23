@@ -263,6 +263,18 @@ def lesson_three_tabs(explain_key, dialogue_key, mcq_key, lesson_label):
 #  GENERAL EXERCISES (single tab)
 # ---------------------------
 def general_exercises_tab(general_key):
+    # ---------- Usage Instructions ----------
+    with st.expander("📋 How to use this practice", expanded=True):
+        st.markdown("""
+        **Follow these simple steps before starting:**
+    
+        1️⃣ **Click "Start General Exercises"** to begin the conversation.  
+        2️⃣ **Answer in Arabic script or Latin letters** (Latin is accepted, Arabic is preferred).  
+        3️⃣ If the AI Tutor asks you to write in Arabic but you can’t — just say:  
+           _"I can’t write in Arabic, I’ll use Latin instead."_  
+        4️⃣ **Feel free to ask questions** anytime if you don’t understand something.  
+        5️⃣ **Stay relaxed** — the AI Tutor will always reply kindly and help you learn step by step 💬
+        """)
     system_prompt = prompts.get("system_prompt", "You are a professional Egyptian Arabic teacher for English speakers.")
     history_key = "general_exercises_history"
     ensure_history(history_key, prompts.get(general_key, system_prompt))
@@ -291,18 +303,7 @@ def general_exercises_tab(general_key):
             st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ---------- Usage Instructions ----------
-    with st.expander("📋 How to use this practice", expanded=True):
-        st.markdown("""
-        **Follow these simple steps before starting:**
-    
-        1️⃣ **Click "Start General Exercises"** to begin the conversation.  
-        2️⃣ **Answer in Arabic script or Latin letters** (Latin is accepted, Arabic is preferred).  
-        3️⃣ If the AI Tutor asks you to write in Arabic but you can’t — just say:  
-           _"I can’t write in Arabic, I’ll use Latin instead."_  
-        4️⃣ **Feel free to ask questions** anytime if you don’t understand something.  
-        5️⃣ **Stay relaxed** — the AI Tutor will always reply kindly and help you learn step by step 💬
-        """)
+
 
 
 # ---------------------------
