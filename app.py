@@ -116,7 +116,10 @@ with st.sidebar:
     unit_choice = st.selectbox("Choose Unit", unit_options, index=0, key="sidebar_unit")
 
     # lessons list: we expect secrets["lessons"] to contain keys like lesson1_explanation, lesson1_dialogue, lesson1_mcq, general_exercises
-    lesson_items = prompts.get("available_lessons", ["Lesson 1", "General Exercises"])
+    lesson_items = prompts.get(
+    "available_lessons", 
+    ["Lesson 1", "Lesson 2", "General Exercises"]
+    )
     lesson_choice = st.selectbox("Choose Lesson", lesson_items, index=0, key="sidebar_lesson")
 
     st.divider()
