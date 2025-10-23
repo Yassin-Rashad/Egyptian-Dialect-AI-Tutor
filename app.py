@@ -138,22 +138,19 @@ st.markdown("<div class='main'><div class='big-title'>Learn Egyptian Dialect —
 # Map lesson_choice -> secret keys (you can adjust naming convention in secrets.toml)
 # convention: lessonX_explanation, lessonX_dialogue, lessonX_mcq
 def get_keys_for_lesson(lesson_label: str):
-    """Return secret keys for explanation/dialogue/mcq given a label like 'Lesson 1'"""
+    """Return secret keys for explanation and practice given a label like 'Lesson 1'"""
     normalized = lesson_label.lower().replace(" ", "")
-    base = normalized.replace("lesson", "lesson")  # placeholder in case you change mapping
-    # simple fixed mapping for 'Lesson 1' -> lesson1_*
     if "lesson1" in normalized:
-        return ("lesson1_explanation", "lesson1_dialogue", "lesson1_mcq")
+        return ("lesson1_explanation", "lesson1_practice")
     elif "general" in normalized:
-        return ("general_exercises", None, None)
+        return ("general_exercises", None)
     else:
-        # fallback: try to build
         idx = ''.join([ch for ch in normalized if ch.isdigit()])
         if idx:
-            return (f"lesson{idx}_explanation", f"lesson{idx}_dialogue", f"lesson{idx}_mcq")
-        return ("general_exercises", None, None)
+            return (f"lesson{idx}_explanation", f"lesson{idx}_practice")
+        return ("general_exercises", None)
 
-explain_key, dialogue_key, mcq_key = get_keys_for_lesson(lesson_choice)
+explain_key, practice_key = get_keys_for_lesson(lesson_choice)
 
 # ---------------------------
 #  LESSON: Explanation / Dialogue / MCQ
@@ -305,7 +302,7 @@ if "general" in lesson_choice.lower() or explain_key == "general_exercises":
     general_exercises_tab("general_exercises")
 else:
     # lesson with 2 tabs (Explanation + Practice)
-    lesson_two_tabs(explain_key, f"{lesson_choice.lower()}", lesson_choice)
+    lesson_two_tabs(explain_key, practice_key, lesson_choice)
 
 # ---------------------------
 #  Footer: small tips and progress summary (basic)
