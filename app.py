@@ -199,9 +199,11 @@ def lesson_two_tabs(explain_key, lesson_key, lesson_label):
         with col1:
             if st.button("Start Explanation", key=f"start_explain_{lesson_label}"):
                 with st.spinner("Generating explanation..."):
-                    assistant_text = get_model_response(st.session_state[explain_history_key])
+                    # use higher token limit for explanation
+                    assistant_text = get_model_response(st.session_state[explain_history_key], max_tokens=1500)
                     st.session_state[explain_history_key].append({"role": "assistant", "content": assistant_text})
                     st.rerun()
+
     
         with col2:
             user_input = st.chat_input("Ask about the lesson explanation...", key=f"explain_input_{lesson_label}")
