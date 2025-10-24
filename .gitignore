@@ -1,0 +1,23 @@
+# =========================
+# 🔒 SECURITY CONFIGURATION
+# =========================
+
+# Ignore all prompt files (so lessons & secrets stay private)
+prompts/
+.streamlit/secrets.toml
+
+# Common sensitive or temporary files
+__pycache__/
+*.pyc
+*.log
+.env
+.vscode/
+.DS_Store
+
+# Streamlit generated stuff
+.streamlit/config.toml
+.streamlit/credentials.toml
+
+# Backup or cache folders
+cache/
+tmp/
