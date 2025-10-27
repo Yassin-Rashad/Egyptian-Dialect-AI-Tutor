@@ -74,7 +74,7 @@ st.markdown(
 # ---------------------------
 #  OPENAI CLIENT
 # ---------------------------
-api_key = os.getenv("OPENAI_API_KEY")
+api_key = st.secrets["OPENAI_API_KEY"]
 if not api_key:
     st.error("❌ OPENAI_API_KEY not found. Please set it as an environment variable.")
     st.stop()
