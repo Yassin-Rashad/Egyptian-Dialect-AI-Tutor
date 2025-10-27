@@ -1,21 +1,68 @@
 import streamlit as st
 import os
+import json
 from openai import OpenAI
 from typing import List
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from io import BytesIO
+from googleapiclient.http import MediaIoBaseDownload
+
+def download_from_drive(file_name, folder_id):
+    try:
+        # ✅ نحول نص الـ JSON إلى dict
+        service_account_path = st.secrets["SERVICE_ACCOUNT_PATH"]
+        with open(service_account_path, "r") as f:
+            service_account_info = json.load(f)
+
+
+        creds = service_account.Credentials.from_service_account_info(
+            service_account_info,
+            scopes=["https://www.googleapis.com/auth/drive.readonly"]
+        )
+        service = build("drive", "v3", credentials=creds)
+
+        results = service.files().list(
+            q=f"'{folder_id}' in parents and name='{file_name}' and trashed=false",
+            spaces="drive",
+            fields="files(id, name)"
+        ).execute()
+
+        items = results.get("files", [])
+        if not items:
+            st.warning(f"⚠️ File '{file_name}' not found in Google Drive folder.")
+            return ""
+
+        file_id = items[0]["id"]
+        request = service.files().get_media(fileId=file_id)
+        fh = BytesIO()
+        downloader = MediaIoBaseDownload(fh, request)
+        done = False
+        while not done:
+            status, done = downloader.next_chunk()
+        fh.seek(0)
+        return fh.read().decode("utf-8")
+
+    except Exception as e:
+        st.error(f"❌ Error reading file from Drive: {e}")
+        return ""
+
 
 # ---------------------------
 #  LOAD PROMPTS
 # ---------------------------
 def load_prompt(unit, lesson, type_=""):
-    """Load the content of a prompt file."""
-    if type_:
-        path = f"prompts/{unit}/{lesson}_{type_}.txt"
+    filename = f"{lesson}_{type_}.txt" if type_ else f"{lesson}.txt"
+    local_path = os.path.join("prompts", unit, filename)
+
+    # أولًا جرّب محلي
+    if os.path.exists(local_path):
+        with open(local_path, "r", encoding="utf-8") as f:
+            return f.read()
     else:
-        path = f"prompts/{unit}/{lesson}.txt"
-    if not os.path.exists(path):
-        return ""
-    with open(path, "r", encoding="utf-8") as f:
-        return f.read()
+        # لو مش موجود، نحمّله من Google Drive
+        FOLDER_ID = st.secrets["PROMPTS_FOLDER_ID"]
+        return download_from_drive(os.path.join(unit, filename), FOLDER_ID)
 
 # ---------------------------
 #  BASE PROMPTS + LESSONS

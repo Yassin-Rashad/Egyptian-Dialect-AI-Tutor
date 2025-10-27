@@ -1,0 +1,7 @@
+#!/home/yassin4/workspace/github.com/Yassin_Rashad/Egyptian-Dialect-AI-Tutor/venv/bin/python3
+import sys
+from rsa.cli import keygen
+if __name__ == '__main__':
+    if sys.argv[0].endswith('.exe'):
+        sys.argv[0] = sys.argv[0][:-4]
+    sys.exit(keygen())
