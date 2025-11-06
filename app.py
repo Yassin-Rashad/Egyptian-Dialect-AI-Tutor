@@ -144,7 +144,21 @@ def load_all_units():
     Supports automatic detection of number of lessons and files.
     """
     data = {}
+    # ✅ لو مجلد prompts مش موجود محليًا (على الكلاود مثلًا)
+    if not os.path.exists("prompts"):
+        st.warning("⚠️ Local 'prompts' folder not found — loading from Google Drive only.")
 
+        # ✅ تحميل البرومبتات الأساسية من Google Drive
+        data["Base Explanation Prompt"] = load_prompt("base", "explanation", "prompt")
+        data["Base Practice Prompt"] = load_prompt("base", "practice", "prompt")
+
+        # ✅ تحميل تمارين عامة (General) للوحدة 1 مؤقتًا من Drive
+        general = load_prompt("unit1", "general_exercises")
+        data["General Dialogue (Unit 1)"] = general
+
+        return data  # ✅ نرجع البيانات اللي اتحملت من Google Drive
+
+        
     # أولاً نحمل البرومبتات الأساسية
     base_explanation_prompt = load_prompt("base", "explanation", "prompt")
     base_practice_prompt = load_prompt("base", "practice", "prompt")
@@ -338,59 +352,40 @@ with st.sidebar:
 
     # ✅ استخدم query_params الجديدة
     params = dict(st.query_params)
-    # 🧩 اكتشف الوحدات تلقائيًا من مجلد prompts
-    unit_options = sorted(
-        [f"Unit {name.replace('unit', '').strip()}"
-        for name in os.listdir("prompts")
-        if name.lower().startswith("unit")],
-        key=lambda x: int(x.split()[1])
-    )
+    # 🧩 اكتشف الوحدات تلقائيًا من مجلد prompts أو استخدم قيم افتراضية لو مش موجود
+    if not os.path.exists("prompts"):
+        st.warning("⚠️ No local 'prompts' folder found — skipping local unit detection.")
+        unit_options = ["Unit 1"]
+        unit_lessons = {"Unit 1": 6}
+    else:
+        unit_options = sorted(
+            [f"Unit {name.replace('unit', '').strip()}"
+            for name in os.listdir("prompts")
+            if name.lower().startswith("unit")],
+            key=lambda x: int(x.split()[1])
+        )
 
+        # 🧩 نكتشف عدد الدروس الحقيقي في كل وحدة
+        unit_lessons = {}
+        for unit_folder in os.listdir("prompts"):
+            if not unit_folder.lower().startswith("unit"):
+                continue
 
-    # 🧠 اكتشف الوحدات تلقائيًا
-    unit_options = sorted(
-        [f"Unit {name.replace('unit', '').strip()}"
-        for name in os.listdir("prompts")
-        if name.lower().startswith("unit")],
-        key=lambda x: int(x.split()[1])
-    )
-
-    # 🧩 نكتشف عدد الدروس الحقيقي في كل وحدة
-    unit_lessons = {}
-    for unit_folder in os.listdir("prompts"):
-        if not unit_folder.lower().startswith("unit"):
-            continue
-
-        lesson_count = len([
-            name for name in os.listdir(os.path.join("prompts", unit_folder))
-            if name.lower().startswith("lesson")
-        ])
-
-        # مثال: "unit5" → "Unit 5"
-        unit_label = f"Unit {unit_folder.replace('unit', '').strip()}"
-        unit_lessons[unit_label] = lesson_count
+            lesson_count = len([
+                name for name in os.listdir(os.path.join("prompts", unit_folder))
+                if name.lower().startswith("lesson")
+            ])
+            unit_label = f"Unit {unit_folder.replace('unit', '').strip()}"
+            unit_lessons[unit_label] = lesson_count
 
     # 🧮 الوحدة الحالية من الرابط أو الافتراضي
     current_unit = st.query_params.get("unit", "Unit 1")
     lesson_count = unit_lessons.get(current_unit, 6)
-
-    # 🧾 توليد قائمة الدروس تلقائيًا بناءً على الملفات الفعلية
     lesson_items = [f"Lesson {i}" for i in range(1, lesson_count + 1)] + ["General Exercises"]
 
-    # الوحدة الحالية من الرابط أو القيمة الافتراضية
-    current_unit = st.query_params.get("unit", "Unit 1")
+    default_unit = st.query_params.get("unit", "Unit 1")
+    default_lesson = st.query_params.get("lesson", "Lesson 1")
 
-    # عدد الدروس حسب الوحدة
-    lesson_count = unit_lessons.get(current_unit, 6)
-
-    # توليد قائمة الدروس تلقائيًا
-    lesson_items = [f"Lesson {i}" for i in range(1, lesson_count + 1)] + ["General Exercises"]
-
-    # اقرأ القيم من الرابط أو استخدم الافتراضي
-    default_unit = params.get("unit", "Unit 1")
-    default_lesson = params.get("lesson", "Lesson 1")
-
-    # لو القيم مش ضمن القوائم، استخدم الافتراضي
     if default_unit not in unit_options:
         default_unit = "Unit 1"
     if default_lesson not in lesson_items:
