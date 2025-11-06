@@ -34,12 +34,24 @@ def get_drive_service():
     return build('drive', 'v3', credentials=creds)
 
 def read_file_from_drive(file_name):
-    """Read text file from Google Drive (supports .txt and Google Docs)."""
+    """Read text file from Google Drive inside a specific folder structure."""
     service = get_drive_service()
+
+    # 🧩 Folder hierarchy:
+    #   AI-Egyptian-Tool-Private/
+    #      └── prompts/
+    #            ├── base/
+    #            └── unit1/ ...
+    MAIN_FOLDER_ID = "16CJKU_bSYOB84-Sqsy5b8bBKNdbLVB-T"
+    PROMPTS_FOLDER_ID = "125CxvdIJDW63ATcbbpTTrt_BJC5fX961"
+
     try:
+        # نبحث داخل مجلد prompts فقط
+        query = (
+            f"name='{file_name}' and '{PROMPTS_FOLDER_ID}' in parents and trashed = false"
+        )
         results = service.files().list(
-            q=f"name='{file_name}' and trashed = false",
-            fields="files(id, name, mimeType)"
+            q=query, fields="files(id, name, mimeType, parents)"
         ).execute()
     except Exception as e:
         st.warning(f"⚠️ Google Drive not reachable ({e}). Using local version.")
@@ -47,7 +59,7 @@ def read_file_from_drive(file_name):
 
     items = results.get("files", [])
     if not items:
-        st.warning(f"⚠️ File '{file_name}' not found on Drive. Using local version.")
+        st.warning(f"⚠️ File '{file_name}' not found inside Drive prompts folder.")
         return ""
 
     file_meta = items[0]
@@ -55,7 +67,7 @@ def read_file_from_drive(file_name):
     mime = file_meta["mimeType"]
 
     try:
-        # لو الملف Google Doc
+        # لو الملف Google Doc → نعمل export
         if mime.startswith("application/vnd.google-apps"):
             request = service.files().export_media(fileId=file_id, mimeType="text/plain")
         else:
@@ -69,6 +81,7 @@ def read_file_from_drive(file_name):
 
         fh.seek(0)
         return fh.read().decode("utf-8", errors="ignore")
+
     except Exception as e:
         st.warning(f"⚠️ Couldn't download '{file_name}' from Drive ({e}). Using local version.")
         return ""
