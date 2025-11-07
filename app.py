@@ -126,7 +126,7 @@ def read_file_from_drive(file_name, parent_folder_name=None):
 
         files = results.get("files", [])
         if not files:
-            st.warning(f"⚠️ File '{file_name}' not found in Drive.")
+            print(f"Loaded from Drive: {file_name}")  # Log only in console
             return ""
 
         chosen_file = files[0]
@@ -148,7 +148,7 @@ def read_file_from_drive(file_name, parent_folder_name=None):
         fh.seek(0)
         content = fh.read().decode("utf-8", errors="ignore")
 
-        st.success(f"✅ Loaded '{file_name}' from Drive.")
+        print(f"Loaded from Drive: {file_name}")  # Log only in console
         return content
 
     except Exception as e:
@@ -241,13 +241,18 @@ def load_all_units() -> dict:
             unit_label = unit_name.capitalize()
             for lesson_name in lessons:
                 dialogue = load_prompt(unit_name, lesson_name)
-                practice = load_prompt(unit_name, lesson_name, "practice")
                 data[f"{lesson_name.capitalize()} Dialogue ({unit_label})"] = dialogue
-                data[f"{lesson_name.capitalize()} Practice ({unit_label})"] = practice
+
+                # ✅ نقرأ practice فقط لو الدرس مش general_exercises
+                if lesson_name.lower() != "general_exercises":
+                    practice = load_prompt(unit_name, lesson_name, "practice")
+                    data[f"{lesson_name.capitalize()} Practice ({unit_label})"] = practice
+
             general = load_prompt(unit_name, "general_exercises")
             if general.strip():
                 data[f"General Dialogue ({unit_label})"] = general
         return data
+
 
     data["Base Explanation Prompt"] = load_prompt("base", "explanation", "prompt")
     data["Base Practice Prompt"] = load_prompt("base", "practice", "prompt")
@@ -576,12 +581,41 @@ def lesson_two_tabs(lesson_label):
         st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
         unit_id = st.query_params.get("unit", "Unit 1").lower().replace(" ", "")
         grammar_file = f"prompts/{unit_id}/{lesson_label.lower()}/{lesson_label.lower().replace(' ', '')}_grammar.txt"
-        if os.path.exists(grammar_file):
+        grammar_content = ""
+
+        # حاول تقرأ من Drive أولًا
+        if running_on_cloud():
+            service = get_drive_service()
+            unit_name = current_unit.lower().replace(" ", "")
+            lesson_name = lesson_label.lower().replace(" ", "")
+            grammar_file_name = f"{lesson_name}_grammar.txt"
+
+            # 🔹 نجيب ID الوحدة
+            unit_results = service.files().list(
+                q=f"(name='{unit_name}' or name='{unit_name.capitalize()}') and mimeType='application/vnd.google-apps.folder' and trashed=false",
+                fields="files(id, name)",
+            ).execute()
+            unit_id = unit_results.get("files", [{}])[0].get("id")
+
+            if unit_id:
+                lesson_results = service.files().list(
+                    q=f"(name='{lesson_label}' or name='{lesson_label.lower()}') and '{unit_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
+                    fields="files(id, name)",
+                ).execute()
+                lesson_id = lesson_results.get("files", [{}])[0].get("id")
+                parent_id = lesson_id or unit_id
+                grammar_content = read_file_from_drive(grammar_file_name, parent_id)
+
+        # fallback المحلي
+        if not grammar_content and os.path.exists(grammar_file):
             with open(grammar_file, "r", encoding="utf-8") as f:
                 grammar_content = f.read().strip()
-                st.markdown(grammar_content)
+
+        if grammar_content:
+            st.markdown(grammar_content)
         else:
             st.info("No grammar note for this lesson.")
+
         st.markdown("</div>", unsafe_allow_html=True)
 
     # -------- PRACTICE --------
