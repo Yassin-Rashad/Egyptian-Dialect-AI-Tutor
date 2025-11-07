@@ -45,49 +45,61 @@ def get_drive_service():
 
 @st.cache_resource
 def list_drive_units_and_lessons():
-    """List all units and lessons from Google Drive prompts folder."""
+    """List all units and lessons from Google Drive prompts folder with pagination fix."""
     service = get_drive_service()
     PROMPTS_FOLDER_ID = "125CxvdIJDW63ATcbbpTTrt_BJC5fX961"
 
     units = {}
     try:
-        # نجيب كل الفولدرات الأساسية (الوحدات)
-        results = service.files().list(
-            q=f"'{PROMPTS_FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
-            fields="files(id, name)"
-        ).execute()
+        all_units = []
+        page_token = None
 
-        unit_folders = results.get("files", [])
+        # 🧩 نجيب كل الوحدات (unit folders)
+        while True:
+            results = service.files().list(
+                q=f"'{PROMPTS_FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
+                fields="nextPageToken, files(id, name)",
+                pageToken=page_token
+            ).execute()
+            all_units.extend(results.get("files", []))
+            page_token = results.get("nextPageToken", None)
+            if page_token is None:
+                break
 
-        # ⚠️ نتجاهل فولدر base ونرتب الباقي بالأرقام
+        # 🧩 نستبعد base ونرتب الباقي بالأرقام
         unit_folders = sorted(
-            [u for u in unit_folders if u["name"].lower().startswith("unit")],
+            [u for u in all_units if u["name"].lower().startswith("unit")],
             key=lambda x: int(''.join(filter(str.isdigit, x["name"])) or 0)
         )
 
         for unit in unit_folders:
             unit_name = unit["name"]
             unit_id = unit["id"]
+            lessons = []
+            page_token = None
 
-            # نجيب كل فولدرات الدروس داخل كل وحدة
-            lesson_results = service.files().list(
-                q=f"'{unit_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
-                fields="files(id, name)"
-            ).execute()
+            # 🧩 نجيب كل الدروس داخل الوحدة (مع pagination)
+            while True:
+                lesson_results = service.files().list(
+                    q=f"'{unit_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
+                    fields="nextPageToken, files(id, name)",
+                    pageToken=page_token
+                ).execute()
+                lessons.extend(lesson_results.get("files", []))
+                page_token = lesson_results.get("nextPageToken", None)
+                if page_token is None:
+                    break
 
-            lesson_folders = lesson_results.get("files", [])
-
-            # ✅ نرتب الدروس بالأرقام ونضيف كمان general_exercises لو موجود
+            # ✅ نرتب الدروس (lesson 1, lesson 2...) + general_exercises
             lesson_folders = sorted(
-                [l for l in lesson_folders if l["name"].lower().startswith("lesson") or l["name"].lower() == "general_exercises"],
+                [l for l in lessons if l["name"].lower().startswith("lesson") or l["name"].lower() == "general_exercises"],
                 key=lambda x: (0 if "general" in x["name"].lower() else int(''.join(filter(str.isdigit, x["name"])) or 0))
             )
 
-            lessons = [l["name"] for l in lesson_folders]
-            units[unit_name] = lessons
+            units[unit_name] = [l["name"] for l in lesson_folders]
 
     except Exception as e:
-        print(f"⚠️ Couldn't list units/lessons from Drive: {e}")
+        st.warning(f"⚠️ Couldn't list units/lessons from Drive: {e}")
 
     return units
 
