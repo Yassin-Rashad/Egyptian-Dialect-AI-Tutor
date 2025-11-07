@@ -53,11 +53,12 @@ def read_file_from_drive(file_name):
 
     try:
         # نبحث عن الملف داخل أي فولدر داخل prompts
-        query = f"name='{file_name}' and '{PROMPTS_FOLDER_ID}' in parents or name='{file_name}' and trashed=false"
+        # 🧩 نبحث عن الملف داخل جميع المجلدات الفرعية داخل prompts
+        query = f"name='{file_name}' and trashed = false"
         results = service.files().list(
-            q=f"name='{file_name}' and trashed=false",
-            fields="files(id, name, mimeType, parents)"
+            q=query, fields="files(id, name, mimeType, parents)"
         ).execute()
+
     except Exception as e:
         st.warning(f"⚠️ Google Drive not reachable ({e}). Using local version.")
         return ""
