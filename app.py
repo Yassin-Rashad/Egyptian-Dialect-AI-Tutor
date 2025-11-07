@@ -37,7 +37,7 @@ def read_file_from_drive(file_name):
     """Read text file from Google Drive (search recursively in all subfolders)."""
     service = get_drive_service()
 
-    PROMPTS_FOLDER_ID = "16CJKU_bSYOB84-Sqsy5b8bBKNdbLVB-T"  # ← استخدم المجلد الرئيسي
+    PROMPTS_FOLDER_ID = "125CxvdIJDW63ATcbbpTTrt_BJC5fX961"  # ← استخدم المجلد الرئيسي
 
     try:
         # نبحث عن الملف داخل أي فولدر داخل prompts
@@ -51,6 +51,7 @@ def read_file_from_drive(file_name):
         return ""
 
     items = results.get("files", [])
+    st.write("🔍 Found files:", [f["name"] for f in results.get("files", [])])
     if not items:
         st.warning(f"⚠️ File '{file_name}' not found anywhere in Drive under prompts folder.")
         return ""
