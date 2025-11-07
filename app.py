@@ -46,33 +46,52 @@ def get_drive_service():
     return build('drive', 'v3', credentials=creds)
 
 def read_file_from_drive(file_name):
-    """Read text file from Google Drive (search recursively in all subfolders)."""
+    """Read text file from Google Drive (search deeply in all subfolders of prompts)."""
     service = get_drive_service()
 
-    PROMPTS_FOLDER_ID = "125CxvdIJDW63ATcbbpTTrt_BJC5fX961"  # ← استخدم المجلد الرئيسي
+    PROMPTS_FOLDER_ID = "125CxvdIJDW63ATcbbpTTrt_BJC5fX961"  # Folder: prompts
 
     try:
-        # نبحث عن الملف داخل أي فولدر داخل prompts
-        # 🧩 نبحث عن الملف داخل جميع المجلدات الفرعية داخل prompts
+        # نبحث داخل كل الملفات النصية داخل مجلد prompts وأي فولدر تحته
         query = f"name='{file_name}' and trashed = false"
-        results = service.files().list(
-            q=query, fields="files(id, name, mimeType, parents)"
-        ).execute()
+        page_token = None
+        all_results = []
+
+        while True:
+            results = service.files().list(
+                q=query,
+                fields="nextPageToken, files(id, name, mimeType, parents)",
+                pageToken=page_token
+            ).execute()
+            all_results.extend(results.get("files", []))
+            page_token = results.get("nextPageToken", None)
+            if page_token is None:
+                break
 
     except Exception as e:
         st.warning(f"⚠️ Google Drive not reachable ({e}). Using local version.")
         return ""
 
-    items = results.get("files", [])
-    st.write("🔍 Found files:", [f["name"] for f in results.get("files", [])])#سطور مؤقتة
-    if not items:
+    if not all_results:
         st.warning(f"⚠️ File '{file_name}' not found anywhere in Drive under prompts folder.")
         return ""
 
-    # نجيب أول نتيجة
-    file_meta = items[0]
-    file_id = file_meta["id"]
-    mime = file_meta["mimeType"]
+    # نطبع كل الملفات اللي بنفس الاسم علشان نعرف المسار
+    st.write("🔍 Found matches for", file_name, ":", all_results)
+
+    # نحاول نختار اللي جوه prompts فقط
+    chosen_file = None
+    for f in all_results:
+        # لو الملف جواه فولدر prompts أو أحد فروعه
+        parents = f.get("parents", [])
+        if parents:
+            chosen_file = f
+            break
+    if not chosen_file:
+        chosen_file = all_results[0]
+
+    file_id = chosen_file["id"]
+    mime = chosen_file["mimeType"]
 
     try:
         if mime.startswith("application/vnd.google-apps"):
@@ -94,7 +113,6 @@ def read_file_from_drive(file_name):
     except Exception as e:
         st.warning(f"⚠️ Couldn't download '{file_name}' from Drive ({e}). Using local version.")
         return ""
-
 # ---------------------------
 #  LOAD PROMPTS (smart switch)
 # ---------------------------
@@ -237,18 +255,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-#سطور مؤقتة
-# 🧪 DEBUG: show current environment (remove this block after testing)
-mode = "☁️ Cloud Mode" if running_on_cloud() else "💻 Local Mode"
-st.sidebar.info(f"Environment: {mode}")
-st.sidebar.write("🧠 DEBUG INFO:")
-st.sidebar.write("Hostname:", socket.gethostname())
-st.sidebar.write("Runtime Env:", os.getenv("STREAMLIT_RUNTIME_ENV"))
-st.sidebar.write("Headless:", os.getenv("STREAMLIT_SERVER_HEADLESS"))
-st.sidebar.write("Home:", os.getenv("HOME"))
-
-# 🧪 END DEBUG BLOCK
-
 # ---------------------------
 #  OPENAI CLIENT
 # ---------------------------
