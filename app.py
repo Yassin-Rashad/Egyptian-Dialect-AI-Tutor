@@ -158,48 +158,67 @@ def read_file_from_drive(file_name, parent_folder_name=None):
 #  PROMPTS LOADING (smart switch)
 # ---------------------------
 def load_prompt(unit: str, lesson: str, type_: str = "") -> str:
+    """
+    Loads lesson or practice/grammar file either locally or from Google Drive.
+    Works with folder names like:
+      prompts/unit1/lesson 1/lesson1.txt
+      prompts/unit1/general_exercises/general_exercises.txt
+    """
+    # 🧩 حدد اسم الملف
+    file_name = lesson.replace(" ", "").lower()
+    if type_:
+        file_name = f"{file_name}_{type_}.txt"
+    else:
+        file_name = f"{file_name}.txt"
+
+    # 🧩 لو التطبيق شغال على Streamlit Cloud
+    if running_on_cloud():
+        service = get_drive_service()
+
+        # 🔹 نجيب فولدر الوحدة (unit)
+        unit_query = (
+            f"(name='{unit}' or name='{unit.lower()}' or name='{unit.capitalize()}') "
+            f"and mimeType='application/vnd.google-apps.folder' and trashed=false"
+        )
+        unit_results = service.files().list(q=unit_query, fields="files(id, name)").execute()
+        unit_folders = unit_results.get("files", [])
+        unit_id = unit_folders[0]["id"] if unit_folders else None
+
+        lesson_id = None
+        if unit_id:
+            # 🔹 نجيب فولدر الدرس أو التمارين العامة
+            lesson_query = (
+                f"(name='{lesson}' or name='{lesson.lower()}' or name='{lesson.capitalize()}') "
+                f"and '{unit_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false"
+            )
+            lesson_results = service.files().list(q=lesson_query, fields="files(id, name)").execute()
+            lesson_folders = lesson_results.get("files", [])
+            lesson_id = lesson_folders[0]["id"] if lesson_folders else None
+
+        # 🔹 نحدد الـ parent المناسب ونقرأ الملف
+        parent_id = lesson_id or unit_id
+        if parent_id:
+            content = read_file_from_drive(file_name, parent_id)
+            if content.strip():
+                return content
+
+    # 🧩 fallback محلي (لو شغال من الجهاز)
     if unit == "base":
         if type_:
             path = f"prompts/{unit}/{lesson}_{type_}.txt"
         else:
             path = f"prompts/{unit}/{lesson}.txt"
     else:
-        file_name = lesson.replace(" ", "")
+        path = f"prompts/{unit}/{lesson}/{lesson.replace(' ', '').lower()}"
         if type_:
-            path = f"prompts/{unit}/{lesson}/{file_name}_{type_}.txt"
+            path += f"_{type_}.txt"
         else:
-            path = f"prompts/{unit}/{lesson}/{file_name}.txt"
+            path += ".txt"
 
-    file_name = os.path.basename(path)
-    if running_on_cloud():
-        service = get_drive_service()
-
-        # 🔹 نجيب ID فولدر الوحدة (unit)
-        unit_results = service.files().list(
-            q=f"name='{unit}' and mimeType='application/vnd.google-apps.folder' and trashed=false",
-            fields="files(id, name)",
-        ).execute()
-        unit_folders = unit_results.get("files", [])
-        unit_id = unit_folders[0]["id"] if unit_folders else None
-
-        # 🔹 نجيب ID فولدر الدرس (lesson)
-        lesson_results = service.files().list(
-            q=f"name='{lesson}' and '{unit_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
-            fields="files(id, name)",
-        ).execute()
-        lesson_folders = lesson_results.get("files", [])
-        lesson_id = lesson_folders[0]["id"] if lesson_folders else None
-
-        # 🔹 نحاول نقرأ الملف من فولدر الدرس مباشرة
-        parent_id = lesson_id or unit_id
-        content = read_file_from_drive(file_name, parent_id)
-
-
-        if content.strip():
-            return content
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
+
     return ""
 
 # ---------------------------
