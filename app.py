@@ -12,11 +12,14 @@ def running_in_wsl():
     return bool(os.environ.get("WSL_DISTRO_NAME") or "microsoft" in platform.uname().release.lower())
 
 def running_on_cloud():
-    return (
-        "streamlitapp" in socket.gethostname().lower()
-        or os.getenv("STREAMLIT_RUNTIME_ENV") == "cloud"
-        or os.getenv("STREAMLIT_SERVER_HEADLESS") == "1"
-    )
+    # Detect Streamlit Cloud or headless deployment
+    cloud_signals = [
+        os.getenv("STREAMLIT_RUNTIME_ENV") == "cloud",
+        os.getenv("STREAMLIT_SERVER_HEADLESS") == "1",
+        "streamlitapp" in socket.gethostname().lower(),
+        os.getenv("HOME", "").startswith("/mount/"),  # Streamlit Cloud runs under /mount/
+    ]
+    return any(cloud_signals)
 
 @st.cache_resource
 def get_drive_service():
