@@ -159,7 +159,7 @@ def read_file_from_drive(file_name):
 
         fh.seek(0)
         content = fh.read().decode("utf-8", errors="ignore")
-        st.success(f"✅ Loaded '{file_name}' from Drive.")
+        print(f"✅ Loaded {file_name} from Drive.")
         return content
 
     except Exception as e:
