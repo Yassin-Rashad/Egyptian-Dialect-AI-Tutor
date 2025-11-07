@@ -216,66 +216,69 @@ base_practice_prompt = load_prompt("base", "practice", "prompt")
 # ---------------------------
 #  LOAD ALL UNITS DYNAMICALLY
 # ---------------------------
+@st.cache_data(show_spinner=False)
 def load_all_units():
     """
-    Automatically load all units and lessons from the prompts/ folder.
-    Each unit folder (e.g. unit1, unit2...) can contain lesson folders like 'lesson 1', 'lesson 2', etc.
-    Supports automatic detection of number of lessons and files.
+    Load all base prompts + units and lessons.
+    Works for both local folders and Google Drive.
     """
     data = {}
-    # ✅ لو مجلد prompts مش موجود محليًا (على الكلاود مثلًا)
+
+    # ✅ نحاول أولًا نقرأ من Drive لو مفيش فولدر محلي
     if not os.path.exists("prompts"):
         st.warning("⚠️ Local 'prompts' folder not found — loading from Google Drive only.")
+
         drive_units = list_drive_units_and_lessons()
 
-        if drive_units:
-            unit_options = [u.capitalize() for u in drive_units.keys()]
-            unit_lessons = {u.capitalize(): len(v) for u, v in drive_units.items()}
-        else:
-            unit_options = ["Unit 1"]
-            unit_lessons = {"Unit 1": 6}
-
-        # ✅ تحميل البرومبتات الأساسية من Google Drive
+        # نضيف البرومبتات الأساسية
         data["Base Explanation Prompt"] = load_prompt("base", "explanation", "prompt")
         data["Base Practice Prompt"] = load_prompt("base", "practice", "prompt")
 
-        # ✅ تحميل تمارين عامة (General) للوحدة 1 مؤقتًا من Drive
-        general = load_prompt("unit1", "general_exercises")
-        data["General Dialogue (Unit 1)"] = general
+        # ✅ نحمل كل الوحدات والدروس فعلاً من Drive
+        for unit_name, lessons in drive_units.items():
+            unit_label = unit_name.capitalize()
+            for lesson_name in lessons:
+                clean_name = lesson_name.replace(" ", "").lower()
+                # ملفات الحوار
+                dialogue = load_prompt(unit_name, lesson_name)
+                # ملفات التمرين
+                practice = load_prompt(unit_name, lesson_name, "practice")
+                data[f"{lesson_name.capitalize()} Dialogue ({unit_label})"] = dialogue
+                data[f"{lesson_name.capitalize()} Practice ({unit_label})"] = practice
 
-        return data  # ✅ نرجع البيانات اللي اتحملت من Google Drive
+            # ✅ نضيف الـ general_exercises لو موجود
+            general = load_prompt(unit_name, "general_exercises")
+            if general.strip():
+                data[f"General Dialogue ({unit_label})"] = general
 
-        
-    # أولاً نحمل البرومبتات الأساسية
+        return data
+
+    # ✅ لو موجود محليًا، نحمّل الملفات كالمعتاد
     base_explanation_prompt = load_prompt("base", "explanation", "prompt")
     base_practice_prompt = load_prompt("base", "practice", "prompt")
-
     data["Base Explanation Prompt"] = base_explanation_prompt
     data["Base Practice Prompt"] = base_practice_prompt
 
-    # 🧩 نقرأ كل فولدر يبدأ بـ unit في مجلد prompts
+    # 🧠 نحمل كل وحدة وملفاتها
     for unit_name in sorted(os.listdir("prompts")):
         if not unit_name.lower().startswith("unit"):
-            continue  # تجاهل أي فولدر مش وحدة
+            continue
 
         unit_path = os.path.join("prompts", unit_name)
-        unit_number = unit_name.replace("unit", "").strip().capitalize()
+        unit_label = f"Unit {unit_name.replace('unit', '').strip()}"
 
-        # ✅ General Exercises
         general = load_prompt(unit_name, "general_exercises")
-        data[f"General Dialogue (Unit {unit_number})"] = general
+        data[f"General Dialogue ({unit_label})"] = general
 
-        # 🧠 نجيب كل الدروس تلقائيًا
         for lesson_folder in sorted(os.listdir(unit_path)):
             if not lesson_folder.lower().startswith("lesson"):
                 continue
 
-            lesson_label = lesson_folder.capitalize()  # مثل "Lesson 1"
             dialogue = load_prompt(unit_name, lesson_folder)
             practice = load_prompt(unit_name, lesson_folder, "practice")
 
-            data[f"{lesson_label} Dialogue (Unit {unit_number})"] = dialogue
-            data[f"{lesson_label} Practice (Unit {unit_number})"] = practice
+            data[f"{lesson_folder.capitalize()} Dialogue ({unit_label})"] = dialogue
+            data[f"{lesson_folder.capitalize()} Practice ({unit_label})"] = practice
 
     return data
 
