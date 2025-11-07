@@ -46,36 +46,54 @@ def get_drive_service():
     return build('drive', 'v3', credentials=creds)
 
 def list_drive_units_and_lessons():
-    """List all units and lessons from Google Drive prompts folder."""
+    """List all units and lessons from Google Drive prompts folder, including general_exercises."""
     service = get_drive_service()
     PROMPTS_FOLDER_ID = "125CxvdIJDW63ATcbbpTTrt_BJC5fX961"
 
     units = {}
     try:
-        # نجيب كل الفولدرات اللي جوا prompts (الوحدات)
+        # نجيب كل فولدرات الوحدات (unit1, unit2, ...)
         results = service.files().list(
             q=f"'{PROMPTS_FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
             fields="files(id, name)"
         ).execute()
 
-        for unit in results.get("files", []):
+        unit_folders = results.get("files", [])
+
+        # ✅ فلترة وترتيب الوحدات بالأرقام
+        unit_folders = sorted(
+            [u for u in unit_folders if u["name"].lower().startswith("unit") or u["name"].lower() == "base"],
+            key=lambda x: int(''.join(filter(str.isdigit, x["name"])) or 0)
+        )
+
+        for unit in unit_folders:
             unit_name = unit["name"]
             unit_id = unit["id"]
 
-            # نجيب الفولدرات الداخلية (الدروس)
+            # نجيب فولدرات الدروس داخل الوحدة
             lesson_results = service.files().list(
                 q=f"'{unit_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
                 fields="files(id, name)"
             ).execute()
 
-            lessons = [l["name"] for l in lesson_results.get("files", [])]
+            lesson_folders = lesson_results.get("files", [])
+
+            # ✅ نضيف general_exercises لو موجود
+            lesson_folders = sorted(
+                [l for l in lesson_folders if l["name"].lower().startswith("lesson") or l["name"].lower() == "general_exercises"],
+                key=lambda x: (0 if "general" in x["name"].lower() else int(''.join(filter(str.isdigit, x["name"])) or 0))
+            )
+
+            lessons = [l["name"] for l in lesson_folders]
             units[unit_name] = lessons
+
+        if not units:
+            st.warning("⚠️ No unit folders found in Google Drive 'prompts' directory.")
 
     except Exception as e:
         st.warning(f"⚠️ Couldn't list units/lessons from Drive: {e}")
 
     return units
-
 
 def read_file_from_drive(file_name):
     """Read text file from Google Drive (search deeply in all subfolders of prompts)."""
