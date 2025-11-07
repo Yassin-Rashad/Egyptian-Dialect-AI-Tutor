@@ -45,6 +45,7 @@ def get_drive_service():
 
     return build('drive', 'v3', credentials=creds)
 
+@st.cache_resource
 def list_drive_units_and_lessons():
     """List all units and lessons from Google Drive prompts folder, including general_exercises."""
     service = get_drive_service()
@@ -95,6 +96,7 @@ def list_drive_units_and_lessons():
 
     return units
 
+@st.cache_resource
 def read_file_from_drive(file_name):
     """Read text file from Google Drive (search deeply in all subfolders of prompts)."""
     service = get_drive_service()
