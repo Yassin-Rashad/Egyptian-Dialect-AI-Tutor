@@ -45,36 +45,50 @@ def get_drive_service():
 
 @st.cache_resource
 def list_drive_units_and_lessons():
+    """List all units and lessons from Google Drive prompts folder."""
     service = get_drive_service()
     PROMPTS_FOLDER_ID = "125CxvdIJDW63ATcbbpTTrt_BJC5fX961"
+
     units = {}
     try:
+        # نجيب كل الفولدرات الأساسية (الوحدات)
         results = service.files().list(
             q=f"'{PROMPTS_FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
             fields="files(id, name)"
         ).execute()
+
         unit_folders = results.get("files", [])
+
+        # ⚠️ نتجاهل فولدر base ونرتب الباقي بالأرقام
         unit_folders = sorted(
-            [u for u in unit_folders if u["name"].lower().startswith("unit") or u["name"].lower() == "base"],
+            [u for u in unit_folders if u["name"].lower().startswith("unit")],
             key=lambda x: int(''.join(filter(str.isdigit, x["name"])) or 0)
         )
+
         for unit in unit_folders:
             unit_name = unit["name"]
             unit_id = unit["id"]
+
+            # نجيب كل فولدرات الدروس داخل كل وحدة
             lesson_results = service.files().list(
                 q=f"'{unit_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
                 fields="files(id, name)"
             ).execute()
+
             lesson_folders = lesson_results.get("files", [])
+
+            # ✅ نرتب الدروس بالأرقام ونضيف كمان general_exercises لو موجود
             lesson_folders = sorted(
                 [l for l in lesson_folders if l["name"].lower().startswith("lesson") or l["name"].lower() == "general_exercises"],
                 key=lambda x: (0 if "general" in x["name"].lower() else int(''.join(filter(str.isdigit, x["name"])) or 0))
             )
+
             lessons = [l["name"] for l in lesson_folders]
             units[unit_name] = lessons
-    except Exception:
-        # silent fallback: return empty dict so local mode will be used
-        return {}
+
+    except Exception as e:
+        print(f"⚠️ Couldn't list units/lessons from Drive: {e}")
+
     return units
 
 @st.cache_resource
