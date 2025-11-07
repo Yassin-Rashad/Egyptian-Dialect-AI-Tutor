@@ -54,7 +54,7 @@ def read_file_from_drive(file_name):
         return ""
 
     items = results.get("files", [])
-    st.write("🔍 Found files:", [f["name"] for f in results.get("files", [])])
+    st.write("🔍 Found files:", [f["name"] for f in results.get("files", [])])#سطور مؤقتة
     if not items:
         st.warning(f"⚠️ File '{file_name}' not found anywhere in Drive under prompts folder.")
         return ""
@@ -227,10 +227,16 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
+#سطور مؤقتة
 # 🧪 DEBUG: show current environment (remove this block after testing)
 mode = "☁️ Cloud Mode" if running_on_cloud() else "💻 Local Mode"
 st.sidebar.info(f"Environment: {mode}")
+st.sidebar.write("🧠 DEBUG INFO:")
+st.sidebar.write("Hostname:", socket.gethostname())
+st.sidebar.write("Runtime Env:", os.getenv("STREAMLIT_RUNTIME_ENV"))
+st.sidebar.write("Headless:", os.getenv("STREAMLIT_SERVER_HEADLESS"))
+st.sidebar.write("Home:", os.getenv("HOME"))
+
 # 🧪 END DEBUG BLOCK
 
 # ---------------------------
