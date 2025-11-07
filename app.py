@@ -318,17 +318,7 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-#سطور مؤقتة
-# 🧪 DEBUG: show current environment (remove this block after testing)
-mode = "☁️ Cloud Mode" if running_on_cloud() else "💻 Local Mode"
-st.sidebar.info(f"Environment: {mode}")
-st.sidebar.write("🧠 DEBUG INFO:")
-st.sidebar.write("Hostname:", socket.gethostname())
-st.sidebar.write("Runtime Env:", os.getenv("STREAMLIT_RUNTIME_ENV"))
-st.sidebar.write("Headless:", os.getenv("STREAMLIT_SERVER_HEADLESS"))
-st.sidebar.write("Home:", os.getenv("HOME"))
 
-# 🧪 END DEBUG BLOCK
 
 # ---------------------------
 #  OPENAI CLIENT
