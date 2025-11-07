@@ -104,33 +104,36 @@ def list_drive_units_and_lessons():
     return units
 
 @st.cache_resource
-def read_file_from_drive(file_name: str) -> str:
+def read_file_from_drive(file_name, parent_folder_name=None):
+    """Read text file from Google Drive with proper folder scoping."""
     service = get_drive_service()
-    try:
-        query = f"name='{file_name}' and trashed = false"
-        page_token = None
-        all_results = []
-        while True:
-            results = service.files().list(
-                q=query,
-                fields="nextPageToken, files(id, name, mimeType, parents)",
-                pageToken=page_token
-            ).execute()
-            all_results.extend(results.get("files", []))
-            page_token = results.get("nextPageToken", None)
-            if page_token is None:
-                break
-    except Exception:
-        return ""
-
-    if not all_results:
-        return ""
-
-    chosen_file = all_results[0]
-    file_id = chosen_file["id"]
-    mime = chosen_file["mimeType"]
+    PROMPTS_FOLDER_ID = "125CxvdIJDW63ATcbbpTTrt_BJC5fX961"
 
     try:
+        # لو عايزين نقرأ من فولدر معين (زي unit1 أو lesson1)
+        if parent_folder_name:
+            query = (
+                f"name='{file_name}' and trashed=false and "
+                f"'{parent_folder_name}' in parents"
+            )
+        else:
+            query = f"name='{file_name}' and trashed=false"
+
+        results = service.files().list(
+            q=query,
+            fields="files(id, name, mimeType, parents)",
+        ).execute()
+
+        files = results.get("files", [])
+        if not files:
+            st.warning(f"⚠️ File '{file_name}' not found in Drive.")
+            return ""
+
+        chosen_file = files[0]
+        file_id = chosen_file["id"]
+        mime = chosen_file["mimeType"]
+
+        # تحميل المحتوى
         if mime.startswith("application/vnd.google-apps"):
             request = service.files().export_media(fileId=file_id, mimeType="text/plain")
         else:
@@ -141,12 +144,16 @@ def read_file_from_drive(file_name: str) -> str:
         done = False
         while not done:
             status, done = downloader.next_chunk()
+
         fh.seek(0)
         content = fh.read().decode("utf-8", errors="ignore")
-        return content
-    except Exception:
-        return ""
 
+        st.success(f"✅ Loaded '{file_name}' from Drive.")
+        return content
+
+    except Exception as e:
+        st.warning(f"⚠️ Couldn't load '{file_name}' from Drive ({e}).")
+        return ""
 # ---------------------------
 #  PROMPTS LOADING (smart switch)
 # ---------------------------
@@ -165,7 +172,29 @@ def load_prompt(unit: str, lesson: str, type_: str = "") -> str:
 
     file_name = os.path.basename(path)
     if running_on_cloud():
-        content = read_file_from_drive(file_name)
+        service = get_drive_service()
+
+        # 🔹 نجيب ID فولدر الوحدة (unit)
+        unit_results = service.files().list(
+            q=f"name='{unit}' and mimeType='application/vnd.google-apps.folder' and trashed=false",
+            fields="files(id, name)",
+        ).execute()
+        unit_folders = unit_results.get("files", [])
+        unit_id = unit_folders[0]["id"] if unit_folders else None
+
+        # 🔹 نجيب ID فولدر الدرس (lesson)
+        lesson_results = service.files().list(
+            q=f"name='{lesson}' and '{unit_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
+            fields="files(id, name)",
+        ).execute()
+        lesson_folders = lesson_results.get("files", [])
+        lesson_id = lesson_folders[0]["id"] if lesson_folders else None
+
+        # 🔹 نحاول نقرأ الملف من فولدر الدرس مباشرة
+        parent_id = lesson_id or unit_id
+        content = read_file_from_drive(file_name, parent_id)
+
+
         if content.strip():
             return content
     if os.path.exists(path):
