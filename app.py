@@ -45,6 +45,38 @@ def get_drive_service():
 
     return build('drive', 'v3', credentials=creds)
 
+def list_drive_units_and_lessons():
+    """List all units and lessons from Google Drive prompts folder."""
+    service = get_drive_service()
+    PROMPTS_FOLDER_ID = "125CxvdIJDW63ATcbbpTTrt_BJC5fX961"
+
+    units = {}
+    try:
+        # نجيب كل الفولدرات اللي جوا prompts (الوحدات)
+        results = service.files().list(
+            q=f"'{PROMPTS_FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
+            fields="files(id, name)"
+        ).execute()
+
+        for unit in results.get("files", []):
+            unit_name = unit["name"]
+            unit_id = unit["id"]
+
+            # نجيب الفولدرات الداخلية (الدروس)
+            lesson_results = service.files().list(
+                q=f"'{unit_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
+                fields="files(id, name)"
+            ).execute()
+
+            lessons = [l["name"] for l in lesson_results.get("files", [])]
+            units[unit_name] = lessons
+
+    except Exception as e:
+        st.warning(f"⚠️ Couldn't list units/lessons from Drive: {e}")
+
+    return units
+
+
 def read_file_from_drive(file_name):
     """Read text file from Google Drive (search deeply in all subfolders of prompts)."""
     service = get_drive_service()
@@ -174,6 +206,14 @@ def load_all_units():
     # ✅ لو مجلد prompts مش موجود محليًا (على الكلاود مثلًا)
     if not os.path.exists("prompts"):
         st.warning("⚠️ Local 'prompts' folder not found — loading from Google Drive only.")
+        drive_units = list_drive_units_and_lessons()
+
+        if drive_units:
+            unit_options = [u.capitalize() for u in drive_units.keys()]
+            unit_lessons = {u.capitalize(): len(v) for u, v in drive_units.items()}
+        else:
+            unit_options = ["Unit 1"]
+            unit_lessons = {"Unit 1": 6}
 
         # ✅ تحميل البرومبتات الأساسية من Google Drive
         data["Base Explanation Prompt"] = load_prompt("base", "explanation", "prompt")
@@ -255,6 +295,18 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+#سطور مؤقتة
+# 🧪 DEBUG: show current environment (remove this block after testing)
+mode = "☁️ Cloud Mode" if running_on_cloud() else "💻 Local Mode"
+st.sidebar.info(f"Environment: {mode}")
+st.sidebar.write("🧠 DEBUG INFO:")
+st.sidebar.write("Hostname:", socket.gethostname())
+st.sidebar.write("Runtime Env:", os.getenv("STREAMLIT_RUNTIME_ENV"))
+st.sidebar.write("Headless:", os.getenv("STREAMLIT_SERVER_HEADLESS"))
+st.sidebar.write("Home:", os.getenv("HOME"))
+
+# 🧪 END DEBUG BLOCK
+
 # ---------------------------
 #  OPENAI CLIENT
 # ---------------------------
@@ -375,9 +427,16 @@ with st.sidebar:
     params = dict(st.query_params)
     # 🧩 اكتشف الوحدات تلقائيًا من مجلد prompts أو استخدم قيم افتراضية لو مش موجود
     if not os.path.exists("prompts"):
-        st.warning("⚠️ No local 'prompts' folder found — skipping local unit detection.")
-        unit_options = ["Unit 1"]
-        unit_lessons = {"Unit 1": 6}
+        st.warning("⚠️ Local 'prompts' folder not found — loading from Google Drive only.")
+        drive_units = list_drive_units_and_lessons()
+
+        if drive_units:
+            unit_options = [u.capitalize() for u in drive_units.keys()]
+            unit_lessons = {u.capitalize(): len(v) for u, v in drive_units.items()}
+        else:
+            unit_options = ["Unit 1"]
+            unit_lessons = {"Unit 1": 6}
+
     else:
         unit_options = sorted(
             [f"Unit {name.replace('unit', '').strip()}"
