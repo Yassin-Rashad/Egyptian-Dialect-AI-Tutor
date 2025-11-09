@@ -571,39 +571,35 @@ with st.sidebar:
 # ---------------------------
 #  MAIN HEADER
 # ---------------------------
-# ✅ أول جزء: لتصحيح الألوان في الموبايل
+# ✅ أولاً: كود تصحيح الألوان (الجديد فقط)
 st.markdown("""
 <style>
+div[style*='text-align:center'] {
+    color: #f8fafc !important;
+}
+
+div[style*='text-align:center'] div {
+    color: #f8fafc !important;
+}
+
+div[style*='text-align:center'] b {
+    color: #ffffff !important;
+}
+
+div[style*='text-align:center'] a {
+    color: #ffffff !important;
+}
+
 @media (max-width: 768px) {
-    div[style*='text-align:center'] div[style*='font-size:28px'] {
-        color: #f8fafc !important;  /* عنوان واضح جدًا */
+    div[style*='text-align:center'] {
+        color: #f8fafc !important;
     }
-    div[style*='text-align:center'] div[style*='color:#475569'] {
-        color: #e2e8f0 !important;  /* السطر الثاني */
-    }
-    div[style*='text-align:center'] div[style*='color:#334155'] {
-        color: #e2e8f0 !important;  /* السطر الثالث */
+    div[style*='text-align:center'] div {
+        color: #f8fafc !important;
     }
 }
 </style>
 """, unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-@media (prefers-color-scheme: dark) {
-    div[style*='text-align:center'] div[style*='font-size:28px'] {
-        color: #f1f5f9 !important; /* العنوان */
-    }
-    div[style*='text-align:center'] div[style*='color:#475569'] {
-        color: #e2e8f0 !important; /* السطر الثاني */
-    }
-    div[style*='text-align:center'] div[style*='color:#334155'] {
-        color: #e2e8f0 !important; /* السطر الثالث */
-    }
-}
-</style>
-""", unsafe_allow_html=True)
-
 st.markdown(f"""
 <div style='text-align:center; margin-bottom:18px;'>
   <div style='font-size:28px; font-weight:800; color:#0f172a;'>Learn Egyptian Dialect — AI Tutor</div>
