@@ -637,34 +637,50 @@ def build_full_prompt(base_prompt: str, lesson_content: str) -> str:
 # ---------------------------
 st.markdown("""
 <style>
-/* ✅ تصحيح ألوان النص داخل التبويبات في الموبايل والـ Dark Mode */
+/* ✅ تصحيح التباين داخل التبويبات لجميع الأوضاع (Light/Dark) */
 div[role='radiogroup'] label {
-    color: #0f172a !important; /* لون النص الأساسي */
+    background-color: #ffffff !important; /* خلفية بيضاء دايمًا */
+    color: #111827 !important; /* نص غامق وواضح */
+    font-weight: 600 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06) !important;
 }
 
 div[role='radiogroup'] input:checked + div {
-    color: #065f46 !important; /* اللون الأخضر الداكن للتبويب المحدد */
-    background-color: #d1fae5 !important;
+    background-color: #d1fae5 !important; /* أخضر فاتح عند التحديد */
+    color: #065f46 !important;
+    border: 1px solid #10b981 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 10px rgba(16,185,129,0.15) !important;
 }
 
+/* ✅ ثبّت لون الرموز */
 div[role='radiogroup'] label svg,
 div[role='radiogroup'] label span {
-    color: #0f172a !important;
-    fill: #0f172a !important;
+    color: #111827 !important;
+    fill: #111827 !important;
 }
 
+/* ✅ نسخة خاصة للموبايل */
 @media (max-width: 768px) {
+    div[role='radiogroup'] {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
     div[role='radiogroup'] label {
-        color: #0f172a !important;
-        font-weight: 600 !important;
-        background-color: #f8fafc !important;
+        width: 100% !important;
+        font-size: 16px !important;
+        padding: 14px !important;
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        text-align: center !important;
     }
 
     div[role='radiogroup'] input:checked + div {
-        color: #065f46 !important;
-        font-weight: 700 !important;
         background-color: #d1fae5 !important;
-        border: 1px solid #10b981 !important;
+        color: #065f46 !important;
     }
 }
 </style>
