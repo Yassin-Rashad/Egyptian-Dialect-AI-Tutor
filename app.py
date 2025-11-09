@@ -656,15 +656,17 @@ div[role='radiogroup'] label {
     box-shadow: 0 2px 4px rgba(0,0,0,0.06) !important;
     transition: all 0.25s ease-in-out !important;
     padding: 14px 26px !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
     cursor: pointer;
     position: relative;
+    white-space: nowrap !important; /* ✅ يمنع النص من النزول لسطر جديد */
+    min-width: 220px; /* ✅ نضمن عرض كفاية للكلمة */
 }
 
-/* 🔹 نخفي أي عناصر داخلية عاملة إطار حوالين الكلام */
+/* نخفي أي عناصر داخلية عاملة إطار حوالين الكلام */
 div[role='radiogroup'] label > div {
     border: none !important;
     box-shadow: none !important;
@@ -673,7 +675,7 @@ div[role='radiogroup'] label > div {
     margin: 0 !important;
 }
 
-/* ✅ تأثير الـ hover */
+/* ✅ hover */
 div[role='radiogroup'] label:hover {
     background-color: #f0fdf4 !important;
     border-color: #10b981 !important;
@@ -681,7 +683,7 @@ div[role='radiogroup'] label:hover {
     transform: translateY(-2px);
 }
 
-/* ✅ التبويب المحدد — يلون الزر بالكامل */
+/* ✅ الزر المحدد */
 div[role='radiogroup'] label:has(input:checked) {
     background: linear-gradient(135deg, #a7f3d0, #6ee7b7) !important;
     border-color: #10b981 !important;
@@ -709,6 +711,7 @@ div[role='radiogroup'] label span {
         width: 100% !important;
         font-size: 16px !important;
         text-align: center !important;
+        white-space: nowrap !important;
     }
 
     div[role='radiogroup'] label:has(input:checked) {
