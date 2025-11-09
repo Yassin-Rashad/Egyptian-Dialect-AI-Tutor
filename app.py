@@ -573,45 +573,54 @@ with st.sidebar:
 # ---------------------------
 st.markdown("""
 <style>
-/* ✅ تلوين العنوان والوصف حسب الوضع */
-.header-container {
-    text-align: center;
-    margin-bottom: 18px;
-}
-
-.header-title {
-    font-size: 28px;
-    font-weight: 800;
-    color: #0f172a; /* فاتح */
-}
-
-.header-subtitle {
-    color: #475569;
-    font-size: 14px;
-    margin-bottom: 10px;
-}
-
-.header-created {
-    font-size: 14px;
-    color: #334155;
-}
-
-/* ✅ الوضع الداكن */
 @media (prefers-color-scheme: dark) {
-    .header-title {
-        color: #f1f5f9 !important; /* أبيض ناعم */
+    div[style*='text-align:center'] div[style*='font-size:28px'] {
+        color: #f1f5f9 !important; /* العنوان */
     }
-    .header-subtitle, .header-created {
-        color: #e2e8f0 !important; /* رمادي فاتح */
+    div[style*='text-align:center'] div[style*='color:#475569'] {
+        color: #e2e8f0 !important; /* السطر الثاني */
+    }
+    div[style*='text-align:center'] div[style*='color:#334155'] {
+        color: #e2e8f0 !important; /* السطر الثالث */
     }
 }
 </style>
+""", unsafe_allow_html=True)
 
-<div class="header-container">
-  <div class="header-title">Learn Egyptian Dialect — AI Tutor</div>
-  <div class="header-subtitle">Interactive explanation and real-time practice.</div>
-  <div class="header-created">
+st.markdown(f"""
+<div style='text-align:center; margin-bottom:18px;'>
+  <div style='font-size:28px; font-weight:800; color:#0f172a;'>Learn Egyptian Dialect — AI Tutor</div>
+  <div style='color:#475569; font-size:14px; margin-bottom:10px;'>
+    Interactive explanation and real-time practice.
+  </div>
+  <div style='font-size:14px; color:#334155;'>
     Created by <b>Yassin Rashad</b> 🇪🇬 — for Arabic learners around the world 🌍
+  </div>
+  <div style='margin-top:10px; text-align:center;'>
+    <a href="https://wa.me/201064958335?text=Hi%20Yassin!%20I'm%20interested%20in%20your%20Arabic%20lessons."
+       target="_blank"
+       style='
+         display:inline-flex;
+         align-items:center;
+         gap:8px;
+         background-color:#25D366;
+         color:white;
+         padding:10px 22px;
+         border-radius:50px;
+         text-decoration:none;
+         font-weight:700;
+         font-size:15px;
+         border:2px solid #16a34a;
+         box-shadow:0px 4px 8px rgba(0,0,0,0.2);
+         transition:all 0.3s ease-in-out;
+       '
+       onmouseover="this.style.backgroundColor='#1ebe5d'"
+       onmouseout="this.style.backgroundColor='#25D366'">
+       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 24 24">
+         <path d="M12 .5C5.73.5.5 5.73.5 12c0 2.11.55 4.1 1.58 5.88L.5 23.5l5.78-1.56A11.37 11.37 0 0 0 12 23.5c6.27 0 11.5-5.23 11.5-11.5S18.27.5 12 .5Zm0 21c-1.72 0-3.41-.45-4.89-1.3l-.35-.2-3.43.93.93-3.35-.22-.36A9.57 9.57 0 0 1 2.5 12C2.5 6.76 6.76 2.5 12 2.5S21.5 6.76 21.5 12 17.24 21.5 12 21.5Zm5.08-6.33c-.28-.14-1.64-.81-1.89-.9-.25-.1-.43-.14-.62.14-.18.25-.71.89-.88 1.07-.16.18-.32.2-.6.07-.28-.14-1.18-.43-2.25-1.38-.83-.74-1.38-1.66-1.54-1.94-.16-.28-.02-.43.12-.57.12-.12.28-.32.42-.48.14-.16.18-.28.28-.46.1-.18.05-.34-.02-.48-.07-.14-.62-1.49-.85-2.05-.22-.53-.44-.46-.62-.46-.16 0-.34-.02-.52-.02s-.48.07-.73.34c-.25.27-.96.94-.96 2.29 0 1.34.98 2.63 1.12 2.81.14.18 1.93 2.95 4.66 4.13.65.28 1.16.45 1.56.58.65.21 1.24.18 1.7.11.52-.08 1.64-.67 1.87-1.31.23-.64.23-1.18.16-1.31-.06-.13-.25-.21-.52-.34Z"/>
+       </svg>
+       Contact via WhatsApp
+    </a>
   </div>
 </div>
 """, unsafe_allow_html=True)
