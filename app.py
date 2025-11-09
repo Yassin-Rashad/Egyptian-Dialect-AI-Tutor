@@ -36,12 +36,22 @@ def running_on_cloud() -> bool:
 @st.cache_resource
 def get_drive_service():
     creds = service_account.Credentials.from_service_account_info(st.secrets["google"])
-    if running_in_wsl() and not running_on_cloud():
-        try:
-            ssl._create_default_https_context = ssl._create_unverified_context
-        except Exception:
-            pass
-    return build("drive", "v3", credentials=creds)
+
+    # ✅ نحاول نحل مشكلة SSL سواء في WSL أو Cloud
+    try:
+        ssl._create_default_https_context = ssl._create_unverified_context
+    except Exception:
+        pass
+
+    # ✅ تفعيل build مع تجاوز SSL
+    try:
+        return build("drive", "v3", credentials=creds, cache_discovery=False)
+    except ssl.SSLError:
+        # fallback لو حصل SSL error
+        import httplib2
+        from googleapiclient.discovery import build as gbuild
+        http = creds.authorize(httplib2.Http(disable_ssl_certificate_validation=True))
+        return gbuild("drive", "v3", http=http)
 
 @st.cache_resource
 def list_drive_units_and_lessons():
