@@ -5,6 +5,7 @@ import io
 import ssl
 import platform
 import socket
+import json
 from typing import List
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -289,6 +290,40 @@ def load_all_units() -> dict:
             data[f"{lesson_folder.capitalize()} Dialogue ({unit_label})"] = dialogue
             data[f"{lesson_folder.capitalize()} Practice ({unit_label})"] = practice
     return data
+# ---------------------------
+#  CACHED PROMPTS SYSTEM
+# ---------------------------
+CACHE_FILE = "cached_prompts.json"
+
+def save_prompts_to_cache(prompts_data: dict):
+    """Save loaded prompts to a local JSON cache."""
+    try:
+        with open(CACHE_FILE, "w", encoding="utf-8") as f:
+            json.dump(prompts_data, f, ensure_ascii=False, indent=2)
+        print("✅ Prompts saved to cache.")
+    except Exception as e:
+        print(f"⚠️ Failed to save cache: {e}")
+
+def load_prompts_from_cache() -> dict:
+    """Load prompts from local JSON cache if it exists."""
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            print("✅ Loaded prompts from cache.")
+            return data
+        except Exception as e:
+            print(f"⚠️ Failed to read cache: {e}")
+    return {}
+
+# ---------------------------
+#  LOAD PROMPTS (SMART SWITCH)
+# ---------------------------
+if os.path.exists(CACHE_FILE):
+    prompts = load_prompts_from_cache()
+else:
+    prompts = load_all_units()
+    save_prompts_to_cache(prompts)
 
 prompts = load_all_units()
 
