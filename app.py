@@ -580,21 +580,28 @@ st.markdown(f"""
   <div style='font-size:14px; color:#334155;'>
     Created by <b>Yassin Rashad</b> 🇪🇬 — for Arabic learners around the world 🌍
   </div>
-  <div style='margin-top:10px;'>
-    <a href="https://wa.me/201064958335" target="_blank" style='
-      display:inline-block;
-      background-color:#25D366;
-      color:white;
-      padding:8px 18px;
-      border-radius:25px;
-      text-decoration:none;
-      font-weight:600;
-      font-size:14px;
-      transition:all 0.3s ease;
-    ' onmouseover="this.style.backgroundColor='#1ebe5d'" onmouseout="this.style.backgroundColor='#25D366'">
-      💬 Contact Via WhatsApp
+  <div style='margin-top:10px; text-align:center;'>
+    <a href="https://wa.me/201064958335?text=Hi%20Yassin!%20I'm%20interested%20in%20your%20Arabic%20lessons."
+        target="_blank"
+        style='
+        display:inline-block;
+        background-color:#25D366;
+        color:#111827;
+        padding:10px 22px;
+        border-radius:50px;
+        text-decoration:none;
+        font-weight:700;
+        font-size:15px;
+        border:2px solid #16a34a;
+        box-shadow:0px 4px 8px rgba(0,0,0,0.2);
+        transition:all 0.3s ease-in-out;
+        '
+        onmouseover="this.style.backgroundColor='#1ebe5d'"
+        onmouseout="this.style.backgroundColor='#25D366'">
+        💬 Contact via WhatsApp
     </a>
-  </div>
+    </div>
+
 </div>
 """, unsafe_allow_html=True)
 
@@ -872,28 +879,41 @@ st.markdown("""
     width: 220px;
     bottom: 20px;
     right: 20px;
-    background-color: #25D366;
-    color: white;
+    background-color: #25D366 !important;
+    color: #111827 !important;
     border-radius: 50px;
     text-align: center;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 15px;
     padding: 12px 18px;
+    border: 2px solid #16a34a;
     box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
     z-index: 100;
     transition: all 0.3s ease-in-out;
 }
 .whatsapp-float:hover {
-    background-color: #1ebe5d;
+    background-color: #1ebe5d !important;
     transform: scale(1.05);
 }
 .whatsapp-float a {
-    color: white;
-    text-decoration: none;
+    color: #111827 !important;
+    text-decoration: none !important;
+}
+@media (max-width: 768px) {
+    .whatsapp-float {
+        width: 90% !important;
+        right: 5% !important;
+        bottom: 15px !important;
+        font-size: 14px !important;
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
+    }
 }
 </style>
 
 <div class="whatsapp-float">
-  <a href="https://wa.me/201064958335" target="_blank">💬 Contact for Private Lessons</a>
+  <a href="https://wa.me/201064958335?text=Hi%20Yassin!%20I'm%20interested%20in%20your%20Arabic%20lessons."
+     target="_blank">💬 Contact for Private Lessons</a>
 </div>
 """, unsafe_allow_html=True)
 
