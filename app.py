@@ -637,7 +637,7 @@ def build_full_prompt(base_prompt: str, lesson_content: str) -> str:
 # ---------------------------
 st.markdown("""
 <style>
-/* ✅ الشكل العام */
+/* ✅ تنسيق التبويبات بشكل موحد */
 div[role='radiogroup'] {
     display: flex;
     justify-content: center;
@@ -646,7 +646,7 @@ div[role='radiogroup'] {
     flex-wrap: wrap;
 }
 
-/* الشكل الأساسي لكل تبويب */
+/* الشكل الأساسي */
 div[role='radiogroup'] label {
     background-color: #ffffff !important;
     color: #111827 !important;
@@ -655,13 +655,15 @@ div[role='radiogroup'] label {
     border-radius: 14px !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.06) !important;
     transition: all 0.25s ease-in-out !important;
-    padding: 12px 24px !important;
+    padding: 14px 26px !important;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    cursor: pointer;
 }
 
-/* ✅ التأثير عند المرور */
+/* ✅ تأثير الـ hover */
 div[role='radiogroup'] label:hover {
     background-color: #f0fdf4 !important;
     border-color: #10b981 !important;
@@ -669,11 +671,12 @@ div[role='radiogroup'] label:hover {
     transform: translateY(-2px);
 }
 
-/* ✅ التبويب المحدد — الخلفية كلها تتلون */
-div[role='radiogroup'] input:checked + div {
+/* ✅ اللون عند التحديد — يلون الزر بالكامل */
+div[role='radiogroup'] label[data-baseweb="radio"]:has(input:checked),
+div[role='radiogroup'] label:has(input:checked) {
     background: linear-gradient(135deg, #a7f3d0, #6ee7b7) !important;
+    border-color: #10b981 !important;
     color: #064e3b !important;
-    border: 1px solid #10b981 !important;
     font-weight: 700 !important;
     box-shadow: 0 4px 10px rgba(16,185,129,0.2) !important;
     transform: scale(1.02);
@@ -686,7 +689,7 @@ div[role='radiogroup'] label span {
     fill: inherit !important;
 }
 
-/* ✅ للموبايل */
+/* ✅ موبايل */
 @media (max-width: 768px) {
     div[role='radiogroup'] {
         flex-direction: column !important;
@@ -696,11 +699,10 @@ div[role='radiogroup'] label span {
     div[role='radiogroup'] label {
         width: 100% !important;
         font-size: 16px !important;
-        padding: 14px !important;
         text-align: center !important;
     }
 
-    div[role='radiogroup'] input:checked + div {
+    div[role='radiogroup'] label:has(input:checked) {
         background: linear-gradient(135deg, #a7f3d0, #6ee7b7) !important;
         color: #064e3b !important;
     }
