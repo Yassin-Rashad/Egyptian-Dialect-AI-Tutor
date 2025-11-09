@@ -331,6 +331,51 @@ prompts = load_all_units()
 #  UI CONFIG
 # ---------------------------
 st.set_page_config(page_title="Egyptian Dialect AI Tutor", layout="centered", page_icon="🎓")
+st.markdown("""
+<style>
+/* ✅ القواعد العامة للـ responsiveness */
+@media (max-width: 768px) {
+    .block-container {
+        padding: 0.8rem 0.6rem !important;
+    }
+
+    .main {
+        padding: 10px !important;
+        border-radius: 10px;
+    }
+
+    .big-title {
+        font-size: 22px !important;
+    }
+
+    .subtitle {
+        font-size: 14px !important;
+    }
+
+    /* ✅ نخلي الأزرار تملى العرض */
+    button[kind="primary"], button[kind="secondary"] {
+        width: 100% !important;
+    }
+
+    /* ✅ نخلي التابات تتراص عموديًا */
+    div[role='radiogroup'] {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    /* ✅ نخلي الزر العايم في النص تحت */
+    .whatsapp-float {
+        width: 90% !important;
+        right: 5% !important;
+        bottom: 10px !important;
+        border-radius: 12px !important;
+        font-size: 14px !important;
+        padding: 10px !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.markdown(
     """
     <style>
