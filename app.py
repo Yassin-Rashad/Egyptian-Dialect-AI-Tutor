@@ -637,7 +637,7 @@ def build_full_prompt(base_prompt: str, lesson_content: str) -> str:
 # ---------------------------
 st.markdown("""
 <style>
-/* ✅ تنسيق التبويبات بشكل موحد */
+/* ✅ تنسيق التبويبات */
 div[role='radiogroup'] {
     display: flex;
     justify-content: center;
@@ -661,6 +661,16 @@ div[role='radiogroup'] label {
     justify-content: center;
     gap: 8px;
     cursor: pointer;
+    position: relative;
+}
+
+/* 🔹 نخفي أي عناصر داخلية عاملة إطار حوالين الكلام */
+div[role='radiogroup'] label > div {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
 /* ✅ تأثير الـ hover */
@@ -671,8 +681,7 @@ div[role='radiogroup'] label:hover {
     transform: translateY(-2px);
 }
 
-/* ✅ اللون عند التحديد — يلون الزر بالكامل */
-div[role='radiogroup'] label[data-baseweb="radio"]:has(input:checked),
+/* ✅ التبويب المحدد — يلون الزر بالكامل */
 div[role='radiogroup'] label:has(input:checked) {
     background: linear-gradient(135deg, #a7f3d0, #6ee7b7) !important;
     border-color: #10b981 !important;
@@ -689,7 +698,7 @@ div[role='radiogroup'] label span {
     fill: inherit !important;
 }
 
-/* ✅ موبايل */
+/* ✅ للموبايل */
 @media (max-width: 768px) {
     div[role='radiogroup'] {
         flex-direction: column !important;
