@@ -571,35 +571,33 @@ with st.sidebar:
 # ---------------------------
 #  MAIN HEADER
 # ---------------------------
-# ✅ أولاً: كود تصحيح الألوان (الجديد فقط)
+# ✅ الحل النهائي لمشكلة وضوح النصوص في الموبايل والدارك مود
 st.markdown("""
 <style>
-div[style*='text-align:center'] {
-    color: #f8fafc !important;
-}
-
-div[style*='text-align:center'] div {
-    color: #f8fafc !important;
-}
-
-div[style*='text-align:center'] b {
+/* نجبر النصوص داخل العنوان إنها تظهر باللون الأبيض بوضوح تام */
+div[style*='text-align:center'] * {
     color: #ffffff !important;
+    text-shadow: 0 0 8px rgba(0,0,0,0.4) !important; /* بيخليها واضحة فوق أي خلفية */
 }
 
-div[style*='text-align:center'] a {
-    color: #ffffff !important;
-}
-
+/* تحسين خاص للموبايل */
 @media (max-width: 768px) {
-    div[style*='text-align:center'] {
-        color: #f8fafc !important;
+    div[style*='text-align:center'] * {
+        color: #ffffff !important;
+        text-shadow: 0 0 10px rgba(0,0,0,0.5) !important;
     }
-    div[style*='text-align:center'] div {
-        color: #f8fafc !important;
+}
+
+/* تحسين إضافي لو الوضع غامق */
+@media (prefers-color-scheme: dark) {
+    div[style*='text-align:center'] * {
+        color: #ffffff !important;
+        text-shadow: 0 0 10px rgba(255,255,255,0.2) !important;
     }
 }
 </style>
 """, unsafe_allow_html=True)
+
 st.markdown(f"""
 <div style='text-align:center; margin-bottom:18px;'>
   <div style='font-size:28px; font-weight:800; color:#0f172a;'>Learn Egyptian Dialect — AI Tutor</div>
