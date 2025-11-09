@@ -572,11 +572,32 @@ with st.sidebar:
 #  MAIN HEADER
 # ---------------------------
 st.markdown(f"""
-<div style='text-align:center; margin-bottom:12px;'>
+<div style='text-align:center; margin-bottom:18px;'>
   <div style='font-size:28px; font-weight:800; color:#0f172a;'>Learn Egyptian Dialect — AI Tutor</div>
-  <div style='color:#475569; font-size:14px;'>Interactive explanation and real-time practice.</div>
+  <div style='color:#475569; font-size:14px; margin-bottom:10px;'>
+    Interactive explanation and real-time practice.
+  </div>
+  <div style='font-size:14px; color:#334155;'>
+    Created by <b>Yassin Rashad</b> 🇪🇬 — for Arabic learners around the world 🌍
+  </div>
+  <div style='margin-top:10px;'>
+    <a href="https://wa.me/201064958335" target="_blank" style='
+      display:inline-block;
+      background-color:#25D366;
+      color:white;
+      padding:8px 18px;
+      border-radius:25px;
+      text-decoration:none;
+      font-weight:600;
+      font-size:14px;
+      transition:all 0.3s ease;
+    ' onmouseover="this.style.backgroundColor='#1ebe5d'" onmouseout="this.style.backgroundColor='#25D366'">
+      💬 Contact via WhatsApp
+    </a>
+  </div>
 </div>
 """, unsafe_allow_html=True)
+
 
 # ---------------------------
 #  LESSON UTILITIES
