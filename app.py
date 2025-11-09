@@ -571,35 +571,44 @@ with st.sidebar:
 # ---------------------------
 #  MAIN HEADER
 # ---------------------------
-# ✅ الحل النهائي لمشكلة وضوح النصوص في الموبايل والدارك مود
+# ✅ الحل الأخير والمضمون تمامًا لمشكلة وضوح النصوص على الموبايل
 st.markdown("""
 <style>
-/* نجبر النصوص داخل العنوان إنها تظهر باللون الأبيض بوضوح تام */
-div[style*='text-align:center'] * {
-    color: #ffffff !important;
-    text-shadow: 0 0 8px rgba(0,0,0,0.4) !important; /* بيخليها واضحة فوق أي خلفية */
+/* نعمل خلفية شفافة فاتحة ونجبر النصوص تكون داكنة */
+.header-container {
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    padding: 12px;
+    display: inline-block;
 }
 
-/* تحسين خاص للموبايل */
+.header-container div, 
+.header-container b, 
+.header-container a {
+    color: #0f172a !important;
+    text-shadow: none !important;
+}
+
+/* نخليها أوضح في الموبايل */
 @media (max-width: 768px) {
-    div[style*='text-align:center'] * {
-        color: #ffffff !important;
-        text-shadow: 0 0 10px rgba(0,0,0,0.5) !important;
+    .header-container {
+        background: rgba(255, 255, 255, 0.9) !important;
+        padding: 14px !important;
     }
-}
 
-/* تحسين إضافي لو الوضع غامق */
-@media (prefers-color-scheme: dark) {
-    div[style*='text-align:center'] * {
-        color: #ffffff !important;
-        text-shadow: 0 0 10px rgba(255,255,255,0.2) !important;
+    .header-container div, 
+    .header-container b, 
+    .header-container a {
+        color: #0f172a !important;
+        font-size: 15px !important;
     }
 }
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown(f"""
-<div style='text-align:center; margin-bottom:18px;'>
+<div class='header-container' style='text-align:center; margin-bottom:18px;'>
   <div style='font-size:28px; font-weight:800; color:#0f172a;'>Learn Egyptian Dialect — AI Tutor</div>
   <div style='color:#475569; font-size:14px; margin-bottom:10px;'>
     Interactive explanation and real-time practice.
