@@ -662,11 +662,16 @@ div[role='radiogroup'] label {
     gap: 8px !important;
     cursor: pointer;
     position: relative;
-    white-space: nowrap !important; /* ✅ يمنع النص من النزول لسطر جديد */
-    min-width: 220px; /* ✅ نضمن عرض كفاية للكلمة */
+    white-space: nowrap !important;
+    min-width: 220px;
 }
 
-/* نخفي أي عناصر داخلية عاملة إطار حوالين الكلام */
+/* 🔹 نص واضح دايمًا */
+div[role='radiogroup'] label * {
+    color: inherit !important;
+}
+
+/* ✅ نخفي أي عناصر داخلية عاملة إطار حوالين الكلام */
 div[role='radiogroup'] label > div {
     border: none !important;
     box-shadow: none !important;
@@ -685,9 +690,9 @@ div[role='radiogroup'] label:hover {
 
 /* ✅ الزر المحدد */
 div[role='radiogroup'] label:has(input:checked) {
-    background: linear-gradient(135deg, #a7f3d0, #6ee7b7) !important;
-    border-color: #10b981 !important;
-    color: #064e3b !important;
+    background: linear-gradient(135deg, #34d399, #10b981) !important;
+    border-color: #059669 !important;
+    color: #ffffff !important; /* ✅ نص أبيض لما يكون الزر متلون */
     font-weight: 700 !important;
     box-shadow: 0 4px 10px rgba(16,185,129,0.2) !important;
     transform: scale(1.02);
@@ -698,6 +703,23 @@ div[role='radiogroup'] label svg,
 div[role='radiogroup'] label span {
     color: inherit !important;
     fill: inherit !important;
+}
+
+/* ✅ الوضع الداكن */
+@media (prefers-color-scheme: dark) {
+    div[role='radiogroup'] label {
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important; /* ✅ نص فاتح */
+        border-color: #334155 !important;
+    }
+    div[role='radiogroup'] label:hover {
+        background-color: #0f172a !important;
+        border-color: #10b981 !important;
+    }
+    div[role='radiogroup'] label:has(input:checked) {
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        color: #ffffff !important;
+    }
 }
 
 /* ✅ للموبايل */
@@ -712,11 +734,6 @@ div[role='radiogroup'] label span {
         font-size: 16px !important;
         text-align: center !important;
         white-space: nowrap !important;
-    }
-
-    div[role='radiogroup'] label:has(input:checked) {
-        background: linear-gradient(135deg, #a7f3d0, #6ee7b7) !important;
-        color: #064e3b !important;
     }
 
     div[role='radiogroup'] label:active {
