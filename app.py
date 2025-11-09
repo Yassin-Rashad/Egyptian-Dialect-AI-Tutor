@@ -404,7 +404,11 @@ with st.sidebar:
         drive_units = list_drive_units_and_lessons()
         if drive_units:
             unit_options = [u.capitalize() for u in drive_units.keys()]
-            unit_lessons = {u.capitalize(): len(v) for u, v in drive_units.items()}
+            unit_lessons = {
+                u.capitalize(): len([x for x in v if not x.lower().startswith("general")])
+                for u, v in drive_units.items()
+            }
+
         else:
             unit_options = ["Unit 1"]
             unit_lessons = {"Unit 1": 6}
