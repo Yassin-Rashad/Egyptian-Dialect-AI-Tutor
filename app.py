@@ -637,32 +637,52 @@ def build_full_prompt(base_prompt: str, lesson_content: str) -> str:
 # ---------------------------
 st.markdown("""
 <style>
-/* ✅ تصحيح التباين داخل التبويبات لجميع الأوضاع (Light/Dark) */
+/* ✅ تحسين شكل التبويبات مع الحفاظ على التباين والهوفر */
+div[role='radiogroup'] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* الشكل الأساسي */
 div[role='radiogroup'] label {
     background-color: #ffffff !important; /* خلفية بيضاء دايمًا */
-    color: #111827 !important; /* نص غامق وواضح */
+    color: #111827 !important; /* نص غامق */
     font-weight: 600 !important;
     border: 1px solid #e2e8f0 !important;
     border-radius: 12px !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.06) !important;
+    transition: all 0.25s ease-in-out !important;
+    padding: 10px 20px !important;
 }
 
+/* ✅ التأثير عند المرور بالماوس */
+div[role='radiogroup'] label:hover {
+    background-color: #ecfdf5 !important; /* أخضر فاتح جدًا */
+    border-color: #10b981 !important;
+    box-shadow: 0 4px 8px rgba(16,185,129,0.15) !important;
+    transform: translateY(-2px);
+}
+
+/* ✅ التبويب النشط */
 div[role='radiogroup'] input:checked + div {
-    background-color: #d1fae5 !important; /* أخضر فاتح عند التحديد */
+    background-color: #d1fae5 !important; /* أخضر فاتح */
     color: #065f46 !important;
     border: 1px solid #10b981 !important;
     font-weight: 700 !important;
-    box-shadow: 0 4px 10px rgba(16,185,129,0.15) !important;
+    box-shadow: 0 4px 10px rgba(16,185,129,0.2) !important;
 }
 
-/* ✅ ثبّت لون الرموز */
+/* ✅ الرموز */
 div[role='radiogroup'] label svg,
 div[role='radiogroup'] label span {
     color: #111827 !important;
     fill: #111827 !important;
 }
 
-/* ✅ نسخة خاصة للموبايل */
+/* ✅ موبايل */
 @media (max-width: 768px) {
     div[role='radiogroup'] {
         flex-direction: column !important;
@@ -681,6 +701,12 @@ div[role='radiogroup'] label span {
     div[role='radiogroup'] input:checked + div {
         background-color: #d1fae5 !important;
         color: #065f46 !important;
+    }
+
+    /* ✅ نرجّع تأثير بسيط للهوفر حتى على الموبايل */
+    div[role='radiogroup'] label:active {
+        background-color: #bbf7d0 !important;
+        transform: scale(0.98);
     }
 }
 </style>
