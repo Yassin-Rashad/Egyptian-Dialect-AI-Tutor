@@ -562,7 +562,12 @@ explain_key, practice_key = get_keys_for_lesson(lesson_choice)
 def lesson_two_tabs(lesson_label):
     current_unit = st.query_params.get("unit", "Unit 1")
     system_prompt = "You are a professional Egyptian Arabic teacher for English speakers."
-
+    # 🧹 تصفير كل المحادثات لما المستخدم يبدّل الدرس
+    if "last_loaded_lesson" not in st.session_state or st.session_state["last_loaded_lesson"] != lesson_choice:
+        for key in list(st.session_state.keys()):
+            if key.endswith("_history"):
+                del st.session_state[key]
+        st.session_state["last_loaded_lesson"] = lesson_choice
     previous_lesson = st.session_state.get("last_rendered_lesson")
     current_lesson_name = st.query_params.get("lesson", "Lesson 1")
     if previous_lesson and previous_lesson != current_lesson_name:
