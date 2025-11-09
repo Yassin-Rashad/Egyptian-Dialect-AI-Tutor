@@ -571,6 +571,23 @@ with st.sidebar:
 # ---------------------------
 #  MAIN HEADER
 # ---------------------------
+# ✅ أول جزء: لتصحيح الألوان في الموبايل
+st.markdown("""
+<style>
+@media (max-width: 768px) {
+    div[style*='text-align:center'] div[style*='font-size:28px'] {
+        color: #f8fafc !important;  /* عنوان واضح جدًا */
+    }
+    div[style*='text-align:center'] div[style*='color:#475569'] {
+        color: #e2e8f0 !important;  /* السطر الثاني */
+    }
+    div[style*='text-align:center'] div[style*='color:#334155'] {
+        color: #e2e8f0 !important;  /* السطر الثالث */
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.markdown("""
 <style>
 @media (prefers-color-scheme: dark) {
