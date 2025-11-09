@@ -882,42 +882,39 @@ if "go_to_lesson" in st.session_state:
     st.session_state["selected_lesson"] = target_lesson
     st.rerun()
 # ---------------------------
-#  FLOATING WHATSAPP BUTTON (improved for mobile)
+#  FLOATING WHATSAPP BUTTON
 # ---------------------------
-# ✅ زر واتساب ثابت تحت التعريف (نفس تنسيق الزر العائم)
 st.markdown("""
 <style>
-.contact-btn {
-    display: inline-block;
-    background-color: #25D366 !important;
-    color: #111827 !important;
-    font-weight: 700;
-    font-size: 15px;
-    padding: 12px 20px;
+.whatsapp-float {
+    position: fixed;
+    width: 220px;
+    bottom: 20px;
+    right: 20px;
+    background-color: #25D366;
+    color: white;
     border-radius: 50px;
-    text-decoration: none;
-    border: 2px solid #16a34a;
+    text-align: center;
+    font-weight: 600;
+    padding: 12px 18px;
     box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+    z-index: 100;
     transition: all 0.3s ease-in-out;
 }
-.contact-btn:hover {
-    background-color: #1ebe5d !important;
+.whatsapp-float:hover {
+    background-color: #1ebe5d;
     transform: scale(1.05);
 }
-@media (max-width: 768px) {
-    .contact-btn {
-        font-size: 14px !important;
-        padding: 10px 14px !important;
-        border-radius: 12px !important;
-    }
+.whatsapp-float a {
+    color: white;
+    text-decoration: none;
 }
 </style>
 
-<div style='text-align:center; margin-bottom:20px;'>
-  <a href='https://wa.me/201064958335' target='_blank' class='contact-btn'>💬 Contact via WhatsApp</a>
+<div class="whatsapp-float">
+  <a href="https://wa.me/201064958335" target="_blank">💬 Contact for Private Lessons</a>
 </div>
 """, unsafe_allow_html=True)
-
 
 # ---------------------------
 #  FOOTER
