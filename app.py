@@ -882,7 +882,7 @@ if "go_to_lesson" in st.session_state:
     st.session_state["selected_lesson"] = target_lesson
     st.rerun()
 # ---------------------------
-#  FLOATING WHATSAPP BUTTON
+#  FLOATING WHATSAPP BUTTON (improved for mobile)
 # ---------------------------
 st.markdown("""
 <style>
@@ -891,23 +891,35 @@ st.markdown("""
     width: 220px;
     bottom: 20px;
     right: 20px;
-    background-color: #25D366;
-    color: white;
+    background-color: #25D366 !important;
+    color: #111827 !important;  /* أسود غامق */
     border-radius: 50px;
     text-align: center;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 15px;
     padding: 12px 18px;
     box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
     z-index: 100;
     transition: all 0.3s ease-in-out;
+    border: 2px solid #16a34a;
 }
 .whatsapp-float:hover {
-    background-color: #1ebe5d;
+    background-color: #1ebe5d !important;
     transform: scale(1.05);
 }
 .whatsapp-float a {
-    color: white;
-    text-decoration: none;
+    color: #111827 !important;  /* الخط غامق */
+    text-decoration: none !important;
+}
+@media (max-width: 768px) {
+    .whatsapp-float {
+        width: 90% !important;
+        right: 5% !important;
+        bottom: 15px !important;
+        font-size: 14px !important;
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
+    }
 }
 </style>
 
