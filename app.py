@@ -582,28 +582,33 @@ st.markdown(f"""
   </div>
   <div style='margin-top:10px; text-align:center;'>
     <a href="https://wa.me/201064958335?text=Hi%20Yassin!%20I'm%20interested%20in%20your%20Arabic%20lessons."
-        target="_blank"
-        style='
-        display:inline-block;
-        background-color:#25D366;
-        color:#111827;
-        padding:10px 22px;
-        border-radius:50px;
-        text-decoration:none;
-        font-weight:700;
-        font-size:15px;
-        border:2px solid #16a34a;
-        box-shadow:0px 4px 8px rgba(0,0,0,0.2);
-        transition:all 0.3s ease-in-out;
-        '
-        onmouseover="this.style.backgroundColor='#1ebe5d'"
-        onmouseout="this.style.backgroundColor='#25D366'">
-        💬 Contact via WhatsApp
+       target="_blank"
+       style='
+         display:inline-flex;
+         align-items:center;
+         gap:8px;
+         background-color:#25D366;
+         color:white;
+         padding:10px 22px;
+         border-radius:50px;
+         text-decoration:none;
+         font-weight:700;
+         font-size:15px;
+         border:2px solid #16a34a;
+         box-shadow:0px 4px 8px rgba(0,0,0,0.2);
+         transition:all 0.3s ease-in-out;
+       '
+       onmouseover="this.style.backgroundColor='#1ebe5d'"
+       onmouseout="this.style.backgroundColor='#25D366'">
+       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 24 24">
+         <path d="M12 .5C5.73.5.5 5.73.5 12c0 2.11.55 4.1 1.58 5.88L.5 23.5l5.78-1.56A11.37 11.37 0 0 0 12 23.5c6.27 0 11.5-5.23 11.5-11.5S18.27.5 12 .5Zm0 21c-1.72 0-3.41-.45-4.89-1.3l-.35-.2-3.43.93.93-3.35-.22-.36A9.57 9.57 0 0 1 2.5 12C2.5 6.76 6.76 2.5 12 2.5S21.5 6.76 21.5 12 17.24 21.5 12 21.5Zm5.08-6.33c-.28-.14-1.64-.81-1.89-.9-.25-.1-.43-.14-.62.14-.18.25-.71.89-.88 1.07-.16.18-.32.2-.6.07-.28-.14-1.18-.43-2.25-1.38-.83-.74-1.38-1.66-1.54-1.94-.16-.28-.02-.43.12-.57.12-.12.28-.32.42-.48.14-.16.18-.28.28-.46.1-.18.05-.34-.02-.48-.07-.14-.62-1.49-.85-2.05-.22-.53-.44-.46-.62-.46-.16 0-.34-.02-.52-.02s-.48.07-.73.34c-.25.27-.96.94-.96 2.29 0 1.34.98 2.63 1.12 2.81.14.18 1.93 2.95 4.66 4.13.65.28 1.16.45 1.56.58.65.21 1.24.18 1.7.11.52-.08 1.64-.67 1.87-1.31.23-.64.23-1.18.16-1.31-.06-.13-.25-.21-.52-.34Z"/>
+       </svg>
+       Contact via WhatsApp
     </a>
-    </div>
-
+  </div>
 </div>
 """, unsafe_allow_html=True)
+
 
 
 # ---------------------------
@@ -880,7 +885,7 @@ st.markdown("""
     bottom: 20px;
     right: 20px;
     background-color: #25D366 !important;
-    color: #111827 !important;
+    color: white !important;
     border-radius: 50px;
     text-align: center;
     font-weight: 700;
@@ -890,14 +895,21 @@ st.markdown("""
     box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
     z-index: 100;
     transition: all 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 .whatsapp-float:hover {
     background-color: #1ebe5d !important;
     transform: scale(1.05);
 }
 .whatsapp-float a {
-    color: #111827 !important;
+    color: white !important;
     text-decoration: none !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 @media (max-width: 768px) {
     .whatsapp-float {
@@ -913,9 +925,15 @@ st.markdown("""
 
 <div class="whatsapp-float">
   <a href="https://wa.me/201064958335?text=Hi%20Yassin!%20I'm%20interested%20in%20your%20Arabic%20lessons."
-     target="_blank">💬 Contact for Private Lessons</a>
+     target="_blank">
+     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 24 24">
+       <path d="M12 .5C5.73.5.5 5.73.5 12c0 2.11.55 4.1 1.58 5.88L.5 23.5l5.78-1.56A11.37 11.37 0 0 0 12 23.5c6.27 0 11.5-5.23 11.5-11.5S18.27.5 12 .5Zm0 21c-1.72 0-3.41-.45-4.89-1.3l-.35-.2-3.43.93.93-3.35-.22-.36A9.57 9.57 0 0 1 2.5 12C2.5 6.76 6.76 2.5 12 2.5S21.5 6.76 21.5 12 17.24 21.5 12 21.5Zm5.08-6.33c-.28-.14-1.64-.81-1.89-.9-.25-.1-.43-.14-.62.14-.18.25-.71.89-.88 1.07-.16.18-.32.2-.6.07-.28-.14-1.18-.43-2.25-1.38-.83-.74-1.38-1.66-1.54-1.94-.16-.28-.02-.43.12-.57.12-.12.28-.32.42-.48.14-.16.18-.28.28-.46.1-.18.05-.34-.02-.48-.07-.14-.62-1.49-.85-2.05-.22-.53-.44-.46-.62-.46-.16 0-.34-.02-.52-.02s-.48.07-.73.34c-.25.27-.96.94-.96 2.29 0 1.34.98 2.63 1.12 2.81.14.18 1.93 2.95 4.66 4.13.65.28 1.16.45 1.56.58.65.21 1.24.18 1.7.11.52-.08 1.64-.67 1.87-1.31.23-.64.23-1.18.16-1.31-.06-.13-.25-.21-.52-.34Z"/>
+     </svg>
+     Contact for Private Lessons
+  </a>
 </div>
 """, unsafe_allow_html=True)
+
 
 # ---------------------------
 #  FOOTER
