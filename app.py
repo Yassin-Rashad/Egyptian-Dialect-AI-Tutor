@@ -571,44 +571,35 @@ with st.sidebar:
 # ---------------------------
 #  MAIN HEADER
 # ---------------------------
-# ✅ الحل الأخير والمضمون تمامًا لمشكلة وضوح النصوص على الموبايل
+# ✅ تحسين وضوح النصوص في الموبايل فقط بدون تغيير نسخة الكمبيوتر
 st.markdown("""
 <style>
-/* نعمل خلفية شفافة فاتحة ونجبر النصوص تكون داكنة */
-.header-container {
-    background: rgba(255, 255, 255, 0.8) !important;
-    backdrop-filter: blur(8px);
-    border-radius: 12px;
-    padding: 12px;
-    display: inline-block;
-}
-
-.header-container div, 
-.header-container b, 
-.header-container a {
-    color: #0f172a !important;
-    text-shadow: none !important;
-}
-
-/* نخليها أوضح في الموبايل */
 @media (max-width: 768px) {
-    .header-container {
-        background: rgba(255, 255, 255, 0.9) !important;
-        padding: 14px !important;
+    div[style*='text-align:center'] {
+        background: rgba(255, 255, 255, 0.9) !important;  /* خلفية فاتحة خفيفة فقط في الموبايل */
+        border-radius: 10px;
+        padding: 12px;
     }
 
-    .header-container div, 
-    .header-container b, 
-    .header-container a {
+    div[style*='text-align:center'] div {
+        color: #0f172a !important;  /* نص داكن وواضح */
+        font-weight: 700 !important;
+        text-shadow: none !important;
+    }
+
+    div[style*='text-align:center'] b {
         color: #0f172a !important;
-        font-size: 15px !important;
+    }
+
+    div[style*='text-align:center'] a {
+        color: white !important;  /* الزر يفضل أبيض زي ما هو */
     }
 }
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown(f"""
-<div class='header-container' style='text-align:center; margin-bottom:18px;'>
+<div style='text-align:center; margin-bottom:18px;'>
   <div style='font-size:28px; font-weight:800; color:#0f172a;'>Learn Egyptian Dialect — AI Tutor</div>
   <div style='color:#475569; font-size:14px; margin-bottom:10px;'>
     Interactive explanation and real-time practice.
