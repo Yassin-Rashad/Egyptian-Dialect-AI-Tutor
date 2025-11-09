@@ -505,16 +505,23 @@ with st.sidebar:
     )
 
     if lesson_choice != st.session_state["selected_lesson"]:
-        # ✅ نصفر كل المحادثات القديمة
+        # ✅ نحذف كل المحادثات القديمة قبل الانتقال للدرس الجديد
         for key in list(st.session_state.keys()):
             if key.endswith("_history"):
                 del st.session_state[key]
+
         st.session_state["go_to_lesson_change"] = {
             "unit": st.session_state["selected_unit"],
             "lesson": lesson_choice,
             "tab": "Explanation"
         }
+
+        # نصفر كمان عداد المحادثات
+        if "stop_training" in st.session_state:
+            del st.session_state["stop_training"]
+
         st.rerun()
+
 
 # ---------------------------
 #  MAIN HEADER
