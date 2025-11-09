@@ -505,6 +505,10 @@ with st.sidebar:
     )
 
     if lesson_choice != st.session_state["selected_lesson"]:
+        # ✅ نصفر كل المحادثات القديمة
+        for key in list(st.session_state.keys()):
+            if key.endswith("_history"):
+                del st.session_state[key]
         st.session_state["go_to_lesson_change"] = {
             "unit": st.session_state["selected_unit"],
             "lesson": lesson_choice,
