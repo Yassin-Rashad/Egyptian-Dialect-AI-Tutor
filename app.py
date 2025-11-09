@@ -331,6 +331,25 @@ prompts = load_all_units()
 #  UI CONFIG
 # ---------------------------
 st.set_page_config(page_title="Egyptian Dialect AI Tutor", layout="centered", page_icon="🎓")
+# ✅ ثابت الثيم علشان الألوان متتغيرش في الموبايل
+st.markdown("""
+<style>
+body, .main, .stApp {
+    background-color: #f7fbff !important;
+    color: #0f172a !important;
+}
+h1, h2, h3, h4, h5, h6, div, p, span, label {
+    color: #0f172a !important;
+}
+a {
+    color: #2563eb !important;
+}
+a:hover {
+    color: #1d4ed8 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.markdown("""
 <style>
 /* ✅ القواعد العامة للـ responsiveness */
