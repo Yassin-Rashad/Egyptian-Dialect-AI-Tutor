@@ -637,7 +637,7 @@ def build_full_prompt(base_prompt: str, lesson_content: str) -> str:
 # ---------------------------
 st.markdown("""
 <style>
-/* ✅ تحسين شكل التبويبات مع الحفاظ على التباين والهوفر */
+/* ✅ الشكل العام */
 div[role='radiogroup'] {
     display: flex;
     justify-content: center;
@@ -646,43 +646,47 @@ div[role='radiogroup'] {
     flex-wrap: wrap;
 }
 
-/* الشكل الأساسي */
+/* الشكل الأساسي لكل تبويب */
 div[role='radiogroup'] label {
-    background-color: #ffffff !important; /* خلفية بيضاء دايمًا */
-    color: #111827 !important; /* نص غامق */
+    background-color: #ffffff !important;
+    color: #111827 !important;
     font-weight: 600 !important;
     border: 1px solid #e2e8f0 !important;
-    border-radius: 12px !important;
+    border-radius: 14px !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.06) !important;
     transition: all 0.25s ease-in-out !important;
-    padding: 10px 20px !important;
+    padding: 12px 24px !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* ✅ التأثير عند المرور بالماوس */
+/* ✅ التأثير عند المرور */
 div[role='radiogroup'] label:hover {
-    background-color: #ecfdf5 !important; /* أخضر فاتح جدًا */
+    background-color: #f0fdf4 !important;
     border-color: #10b981 !important;
-    box-shadow: 0 4px 8px rgba(16,185,129,0.15) !important;
+    box-shadow: 0 4px 8px rgba(16,185,129,0.12) !important;
     transform: translateY(-2px);
 }
 
-/* ✅ التبويب النشط */
+/* ✅ التبويب المحدد — الخلفية كلها تتلون */
 div[role='radiogroup'] input:checked + div {
-    background-color: #d1fae5 !important; /* أخضر فاتح */
-    color: #065f46 !important;
+    background: linear-gradient(135deg, #a7f3d0, #6ee7b7) !important;
+    color: #064e3b !important;
     border: 1px solid #10b981 !important;
     font-weight: 700 !important;
     box-shadow: 0 4px 10px rgba(16,185,129,0.2) !important;
+    transform: scale(1.02);
 }
 
 /* ✅ الرموز */
 div[role='radiogroup'] label svg,
 div[role='radiogroup'] label span {
-    color: #111827 !important;
-    fill: #111827 !important;
+    color: inherit !important;
+    fill: inherit !important;
 }
 
-/* ✅ موبايل */
+/* ✅ للموبايل */
 @media (max-width: 768px) {
     div[role='radiogroup'] {
         flex-direction: column !important;
@@ -693,19 +697,15 @@ div[role='radiogroup'] label span {
         width: 100% !important;
         font-size: 16px !important;
         padding: 14px !important;
-        background-color: #ffffff !important;
-        color: #111827 !important;
         text-align: center !important;
     }
 
     div[role='radiogroup'] input:checked + div {
-        background-color: #d1fae5 !important;
-        color: #065f46 !important;
+        background: linear-gradient(135deg, #a7f3d0, #6ee7b7) !important;
+        color: #064e3b !important;
     }
 
-    /* ✅ نرجّع تأثير بسيط للهوفر حتى على الموبايل */
     div[role='radiogroup'] label:active {
-        background-color: #bbf7d0 !important;
         transform: scale(0.98);
     }
 }
