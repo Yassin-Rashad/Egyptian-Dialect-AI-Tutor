@@ -115,55 +115,63 @@ def list_drive_units_and_lessons():
 
 @st.cache_resource
 def read_file_from_drive(file_name, parent_folder_name=None):
-    """Read text file from Google Drive with proper folder scoping."""
+    """Read text file from Google Drive with retry and SSL fallback."""
+    import time
+    import httplib2
     service = get_drive_service()
     PROMPTS_FOLDER_ID = "125CxvdIJDW63ATcbbpTTrt_BJC5fX961"
 
-    try:
-        # لو عايزين نقرأ من فولدر معين (زي unit1 أو lesson1)
-        if parent_folder_name:
-            query = (
-                f"name='{file_name}' and trashed=false and "
-                f"'{parent_folder_name}' in parents"
-            )
-        else:
-            query = f"name='{file_name}' and trashed=false"
+    # 🔁 نحاول لحد 3 مرات
+    for attempt in range(3):
+        try:
+            if parent_folder_name:
+                query = f"name='{file_name}' and trashed=false and '{parent_folder_name}' in parents"
+            else:
+                query = f"name='{file_name}' and trashed=false"
 
-        results = service.files().list(
-            q=query,
-            fields="files(id, name, mimeType, parents)",
-        ).execute()
+            results = service.files().list(
+                q=query,
+                fields="files(id, name, mimeType, parents)"
+            ).execute()
 
-        files = results.get("files", [])
-        if not files:
-            print(f"Loaded from Drive: {file_name}")  # Log only in console
-            return ""
+            files = results.get("files", [])
+            if not files:
+                print(f"⚠️ File '{file_name}' not found in Drive.")
+                return ""
 
-        chosen_file = files[0]
-        file_id = chosen_file["id"]
-        mime = chosen_file["mimeType"]
+            chosen_file = files[0]
+            file_id = chosen_file["id"]
+            mime = chosen_file["mimeType"]
 
-        # تحميل المحتوى
-        if mime.startswith("application/vnd.google-apps"):
-            request = service.files().export_media(fileId=file_id, mimeType="text/plain")
-        else:
-            request = service.files().get_media(fileId=file_id)
+            if mime.startswith("application/vnd.google-apps"):
+                request = service.files().export_media(fileId=file_id, mimeType="text/plain")
+            else:
+                request = service.files().get_media(fileId=file_id)
 
-        fh = io.BytesIO()
-        downloader = MediaIoBaseDownload(fh, request)
-        done = False
-        while not done:
-            status, done = downloader.next_chunk()
+            fh = io.BytesIO()
+            downloader = MediaIoBaseDownload(fh, request)
+            done = False
+            while not done:
+                status, done = downloader.next_chunk()
 
-        fh.seek(0)
-        content = fh.read().decode("utf-8", errors="ignore")
+            fh.seek(0)
+            content = fh.read().decode("utf-8", errors="ignore")
+            print(f"✅ Loaded from Drive: {file_name}")
+            return content
 
-        print(f"Loaded from Drive: {file_name}")  # Log only in console
-        return content
+        except (ssl.SSLError, TimeoutError, ConnectionError, Exception) as e:
+            print(f"⚠️ Attempt {attempt+1}/3 failed for '{file_name}': {e}")
+            time.sleep(1.5)
+            # ✅ في آخر محاولة نعمل fallback بدون SSL validation
+            if attempt == 2:
+                try:
+                    creds = service_account.Credentials.from_service_account_info(st.secrets["google"])
+                    http = creds.authorize(httplib2.Http(disable_ssl_certificate_validation=True))
+                    service = build("drive", "v3", http=http, cache_discovery=False)
+                except Exception:
+                    pass
 
-    except Exception as e:
-        st.warning(f"⚠️ Couldn't load '{file_name}' from Drive ({e}).")
-        return ""
+    return ""
 # ---------------------------
 #  PROMPTS LOADING (smart switch)
 # ---------------------------
