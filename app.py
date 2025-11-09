@@ -635,6 +635,41 @@ def build_full_prompt(base_prompt: str, lesson_content: str) -> str:
 # ---------------------------
 #  TABS: Explanation / Grammar / Practice
 # ---------------------------
+st.markdown("""
+<style>
+/* ✅ تصحيح ألوان النص داخل التبويبات في الموبايل والـ Dark Mode */
+div[role='radiogroup'] label {
+    color: #0f172a !important; /* لون النص الأساسي */
+}
+
+div[role='radiogroup'] input:checked + div {
+    color: #065f46 !important; /* اللون الأخضر الداكن للتبويب المحدد */
+    background-color: #d1fae5 !important;
+}
+
+div[role='radiogroup'] label svg,
+div[role='radiogroup'] label span {
+    color: #0f172a !important;
+    fill: #0f172a !important;
+}
+
+@media (max-width: 768px) {
+    div[role='radiogroup'] label {
+        color: #0f172a !important;
+        font-weight: 600 !important;
+        background-color: #f8fafc !important;
+    }
+
+    div[role='radiogroup'] input:checked + div {
+        color: #065f46 !important;
+        font-weight: 700 !important;
+        background-color: #d1fae5 !important;
+        border: 1px solid #10b981 !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
 explain_key, practice_key = get_keys_for_lesson(lesson_choice)
 
 def lesson_two_tabs(lesson_label):
