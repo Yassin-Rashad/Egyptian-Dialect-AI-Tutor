@@ -592,7 +592,7 @@ st.markdown(f"""
       font-size:14px;
       transition:all 0.3s ease;
     ' onmouseover="this.style.backgroundColor='#1ebe5d'" onmouseout="this.style.backgroundColor='#25D366'">
-      💬 Contact via WhatsApp
+      💬 Contact Via WhatsApp
     </a>
   </div>
 </div>
