@@ -584,24 +584,41 @@ from streamlit.components.v1 import html
 
 html("""
 <div style="
-    background-color: #ffffff;
+    background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
     border: 2px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 22px 20px;
-    margin: 40px auto 40px auto;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    border-radius: 22px;
+    padding: 20px 18px;
+    margin: 36px auto 42px auto;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
     text-align: center;
-    max-width: 650px;
+    max-width: 92%;
+    width: 600px;
 ">
-    <h2 style="font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">
+    <h2 style="
+        font-size: clamp(22px, 5vw, 28px);
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 10px;
+        line-height: 1.2;
+    ">
         Learn Egyptian Dialect — AI Tutor
     </h2>
 
-    <p style="color: #475569; font-size: 16px; margin-bottom: 12px;">
+    <p style="
+        color: #475569;
+        font-size: clamp(14px, 3.8vw, 16px);
+        margin-bottom: 12px;
+        line-height: 1.5;
+    ">
         Interactive explanation and real-time practice.
     </p>
 
-    <p style="font-size: 15px; color: #334155; margin-bottom: 18px;">
+    <p style="
+        font-size: clamp(13px, 3.5vw, 15px);
+        color: #334155;
+        margin-bottom: 18px;
+        line-height: 1.4;
+    ">
         Created by <b>Yassin Rashad</b> 🇪🇬 — for Arabic learners around the world 🌍
     </p>
 
@@ -614,24 +631,25 @@ html("""
          gap:8px;
          background-color:#25D366;
          color:white;
-         padding:12px 26px;
+         padding:12px 28px;
          border-radius:50px;
          text-decoration:none;
          font-weight:700;
-         font-size:15px;
+         font-size:clamp(14px, 4vw, 16px);
          border:2px solid #16a34a;
          box-shadow:0px 4px 10px rgba(0,0,0,0.15);
          transition:all 0.3s ease-in-out;
-       '
+         white-space: nowrap;
+     '
        onmouseover="this.style.backgroundColor='#1ebe5d'"
        onmouseout="this.style.backgroundColor='#25D366'">
-       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 24 24">
+       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="white" viewBox="0 0 24 24">
          <path d="M12 .5C5.73.5.5 5.73.5 12c0 2.11.55 4.1 1.58 5.88L.5 23.5l5.78-1.56A11.37 11.37 0 0 0 12 23.5c6.27 0 11.5-5.23 11.5-11.5S18.27.5 12 .5Zm0 21c-1.72 0-3.41-.45-4.89-1.3l-.35-.2-3.43.93.93-3.35-.22-.36A9.57 9.57 0 0 1 2.5 12C2.5 6.76 6.76 2.5 12 2.5S21.5 6.76 21.5 12 17.24 21.5 12 21.5Zm5.08-6.33c-.28-.14-1.64-.81-1.89-.9-.25-.1-.43-.14-.62.14-.18.25-.71.89-.88 1.07-.16.18-.32.2-.6.07-.28-.14-1.18-.43-2.25-1.38-.83-.74-1.38-1.66-1.54-1.94-.16-.28-.02-.43.12-.57.12-.12.28-.32.42-.48.14-.16.18-.28.28-.46.1-.18.05-.34-.02-.48-.07-.14-.62-1.49-.85-2.05-.22-.53-.44-.46-.62-.46-.16 0-.34-.02-.52-.02s-.48.07-.73.34c-.25.27-.96.94-.96 2.29 0 1.34.98 2.63 1.12 2.81.14.18 1.93 2.95 4.66 4.13.65.28 1.16.45 1.56.58.65.21 1.24.18 1.7.11.52-.08 1.64-.67 1.87-1.31.23-.64.23-1.18.16-1.31-.06-.13-.25-.21-.52-.34Z"/>
        </svg>
        Contact via WhatsApp
     </a>
 </div>
-""", height=320)
+""", height=400, scrolling=False)
 
 # ---------------------------
 #  LESSON UTILITIES
