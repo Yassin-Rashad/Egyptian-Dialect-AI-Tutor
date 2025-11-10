@@ -1117,11 +1117,13 @@ def lesson_two_tabs(lesson_label):
 
     if selected_tab != current_tab:
         st.session_state["selected_tab"] = selected_tab
-        st.query_params = {
-            "unit": st.session_state.get("selected_unit", "Unit 1"),
-            "lesson": st.session_state.get("selected_lesson", "Lesson 1"),
-            "tab": selected_tab
-        }
+        # ✅ نحفظه كمان في localStorage من غير ما نعمل refresh
+        st.markdown(f"""
+        <script>
+        window.localStorage.setItem("yassin_tab_choice", "{selected_tab}");
+        </script>
+        """, unsafe_allow_html=True)
+
     # -------- EXPLANATION --------
     if selected_tab == "Explanation":
         st.markdown("### 📘 Explanation")
