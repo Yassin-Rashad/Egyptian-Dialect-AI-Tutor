@@ -829,6 +829,26 @@ div[role='radiogroup'] label span {
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+/* ✅ منع المتصفح من عكس الألوان داخل التبويبات المختارة */
+div[role='radiogroup'] label:has(input:checked) * {
+    color: #0f172a !important;              /* ✅ النص الغامق */
+    -webkit-text-fill-color: #0f172a !important;  /* ✅ لمتصفحات الموبايل */
+    mix-blend-mode: normal !important;      /* ✅ تعطيل دمج الألوان */
+    text-shadow: none !important;           /* ✅ بدون تظليل */
+    filter: brightness(1) contrast(1) !important;
+}
+
+/* ✅ نأكد إن أي نص داخل الزر المحدد ما يتحولش أبيض */
+div[role='radiogroup'] label:has(input:checked) span,
+div[role='radiogroup'] label:has(input:checked) svg {
+    color: #0f172a !important;
+    fill: #0f172a !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 explain_key, practice_key = get_keys_for_lesson(lesson_choice)
 
 def lesson_two_tabs(lesson_label):
