@@ -579,7 +579,10 @@ with st.sidebar:
 # ---------------------------
 #  MAIN HEADER (IN FIXED LIGHT BOX)
 # ---------------------------
-st.markdown("""
+
+from streamlit.components.v1 import html
+
+html("""
 <div style="
     background-color: #ffffff;
     border: 2px solid #e2e8f0;
@@ -643,7 +646,7 @@ st.markdown("""
        Contact via WhatsApp
     </a>
 </div>
-""", unsafe_allow_html=True)
+""")
 
 
 # ---------------------------
