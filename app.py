@@ -98,7 +98,14 @@ def get_drive_service():
 
     try:
         # ✅ المحاولة العادية أولًا
-        service = build("drive", "v3", credentials=creds, cache_discovery=False)
+        import time
+        for _ in range(3):
+            try:
+                service = build("drive", "v3", credentials=creds, cache_discovery=False)
+                break
+            except Exception:
+                time.sleep(1.5)
+
         return service
     except ssl.SSLError:
         # ✅ لو حصل SSL Error، نعمل اتصال بدون تحقق SSL
@@ -300,8 +307,8 @@ def load_prompt(unit: str, lesson: str, type_: str = "") -> str:
 # ---------------------------
 #  BASE PROMPTS
 # ---------------------------
-base_explanation_prompt = load_prompt("base", "explanation", "prompt")
-base_practice_prompt = load_prompt("base", "practice", "prompt")
+base_explanation_prompt = ""
+base_practice_prompt = ""
 
 # ---------------------------
 #  LOAD ALL UNITS DYNAMICALLY
@@ -383,6 +390,10 @@ else:
     save_prompts_to_cache(prompts)
 
 prompts = load_all_units()
+if not base_explanation_prompt:
+    base_explanation_prompt = load_prompt("base", "explanation", "prompt")
+if not base_practice_prompt:
+    base_practice_prompt = load_prompt("base", "practice", "prompt")
 
 # ---------------------------
 #  UI CONFIG
@@ -1014,7 +1025,6 @@ def lesson_two_tabs(lesson_label):
         key=f"tab_choice_{lesson_label}_{device_session_id}",
         index=default_index
     )
-
 
     # ✅ نحدد التبويب الجديد بناءً على الاختيار
 
