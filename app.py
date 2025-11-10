@@ -1036,7 +1036,19 @@ def lesson_two_tabs(lesson_label):
         default_index = tab_options.index(st.session_state["selected_tab"])
     except:
         default_index = 0
-    # --- عرض التبويبات ---
+        # ✅ استرجاع آخر تبويب محفوظ من المتصفح قبل عرض التبويبات
+    from streamlit.components.v1 import html
+
+    html("""
+    <script>
+    const key = "yassin_tab_choice";
+    const savedTab = window.localStorage.getItem(key);
+    if (savedTab) {
+        window.parent.postMessage({type: "streamlit:setSessionState", key: "selected_tab", value: savedTab}, "*");
+    }
+    </script>
+    """, height=0)
+
     tab_choice = st.radio(
         "Select section",
         ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"],
