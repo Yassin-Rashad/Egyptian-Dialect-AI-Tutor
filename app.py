@@ -1051,35 +1051,38 @@ def lesson_two_tabs(lesson_label):
     # ✅ نحفظ التبويب الحالي لكل متصفح باستخدام localStorage فقط (بدون تغيير التنسيقات)
     from streamlit.components.v1 import html
     import uuid
+    # ✅ قراءة التبويب من localStorage في أول تحميل
+    from streamlit.components.v1 import html
 
-    # نقرأ التبويب من localStorage
     html("""
     <script>
     const key = "yassin_tab_choice";
-    const storedTab = window.localStorage.getItem(key) || "📘 Explanation";
-    window.parent.postMessage({ currentTab: storedTab }, "*");
+    let storedTab = window.localStorage.getItem(key);
+
+    // لو أول مرة نفتح، نخزن Explanation كافتراضي
+    if (!storedTab) {
+    window.localStorage.setItem(key, "📘 Explanation");
+    storedTab = "📘 Explanation";
+    }
+
+    // نمرره إلى Streamlit
+    const sendTab = () => {
+    const frame = window.parent;
+    if (frame) {
+        frame.postMessage({type: "streamlit:setSessionState", key: "selected_tab", value: storedTab}, "*");
+    }
+    };
+    sendTab();
+
+    // لما المستخدم يختار تبويب جديد نحدّث التخزين
     window.addEventListener("message", (event) => {
     if (event.data && event.data.newTab) {
-        window.localStorage.setItem(key, event.data.newTab);
+        localStorage.setItem(key, event.data.newTab);
     }
     });
     </script>
     """, height=0)
 
-    # نحفظ التبويب اللي جاي من localStorage في session
-    st.markdown("""
-    <script>
-    window.addEventListener("message", (event) => {
-    if (event.data && event.data.currentTab) {
-        window.parent.postMessage({
-        type: "streamlit:setSessionState",
-        key: "tab_from_browser",
-        value: event.data.currentTab
-        }, "*");
-    }
-    });
-    </script>
-    """, unsafe_allow_html=True)
 
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
 
@@ -1091,6 +1094,15 @@ def lesson_two_tabs(lesson_label):
         default_index = 0
 
     tab_choice = st.radio(
+        # نحفظ التبويب الجديد في localStorage بدون refresh
+        st.markdown(f"""
+        <script>
+        window.parent.postMessage({{ newTab: "{tab_choice}" }}, "*");
+        window.localStorage.setItem("yassin_tab_choice", "{tab_choice}");
+        </script>
+        """, unsafe_allow_html=True)
+        st.session_state["selected_tab"] = tab_choice
+
         "Select section",
         tab_options,
         horizontal=True,
