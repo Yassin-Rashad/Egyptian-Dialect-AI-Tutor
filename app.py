@@ -971,39 +971,6 @@ def lesson_two_tabs(lesson_label):
     </div>
     """, unsafe_allow_html=True)
 
-    # ✅ تحديد التبويب الافتراضي عند أول زيارة في الجهاز
-    if "selected_tab" not in st.session_state:
-        st.session_state["selected_tab"] = "Explanation"
-
-    # ✅ لو المستخدم غيّر التبويب نحفظه في session فقط (بدون query_params)
-    current_tab = st.session_state["selected_tab"]
-    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
-
-    tab_choice = st.radio(
-        "Select section",
-        tab_options,
-        horizontal=True,
-        label_visibility="collapsed",
-        index=tab_options.index(
-            "📘 Explanation" if current_tab not in tab_options else tab_options[tab_options.index(current_tab)]
-        ),
-        key="lesson_tab_choice"
-    )
-
-    # ✅ نحول اسم التبويب لنص بسيط ونخزّنه محليًا فقط
-    if "Explanation" in tab_choice:
-        selected_tab = "Explanation"
-    elif "Grammar" in tab_choice:
-        selected_tab = "Grammar"
-    else:
-        selected_tab = "Practice"
-
-    # ✅ لو المستخدم غيّر التبويب نحفظه محلي فقط من غير URL
-    if selected_tab != st.session_state["selected_tab"]:
-        st.session_state["selected_tab"] = selected_tab
-
-
-
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
     if st.session_state.get("selected_tab") == "Grammar":
         default_tab = "🧠 Grammar Note"
