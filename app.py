@@ -1105,7 +1105,6 @@ def lesson_two_tabs(lesson_label):
     # نحفظ التبويب الجديد في localStorage بدون refresh
     st.markdown(f"""
     <script>
-    window.parent.postMessage({{ newTab: "{tab_choice}" }}, "*");
     window.localStorage.setItem("yassin_tab_choice", "{tab_choice}");
     </script>
     """, unsafe_allow_html=True)
