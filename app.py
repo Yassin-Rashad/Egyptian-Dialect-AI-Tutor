@@ -90,23 +90,26 @@ def running_on_cloud() -> bool:
 # ---------------------------
 @st.cache_resource
 def get_drive_service():
+    from google.oauth2 import service_account
+    from googleapiclient.discovery import build
+    import httplib2, ssl
+
     creds = service_account.Credentials.from_service_account_info(st.secrets["google"])
 
-    # ✅ نحاول نحل مشكلة SSL سواء في WSL أو Cloud
     try:
-        ssl._create_default_https_context = ssl._create_unverified_context
-    except Exception:
-        pass
-
-    # ✅ تفعيل build مع تجاوز SSL
-    try:
-        return build("drive", "v3", credentials=creds, cache_discovery=False)
+        # ✅ المحاولة العادية أولًا
+        service = build("drive", "v3", credentials=creds, cache_discovery=False)
+        return service
     except ssl.SSLError:
-        # fallback لو حصل SSL error
-        import httplib2
-        from googleapiclient.discovery import build as gbuild
+        # ✅ لو حصل SSL Error، نعمل اتصال بدون تحقق SSL
+        st.warning("⚠️ SSL issue detected — switching to unverified HTTPS mode...")
         http = creds.authorize(httplib2.Http(disable_ssl_certificate_validation=True))
-        return gbuild("drive", "v3", http=http)
+        service = build("drive", "v3", http=http, cache_discovery=False)
+        return service
+    except Exception as e:
+        st.error(f"⚠️ Could not connect to Google Drive API: {e}")
+        return None
+
 
 @st.cache_resource
 def list_drive_units_and_lessons():
