@@ -925,37 +925,148 @@ def lesson_two_tabs(lesson_label):
     from streamlit.components.v1 import html
     import uuid, json
 
-    from streamlit.components.v1 import html
-    import uuid
-
-    # ✅ كود العزل الكامل للتبويبات بين الأجهزة (localStorage فقط)
-    def get_device_tab_state():
+    # ✅ نولّد أو نقرأ session id خاص بالمتصفح (وليس السيرفر)
+    def get_client_session_id():
         js_code = """
         <script>
-        const key = "yassin_tab_choice";
-        const storedTab = window.localStorage.getItem(key);
-
-        // لما المستخدم يختار تبويب جديد
-        window.addEventListener("message", (event) => {
-        if (event.data && event.data.newTab) {
-            window.localStorage.setItem(key, event.data.newTab);
-        }
-        });
-
-        // نبعت التبويب الحالي للـ Streamlit
-        if (storedTab) {
-        window.parent.postMessage({ currentTab: storedTab }, "*");
+        const existing = window.localStorage.getItem("yassin_ai_session");
+        if (!existing) {
+            const newId = crypto.randomUUID().slice(0, 8);
+            window.localStorage.setItem("yassin_ai_session", newId);
+            window.parent.postMessage({session_id: newId}, "*");
         } else {
-        window.localStorage.setItem(key, "📘 Explanation");
-        window.parent.postMessage({ currentTab: "📘 Explanation" }, "*");
+            window.parent.postMessage({session_id: existing}, "*");
         }
         </script>
         """
         html(js_code, height=0)
+        return None
 
-    get_device_tab_state()
+    if "device_session_id" not in st.session_state:
+        st.session_state["device_session_id"] = None
 
-    # ✅ استقبال التبويب الحالي من الـ localStorage
+    get_client_session_id()
+
+    # ✅ نستقبل القيمة من الـ localStorage في الـ session_state
+    st.markdown(
+        """
+        <script>
+        window.addEventListener("message", (event) => {
+            if (event.data && event.data.session_id) {
+                const sessionId = event.data.session_id;
+                window.parent.postMessage(
+                    { type: "streamlit:setSessionState", key: "device_session_id", value: sessionId },
+                    "*"
+                );
+            }
+        });
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
+
+    current_unit = st.query_params.get("unit", "Unit 1")
+    system_prompt = "You are a professional Egyptian Arabic teacher for English speakers."
+    # 🧹 تصفير كل المحادثات لما المستخدم يبدّل الدرس
+    if "last_loaded_lesson" not in st.session_state or st.session_state["last_loaded_lesson"] != lesson_choice:
+        for key in list(st.session_state.keys()):
+            if key.endswith("_history"):
+                del st.session_state[key]
+        st.session_state["last_loaded_lesson"] = lesson_choice
+    previous_lesson = st.session_state.get("last_rendered_lesson")
+    current_lesson_name = st.query_params.get("lesson", "Lesson 1")
+    if previous_lesson and previous_lesson != current_lesson_name:
+        st.session_state["selected_tab"] = "Explanation"
+        st.query_params["tab"] = "Explanation"
+    st.session_state["last_rendered_lesson"] = current_lesson_name
+
+    unit_id = current_unit.lower().replace(" ", "")
+    explain_history_key = f"{unit_id}_{lesson_label}_explain_history"
+    practice_history_key = f"{unit_id}_{lesson_label}_practice_history"
+
+    ensure_history(explain_history_key, system_prompt)
+    ensure_history(practice_history_key, system_prompt)
+
+    params = dict(st.query_params)
+    current_tab = st.session_state.get("selected_tab", params.get("tab", "Explanation"))
+
+    st.markdown("""
+    <style>
+    div[role='radiogroup'] input[type='radio'], div[role='radiogroup'] svg { display: none !important; }
+    div[role='radiogroup'] { display: flex; justify-content: center; align-items: center; gap: 28px; margin-bottom: 16px; flex-wrap: nowrap; }
+    div[role='radiogroup'] label { background: #f8fafc; border-radius: 12px; cursor: pointer; font-weight: 500; color: #334155; transition: all 0.25s ease; border: 1px solid transparent; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; padding: 10px 22px; }
+    div[role='radiogroup'] label:hover { background: #ecfdf5; }
+    div[role='radiogroup'] input:checked + div { background: #d1fae5; border: 1px solid #10b981; color: #065f46 !important; font-weight: 600; box-shadow: 0 2px 6px rgba(16,185,129,0.12); }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div style="
+        background-color: #ffffff;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 10px 16px;
+        margin: 25px auto 22px auto;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        text-align: center;
+        max-width: 500px;
+    ">
+        <h3 style="
+            font-size: clamp(18px, 4.5vw, 22px);
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        ">
+            🧠 {current_unit} — {current_lesson_name}
+        </h3>
+    </div>
+    """, unsafe_allow_html=True)
+
+    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
+
+    # ✅ نجيب التبويب الحالي من session فقط
+    current_tab = st.session_state.get("selected_tab", "Explanation")
+
+    # ✅ نحسب الفهرس (index) بشكل آمن وثابت
+    try:
+        default_index = next(i for i, t in enumerate(tab_options) if current_tab in t)
+    except StopIteration:
+        default_index = 0
+    # ✅ نعمل مفتاح فريد للجهاز الحالي (session id)
+    if "device_id" not in st.session_state:
+        import random, string
+        st.session_state["device_id"] = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+
+    device_id = st.session_state["device_id"]
+
+    # ✅ نولّد session فريد لكل جهاز (عشان ما تتداخلش الأجهزة)
+    import uuid
+
+    device_session_id = st.session_state.get("device_session_id", "default_session")
+
+    # ✅ نحفظ التبويب الحالي لكل متصفح باستخدام localStorage فقط (بدون تغيير التنسيقات)
+    from streamlit.components.v1 import html
+    import uuid
+
+    # نقرأ التبويب من localStorage
+    html("""
+    <script>
+    const key = "yassin_tab_choice";
+    const storedTab = window.localStorage.getItem(key) || "📘 Explanation";
+    window.parent.postMessage({ currentTab: storedTab }, "*");
+    window.addEventListener("message", (event) => {
+    if (event.data && event.data.newTab) {
+        window.localStorage.setItem(key, event.data.newTab);
+    }
+    });
+    </script>
+    """, height=0)
+
+    # نحفظ التبويب اللي جاي من localStorage في session
     st.markdown("""
     <script>
     window.addEventListener("message", (event) => {
@@ -972,7 +1083,7 @@ def lesson_two_tabs(lesson_label):
 
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
 
-    # نستخدم التبويب المخزون من المتصفح فقط
+    # نستخدم القيمة اللي جايه من localStorage
     current_tab = st.session_state.get("tab_from_browser", "📘 Explanation")
     try:
         default_index = tab_options.index(current_tab)
@@ -984,11 +1095,11 @@ def lesson_two_tabs(lesson_label):
         tab_options,
         horizontal=True,
         label_visibility="collapsed",
-        index=default_index,
-        key=f"radio_{lesson_label}_{uuid.uuid4()}"
+        key=f"tab_choice_{lesson_label}_{uuid.uuid4()}",
+        index=default_index
     )
 
-    # ✅ نحفظ التبويب الجديد في localStorage فقط (مش في session_state)
+    # نحدّث localStorage بالتبويب الجديد
     st.markdown(f"""
     <script>
     window.parent.postMessage({{ newTab: "{tab_choice}" }}, "*");
