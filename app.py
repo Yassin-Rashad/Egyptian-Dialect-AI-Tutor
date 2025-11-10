@@ -849,6 +849,7 @@ div[role='radiogroup'] label:has(input:checked) svg {
 </style>
 """, unsafe_allow_html=True)
 
+
 explain_key, practice_key = get_keys_for_lesson(lesson_choice)
 
 def lesson_two_tabs(lesson_label):
