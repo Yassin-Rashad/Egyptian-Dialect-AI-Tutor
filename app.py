@@ -1058,7 +1058,7 @@ def lesson_two_tabs(lesson_label):
     <script>
     const key = "yassin_tab_choice";
     let storedTab = window.localStorage.getItem(key);
-
+    window.parent.postMessage({type: "streamlit:setSessionState", key: "selected_tab", value: storedTab}, "*");
     // لو أول مرة نفتح، نخزن Explanation كافتراضي
     if (!storedTab) {
     window.localStorage.setItem(key, "📘 Explanation");
@@ -1094,15 +1094,6 @@ def lesson_two_tabs(lesson_label):
         default_index = 0
 
     tab_choice = st.radio(
-        # نحفظ التبويب الجديد في localStorage بدون refresh
-        st.markdown(f"""
-        <script>
-        window.parent.postMessage({{ newTab: "{tab_choice}" }}, "*");
-        window.localStorage.setItem("yassin_tab_choice", "{tab_choice}");
-        </script>
-        """, unsafe_allow_html=True)
-        st.session_state["selected_tab"] = tab_choice
-
         "Select section",
         tab_options,
         horizontal=True,
@@ -1110,6 +1101,16 @@ def lesson_two_tabs(lesson_label):
         key=f"tab_choice_{lesson_label}_{uuid.uuid4()}",
         index=default_index
     )
+
+    # نحفظ التبويب الجديد في localStorage بدون refresh
+    st.markdown(f"""
+    <script>
+    window.parent.postMessage({{ newTab: "{tab_choice}" }}, "*");
+    window.localStorage.setItem("yassin_tab_choice", "{tab_choice}");
+    </script>
+    """, unsafe_allow_html=True)
+    st.session_state["selected_tab"] = tab_choice
+
 
     # نحدّث localStorage بالتبويب الجديد
     st.markdown(f"""
