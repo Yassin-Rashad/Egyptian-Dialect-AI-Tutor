@@ -23,6 +23,51 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ✅ Force Light Theme Globally
+st.markdown("""
+<style>
+/* نوقف أي تأثير لوضع الداكن */
+@media (prefers-color-scheme: dark) {
+  html, body, [class*="main"], [class*="block-container"], [class*="stAppViewContainer"], [class*="stApp"] {
+    background-color: #f7fbff !important;
+    color: #111827 !important;
+    color-scheme: light !important;
+  }
+
+  div, section, article, header, footer, span, p, label, input, textarea, button {
+    background-color: #f7fbff !important;
+    color: #111827 !important;
+    border-color: #e2e8f0 !important;
+    color-scheme: light !important;
+  }
+
+  /* نجبر كل النصوص تكون غامقة واضحة */
+  * {
+    -webkit-text-fill-color: #111827 !important;
+    -webkit-text-stroke: 0 !important;
+  }
+
+  /* نحافظ على الخلفيات البيضاء للعناصر التفاعلية */
+  .stButton>button, .stTextInput>div>div>input, .stChatInput input {
+    background-color: white !important;
+    color: #111827 !important;
+  }
+
+  /* التبويبات */
+  div[role='radiogroup'] label {
+    background-color: #f7fbff !important;
+    color: #111827 !important;
+  }
+
+  /* الرسائل */
+  [data-testid="stChatMessage"] {
+    background-color: white !important;
+    color: #111827 !important;
+  }
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 def running_in_wsl() -> bool:
     return bool(os.environ.get("WSL_DISTRO_NAME") or "microsoft" in platform.uname().release.lower())
