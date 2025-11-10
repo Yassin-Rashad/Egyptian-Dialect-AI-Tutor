@@ -597,6 +597,40 @@ with st.sidebar:
 #  MAIN HEADER
 # ---------------------------
 # ✅ تحسين وضوح النصوص في الموبايل فقط بدون تغيير نسخة الكمبيوتر
+# ✅ بعد العنوان مباشرة (وقبل أي تبويبات أو عناصر جديدة)
+st.markdown("""
+<style>
+/* 🌙 إصلاح ألوان النصوص في الوضع الداكن خاصة على الموبايل */
+@media (prefers-color-scheme: dark) {
+  div[style*='text-align:center'] * {
+    color: #f8fafc !important;
+  }
+}
+</style>
+
+<script>
+window.addEventListener("load", function() {
+  try {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const isMobile = window.innerWidth < 768;
+    if (prefersDark && isMobile) {
+      const headers = document.querySelectorAll("div[style*='text-align:center']");
+      headers.forEach(el => {
+        el.style.backgroundColor = "transparent";
+        el.querySelectorAll("*").forEach(inner => {
+          inner.style.color = "#f8fafc";  // أبيض فاتح
+          inner.style.textShadow = "none";
+        });
+      });
+    }
+  } catch (e) {
+    console.log("Dark mode mobile fix error:", e);
+  }
+});
+</script>
+""", unsafe_allow_html=True)
+
+
 st.markdown("""
 <style>
 @media (max-width: 768px) {
@@ -680,25 +714,6 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ✅ بعد العنوان مباشرة (وقبل أي تبويبات أو عناصر جديدة)
-st.markdown("""
-<script>
-window.addEventListener("load", function() {
-  try {
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    if (prefersDark) {
-      const headers = document.querySelectorAll("div[style*='text-align:center']");
-      headers.forEach(el => {
-        el.style.color = "#f8fafc";
-        el.querySelectorAll("*").forEach(inner => inner.style.color = "#f8fafc");
-      });
-    }
-  } catch(e) {
-    console.log("Dark mode script error:", e);
-  }
-});
-</script>
-""", unsafe_allow_html=True)
 
 
 # ---------------------------
