@@ -1049,14 +1049,37 @@ def lesson_two_tabs(lesson_label):
     </script>
     """, height=0)
 
+    # ✅ استرجاع آخر تبويب محفوظ من المتصفح أو من session
+    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
+
+    if "selected_tab" not in st.session_state:
+        st.session_state["selected_tab"] = "📘 Explanation"
+
+    tab_value = st.session_state["selected_tab"]
+
+    # نحاول نجيب التبويب من localStorage أول ما الصفحة تفتح
+    html("""
+    <script>
+    const saved = window.localStorage.getItem("yassin_tab_choice") || "📘 Explanation";
+    window.parent.postMessage({type: "streamlit:setSessionState", key: "selected_tab", value: saved}, "*");
+    </script>
+    """, height=0)
+
+    if tab_value not in tab_options:
+        tab_value = "📘 Explanation"
+
+    index = tab_options.index(tab_value)
+
+
     tab_choice = st.radio(
         "Select section",
-        ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"],
+        tab_options,
         horizontal=True,
         label_visibility="collapsed",
-        index=["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"].index(st.session_state.get("selected_tab", "📘 Explanation")),
+        index=index,
         key="tab_radio"
     )
+
 
     # --- حفظ التبويب الجديد في localStorage لما المستخدم يغيّره ---
     html(f"""
