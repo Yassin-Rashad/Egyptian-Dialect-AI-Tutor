@@ -1,5 +1,6 @@
 # app.py
 import streamlit as st
+st.cache_data.clear()
 import os
 import io
 import ssl
@@ -981,6 +982,12 @@ def lesson_two_tabs(lesson_label):
         default_index = next(i for i, t in enumerate(tab_options) if current_tab in t)
     except StopIteration:
         default_index = 0
+    # ✅ نعمل مفتاح فريد للجهاز الحالي (session id)
+    if "device_id" not in st.session_state:
+        import random, string
+        st.session_state["device_id"] = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+
+    device_id = st.session_state["device_id"]
 
     # ✅ نعرض التبويبات بمفتاح فريد
     tab_choice = st.radio(
@@ -988,7 +995,7 @@ def lesson_two_tabs(lesson_label):
         tab_options,
         horizontal=True,
         label_visibility="collapsed",
-        key=f"lesson_tab_choice_{lesson_label}",
+        key=f"lesson_tab_choice_{lesson_label}_{device_id}",
         index=default_index
     )
 
