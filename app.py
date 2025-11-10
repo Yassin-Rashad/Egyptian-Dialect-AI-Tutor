@@ -389,7 +389,6 @@ else:
     prompts = load_all_units()
     save_prompts_to_cache(prompts)
 
-prompts = load_all_units()
 if not base_explanation_prompt:
     base_explanation_prompt = load_prompt("base", "explanation", "prompt")
 if not base_practice_prompt:
@@ -924,6 +923,49 @@ div[role='radiogroup'] label:has(input:checked) {
 explain_key, practice_key = get_keys_for_lesson(lesson_choice)
 
 def lesson_two_tabs(lesson_label):
+    from streamlit.components.v1 import html
+    import uuid, json
+
+    # ✅ نولّد أو نقرأ session id خاص بالمتصفح (وليس السيرفر)
+    def get_client_session_id():
+        js_code = """
+        <script>
+        const existing = window.localStorage.getItem("yassin_ai_session");
+        if (!existing) {
+            const newId = crypto.randomUUID().slice(0, 8);
+            window.localStorage.setItem("yassin_ai_session", newId);
+            window.parent.postMessage({session_id: newId}, "*");
+        } else {
+            window.parent.postMessage({session_id: existing}, "*");
+        }
+        </script>
+        """
+        html(js_code, height=0)
+        return None
+
+    if "device_session_id" not in st.session_state:
+        st.session_state["device_session_id"] = None
+
+    get_client_session_id()
+
+    # ✅ نستقبل القيمة من الـ localStorage في الـ session_state
+    st.markdown(
+        """
+        <script>
+        window.addEventListener("message", (event) => {
+            if (event.data && event.data.session_id) {
+                const sessionId = event.data.session_id;
+                window.parent.postMessage(
+                    { type: "streamlit:setSessionState", key: "device_session_id", value: sessionId },
+                    "*"
+                );
+            }
+        });
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
+
     current_unit = st.query_params.get("unit", "Unit 1")
     system_prompt = "You are a professional Egyptian Arabic teacher for English speakers."
     # 🧹 تصفير كل المحادثات لما المستخدم يبدّل الدرس
@@ -1005,17 +1047,7 @@ def lesson_two_tabs(lesson_label):
     # ✅ نولّد session فريد لكل جهاز (عشان ما تتداخلش الأجهزة)
     import uuid
 
-    if "device_session_id" not in st.session_state:
-        try:
-            import platform
-            browser_name = platform.system().lower()
-            unique_token = str(uuid.uuid4())[:8]
-            st.session_state["device_session_id"] = f"{browser_name}_{unique_token}"
-        except Exception:
-            st.session_state["device_session_id"] = str(uuid.uuid4())[:8]
-
-    device_session_id = st.session_state["device_session_id"]
-
+    device_session_id = st.session_state.get("device_session_id", "default_session")
 
     tab_choice = st.radio(
         "Select section",
