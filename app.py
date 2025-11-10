@@ -884,6 +884,28 @@ body {
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+/* ✅ حل مشكلة الخلفية البيضاء حوالين النص داخل الزر المحدد */
+div[role='radiogroup'] label:has(input:checked) * {
+    background-color: transparent !important; /* نخليها شفافة */
+    box-shadow: none !important;              /* نشيل أي ظل */
+}
+
+/* ✅ نلغي الخلفية البيضاء اللي بتظهر ورا الإيموجي */
+div[role='radiogroup'] label:has(input:checked) span {
+    background: none !important;
+    background-color: transparent !important;
+}
+
+/* ✅ نمنع المتصفح من عمل أي تأثير عكسي للألوان */
+div[role='radiogroup'] label:has(input:checked) {
+    isolation: isolate !important;
+    mix-blend-mode: normal !important;
+    overflow: hidden !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 explain_key, practice_key = get_keys_for_lesson(lesson_choice)
 
