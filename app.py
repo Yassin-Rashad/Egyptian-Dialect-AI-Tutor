@@ -1120,7 +1120,7 @@ def lesson_two_tabs(lesson_label):
         st.session_state["selected_tab"] = tab_choice
 
     # -------- EXPLANATION --------
-    if selected_tab == "Explanation":
+    if st.session_state["selected_tab"] == "📘 Explanation":
         st.markdown("### 📘 Explanation")
         st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
         for msg in st.session_state[explain_history_key]:
@@ -1145,7 +1145,7 @@ def lesson_two_tabs(lesson_label):
         st.markdown("</div>", unsafe_allow_html=True)
 
     # -------- GRAMMAR --------
-    elif selected_tab == "Grammar":
+    elif st.session_state["selected_tab"] == "🧠 Grammar Note":
         st.markdown("### 🧠 Grammar Note")
         st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
         unit_id = st.query_params.get("unit", "Unit 1").lower().replace(" ", "")
