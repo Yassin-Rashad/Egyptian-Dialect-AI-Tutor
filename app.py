@@ -972,21 +972,27 @@ def lesson_two_tabs(lesson_label):
     """, unsafe_allow_html=True)
 
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
-    if st.session_state.get("selected_tab") == "Grammar":
-        default_tab = "🧠 Grammar Note"
-    elif st.session_state.get("selected_tab") == "Practice":
-        default_tab = "🧩 Practice Exercises"
-    else:
-        default_tab = "📘 Explanation"
 
+    # ✅ نجيب التبويب الحالي من session فقط
+    current_tab = st.session_state.get("selected_tab", "Explanation")
+
+    # ✅ نحسب الفهرس (index) بشكل آمن وثابت
+    try:
+        default_index = next(i for i, t in enumerate(tab_options) if current_tab in t)
+    except StopIteration:
+        default_index = 0
+
+    # ✅ نعرض التبويبات بمفتاح فريد
     tab_choice = st.radio(
         "Select section",
         tab_options,
         horizontal=True,
         label_visibility="collapsed",
-        key=f"lesson_tab_choice_{lesson_label}",  # ✅ مفتاح فريد لكل درس
-        index=tab_options.index(default_tab)
+        key=f"lesson_tab_choice_{lesson_label}",
+        index=default_index
     )
+
+    # ✅ نحدد التبويب الجديد بناءً على الاختيار
 
     if "Explanation" in tab_choice:
         selected_tab = "Explanation"
@@ -1002,8 +1008,6 @@ def lesson_two_tabs(lesson_label):
             "lesson": st.session_state.get("selected_lesson", "Lesson 1"),
             "tab": selected_tab
         }
-        st.rerun()
-
     # -------- EXPLANATION --------
     if selected_tab == "Explanation":
         st.markdown("### 📘 Explanation")
