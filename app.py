@@ -624,15 +624,36 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown(f"""
-<div style='text-align:center; margin-bottom:18px;'>
-  <div style='font-size:28px; font-weight:800; color:#0f172a;'>Learn Egyptian Dialect — AI Tutor</div>
-  <div style='color:#475569; font-size:14px; margin-bottom:10px;'>
-    Interactive explanation and real-time practice.
-  </div>
-  <div style='font-size:14px; color:#334155;'>
-    Created by <b>Yassin Rashad</b> 🇪🇬 — for Arabic learners around the world 🌍
-  </div>
-  <div style='margin-top:10px; text-align:center;'>
+    <div style='text-align:center; margin-bottom:18px;'>
+    <div style='
+        font-size:28px;
+        font-weight:800;
+        color:#0f172a;
+        --darkreader-inline-color:#f8fafc;
+        color: color-mix(in srgb, currentColor 90%, white);
+    '>
+        Learn Egyptian Dialect — AI Tutor
+    </div>
+
+    <div style='
+        color:#475569;
+        font-size:14px;
+        margin-bottom:10px;
+        --darkreader-inline-color:#e2e8f0;
+        color: color-mix(in srgb, currentColor 80%, white);
+    '>
+        Interactive explanation and real-time practice.
+    </div>
+
+    <div style='
+        font-size:14px;
+        color:#334155;
+        --darkreader-inline-color:#e5e7eb;
+        color: color-mix(in srgb, currentColor 85%, white);
+    '>
+        Created by <b>Yassin Rashad</b> 🇪🇬 — for Arabic learners around the world 🌍
+    </div>
+    <div style='margin-top:10px; text-align:center;'>
     <a href="https://wa.me/201064958335?text=Hi%20Yassin!%20I'm%20interested%20in%20your%20Arabic%20lessons."
        target="_blank"
        style='
@@ -661,6 +682,25 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# ✅ بعد العنوان مباشرة (وقبل أي تبويبات أو عناصر جديدة)
+st.markdown("""
+<script>
+window.addEventListener("load", function() {
+  try {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (prefersDark) {
+      const headers = document.querySelectorAll("div[style*='text-align:center']");
+      headers.forEach(el => {
+        el.style.color = "#f8fafc";
+        el.querySelectorAll("*").forEach(inner => inner.style.color = "#f8fafc");
+      });
+    }
+  } catch(e) {
+    console.log("Dark mode script error:", e);
+  }
+});
+</script>
+""", unsafe_allow_html=True)
 
 
 # ---------------------------
