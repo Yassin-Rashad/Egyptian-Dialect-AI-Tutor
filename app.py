@@ -1046,7 +1046,7 @@ def lesson_two_tabs(lesson_label):
     # ✅ نولّد session فريد لكل جهاز (عشان ما تتداخلش الأجهزة)
     import uuid
 
-    device_session_id = st.session_state.get("device_session_id", "default_session")
+    device_session_id = "local_only"
 
     # ✅ نحفظ التبويب الحالي لكل متصفح باستخدام localStorage فقط (بدون تغيير التنسيقات)
     from streamlit.components.v1 import html
