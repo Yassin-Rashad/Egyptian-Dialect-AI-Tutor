@@ -382,8 +382,13 @@ st.markdown("""
 @media (prefers-color-scheme: dark) {
     /* نخلي كل النصوص داخل العنوان الرئيسي تكون فاتحة وواضحة */
     div[style*='text-align:center'] * {
-        color: #f1f5f9 !important; /* أبيض مائل للرمادي */
+        color: #f9fafb !important;
         text-shadow: none !important;
+        -webkit-text-fill-color: #f9fafb !important; /* ✅ لمتصفحات الموبايل */
+        -webkit-text-stroke: 0px transparent !important;
+        filter: brightness(1.3) contrast(1.2) !important; /* 🔥 يجبر النص يكون فاتح حتى مع dark filter */
+        mix-blend-mode: lighten !important; /* 💡 يدمج اللون مع الخلفية */
+        color-scheme: dark light;
     }
 
     /* الزر بتاع واتساب يفضل لونه زي ما هو */
@@ -600,34 +605,26 @@ with st.sidebar:
 # ✅ بعد العنوان مباشرة (وقبل أي تبويبات أو عناصر جديدة)
 st.markdown("""
 <style>
-/* 🌙 إصلاح ألوان النصوص في الوضع الداكن خاصة على الموبايل */
+/* 🌙 إصلاح شامل لألوان النصوص في الوضع الداكن لجميع الأجهزة */
 @media (prefers-color-scheme: dark) {
+  div[style*='text-align:center'] {
+    background: transparent !important;
+  }
+
+  /* نخلي كل النصوص جوه العنوان فاتحة وواضحة */
   div[style*='text-align:center'] * {
-    color: #f8fafc !important;
+    color: #f9fafb !important;
+    text-shadow: none !important;
+    -webkit-text-fill-color: #f9fafb !important; /* ✅ خاص بمتصفحات الموبايل */
+    -webkit-text-stroke: 0px transparent !important;
+  }
+
+  /* الروابط (زر واتساب) */
+  div[style*='text-align:center'] a {
+    color: white !important;
   }
 }
 </style>
-
-<script>
-window.addEventListener("load", function() {
-  try {
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const isMobile = window.innerWidth < 768;
-    if (prefersDark && isMobile) {
-      const headers = document.querySelectorAll("div[style*='text-align:center']");
-      headers.forEach(el => {
-        el.style.backgroundColor = "transparent";
-        el.querySelectorAll("*").forEach(inner => {
-          inner.style.color = "#f8fafc";  // أبيض فاتح
-          inner.style.textShadow = "none";
-        });
-      });
-    }
-  } catch (e) {
-    console.log("Dark mode mobile fix error:", e);
-  }
-});
-</script>
 """, unsafe_allow_html=True)
 
 
@@ -732,6 +729,24 @@ setTimeout(() => {
     console.log("Mobile dark mode fix:", e);
   }
 }, 1200); // ننتظر ثانية وربع بعد تحميل الصفحة بالكامل
+</script>
+""", unsafe_allow_html=True)
+st.markdown("""
+<script>
+setTimeout(() => {
+  try {
+    // 👇 نوقف أي فلتر غامق بيضيفه النظام على الموبايل
+    document.documentElement.style.colorScheme = 'light';
+    document.querySelectorAll('*').forEach(el => {
+      el.style.webkitTextFillColor = 'inherit';
+      el.style.color = '#f8fafc';
+      el.style.textShadow = 'none';
+    });
+    console.log("✅ Forced light color scheme on mobile");
+  } catch (e) {
+    console.log("Dark mode override failed:", e);
+  }
+}, 800); // ننتظر 0.8 ثانية بعد تحميل الصفحة بالكامل
 </script>
 """, unsafe_allow_html=True)
 
