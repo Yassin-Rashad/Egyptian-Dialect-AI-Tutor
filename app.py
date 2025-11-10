@@ -15,6 +15,15 @@ from openai import OpenAI
 # ---------------------------
 #  ENVIRONMENT DETECTION
 # ---------------------------
+
+st.set_page_config(
+    page_title="Egyptian Dialect AI Tutor",
+    layout="centered",
+    page_icon="🎓",
+    initial_sidebar_state="expanded",
+    theme="light"  # ✅ نجبر Streamlit يحمّل الثيم الفاتح دائمًا
+)
+
 def running_in_wsl() -> bool:
     return bool(os.environ.get("WSL_DISTRO_NAME") or "microsoft" in platform.uname().release.lower())
 
@@ -330,7 +339,6 @@ prompts = load_all_units()
 # ---------------------------
 #  UI CONFIG
 # ---------------------------
-st.set_page_config(page_title="Egyptian Dialect AI Tutor", layout="centered", page_icon="🎓")
 st.markdown("""
 <style>
 /* ✅ القواعد العامة للـ responsiveness */
@@ -375,36 +383,6 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-
-st.markdown("""
-<style>
-/* 🌙 إصلاح شامل لألوان النصوص في الوضع الداكن */
-@media (prefers-color-scheme: dark) {
-    /* نخلي كل النصوص داخل العنوان الرئيسي تكون فاتحة وواضحة */
-    div[style*='text-align:center'] * {
-        color: #f9fafb !important;
-        text-shadow: none !important;
-        -webkit-text-fill-color: #f9fafb !important; /* ✅ لمتصفحات الموبايل */
-        -webkit-text-stroke: 0px transparent !important;
-        filter: brightness(1.3) contrast(1.2) !important; /* 🔥 يجبر النص يكون فاتح حتى مع dark filter */
-        mix-blend-mode: lighten !important; /* 💡 يدمج اللون مع الخلفية */
-        color-scheme: dark light;
-    }
-
-    /* الزر بتاع واتساب يفضل لونه زي ما هو */
-    div[style*='text-align:center'] a {
-        color: white !important;
-    }
-
-    /* الخلفية تفضل شفافة */
-    div[style*='text-align:center'] {
-        background: transparent !important;
-    }
-}
-</style>
-""", unsafe_allow_html=True)
-
-
 
 st.markdown(
     """
@@ -599,95 +577,52 @@ with st.sidebar:
 
 
 # ---------------------------
-#  MAIN HEADER
+#  MAIN HEADER (IN FIXED LIGHT BOX)
 # ---------------------------
-# ✅ تحسين وضوح النصوص في الموبايل فقط بدون تغيير نسخة الكمبيوتر
-# ✅ بعد العنوان مباشرة (وقبل أي تبويبات أو عناصر جديدة)
 st.markdown("""
-<style>
-/* 🌙 إصلاح شامل لألوان النصوص في الوضع الداكن لجميع الأجهزة */
-@media (prefers-color-scheme: dark) {
-  div[style*='text-align:center'] {
-    background: transparent !important;
-  }
+<div style="
+    background-color: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 18px 16px;
+    margin-bottom: 22px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    text-align: center;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+">
+    <div style='
+        font-size: 26px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+    '>
+        Learn Egyptian Dialect — AI Tutor
+    </div>
 
-  /* نخلي كل النصوص جوه العنوان فاتحة وواضحة */
-  div[style*='text-align:center'] * {
-    color: #f9fafb !important;
-    text-shadow: none !important;
-    -webkit-text-fill-color: #f9fafb !important; /* ✅ خاص بمتصفحات الموبايل */
-    -webkit-text-stroke: 0px transparent !important;
-  }
+    <div style='
+        color: #475569;
+        font-size: 15px;
+        margin-bottom: 10px;
+    '>
+        Interactive explanation and real-time practice.
+    </div>
 
-  /* الروابط (زر واتساب) */
-  div[style*='text-align:center'] a {
-    color: white !important;
-  }
-}
-</style>
-""", unsafe_allow_html=True)
+    <div style='
+        font-size: 14px;
+        color: #334155;
+        margin-bottom: 12px;
+    '>
+        Created by <b>Yassin Rashad</b> 🇪🇬 — for Arabic learners around the world 🌍
+    </div>
 
-
-st.markdown("""
-<style>
-@media (max-width: 768px) {
-    div[style*='text-align:center'] {
-        background: rgba(255, 255, 255, 0.9) !important;  /* خلفية فاتحة خفيفة فقط في الموبايل */
-        border-radius: 10px;
-        padding: 12px;
-    }
-
-    div[style*='text-align:center'] div {
-        color: #0f172a !important;  /* نص داكن وواضح */
-        font-weight: 700 !important;
-        text-shadow: none !important;
-    }
-
-    div[style*='text-align:center'] b {
-        color: #0f172a !important;
-    }
-
-    div[style*='text-align:center'] a {
-        color: white !important;  /* الزر يفضل أبيض زي ما هو */
-    }
-}
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown(f"""
-<div style='text-align:center; margin-bottom:18px;'>
-  <div style='
-      font-size:28px;
-      font-weight:800;
-      color:#0f172a;
-      --darkreader-inline-color:#f8fafc;
-  '>
-      Learn Egyptian Dialect — AI Tutor
-  </div>
-
-  <div style='
-      color:#475569;
-      font-size:14px;
-      margin-bottom:10px;
-      --darkreader-inline-color:#e2e8f0;
-  '>
-      Interactive explanation and real-time practice.
-  </div>
-
-  <div style='
-      font-size:14px;
-      color:#334155;
-      --darkreader-inline-color:#e5e7eb;
-  '>
-      Created by <b>Yassin Rashad</b> 🇪🇬 — for Arabic learners around the world 🌍
-  </div>
-
-  <div style='margin-top:10px; text-align:center;'>
     <a href="https://wa.me/201064958335?text=Hi%20Yassin!%20I'm%20interested%20in%20your%20Arabic%20lessons."
        target="_blank"
        style='
          display:inline-flex;
          align-items:center;
+         justify-content:center;
          gap:8px;
          background-color:#25D366;
          color:white;
@@ -707,47 +642,7 @@ st.markdown(f"""
        </svg>
        Contact via WhatsApp
     </a>
-  </div>
 </div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<script>
-setTimeout(() => {
-  try {
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    if (prefersDark) {
-      document.querySelectorAll("div[style*='text-align:center']").forEach(header => {
-        header.style.backgroundColor = "transparent";
-        header.querySelectorAll("*").forEach(el => {
-          el.style.color = "#f8fafc"; // أبيض واضح
-          el.style.textShadow = "none";
-        });
-      });
-    }
-  } catch (e) {
-    console.log("Mobile dark mode fix:", e);
-  }
-}, 1200); // ننتظر ثانية وربع بعد تحميل الصفحة بالكامل
-</script>
-""", unsafe_allow_html=True)
-st.markdown("""
-<script>
-setTimeout(() => {
-  try {
-    // 👇 نوقف أي فلتر غامق بيضيفه النظام على الموبايل
-    document.documentElement.style.colorScheme = 'light';
-    document.querySelectorAll('*').forEach(el => {
-      el.style.webkitTextFillColor = 'inherit';
-      el.style.color = '#f8fafc';
-      el.style.textShadow = 'none';
-    });
-    console.log("✅ Forced light color scheme on mobile");
-  } catch (e) {
-    console.log("Dark mode override failed:", e);
-  }
-}, 800); // ننتظر 0.8 ثانية بعد تحميل الصفحة بالكامل
-</script>
 """, unsafe_allow_html=True)
 
 
