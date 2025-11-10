@@ -991,21 +991,27 @@ def lesson_two_tabs(lesson_label):
 
     device_id = st.session_state["device_id"]
 
-    # ✅ نولّد مفتاح فريد بناءً على الجهاز + نوع المتصفح
-    if "device_token" not in st.session_state:
-        import random, string, platform
-        unique_id = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
-        browser = platform.system().lower()
-        st.session_state["device_token"] = f"{browser}_{unique_id}"
+    # ✅ نولّد session فريد لكل جهاز (عشان ما تتداخلش الأجهزة)
+    import uuid
 
-    device_token = st.session_state["device_token"]
+    if "device_session_id" not in st.session_state:
+        try:
+            import platform
+            browser_name = platform.system().lower()
+            unique_token = str(uuid.uuid4())[:8]
+            st.session_state["device_session_id"] = f"{browser_name}_{unique_token}"
+        except Exception:
+            st.session_state["device_session_id"] = str(uuid.uuid4())[:8]
+
+    device_session_id = st.session_state["device_session_id"]
+
 
     tab_choice = st.radio(
         "Select section",
         tab_options,
         horizontal=True,
         label_visibility="collapsed",
-        key=f"tab_choice_{lesson_label}_{device_token}",
+        key=f"tab_choice_{lesson_label}_{device_session_id}",
         index=default_index
     )
 
