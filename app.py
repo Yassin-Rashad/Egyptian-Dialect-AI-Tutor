@@ -991,15 +991,24 @@ def lesson_two_tabs(lesson_label):
 
     device_id = st.session_state["device_id"]
 
-    # ✅ نعرض التبويبات بمفتاح فريد
+    # ✅ نولّد مفتاح فريد بناءً على الجهاز + نوع المتصفح
+    if "device_token" not in st.session_state:
+        import random, string, platform
+        unique_id = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+        browser = platform.system().lower()
+        st.session_state["device_token"] = f"{browser}_{unique_id}"
+
+    device_token = st.session_state["device_token"]
+
     tab_choice = st.radio(
         "Select section",
         tab_options,
         horizontal=True,
         label_visibility="collapsed",
-        key=f"lesson_tab_choice_{lesson_label}_{device_id}",
+        key=f"tab_choice_{lesson_label}_{device_token}",
         index=default_index
     )
+
 
     # ✅ نحدد التبويب الجديد بناءً على الاختيار
 
