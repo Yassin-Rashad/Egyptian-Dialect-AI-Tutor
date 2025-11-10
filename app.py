@@ -1247,10 +1247,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Temporary cache clear (run once)
-st.cache_data.clear()
-st.success("Cache cleared successfully — please refresh the page once.")
-
 # ---------------------------
 #  FOOTER
 # ---------------------------
