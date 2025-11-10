@@ -924,49 +924,20 @@ explain_key, practice_key = get_keys_for_lesson(lesson_choice)
 def lesson_two_tabs(lesson_label):
     from streamlit.components.v1 import html
     import uuid, json
-
-    # ✅ نولّد أو نقرأ session id خاص بالمتصفح (وليس السيرفر)
-    def get_client_session_id():
-        js_code = """
-        <script>
-        const existing = window.localStorage.getItem("yassin_ai_session");
-        if (!existing) {
-            const newId = crypto.randomUUID().slice(0, 8);
-            window.localStorage.setItem("yassin_ai_session", newId);
-            window.parent.postMessage({session_id: newId}, "*");
-        } else {
-            window.parent.postMessage({session_id: existing}, "*");
-        }
-        </script>
-        """
-        html(js_code, height=0)
-        return None
-
-    if "device_session_id" not in st.session_state:
-        st.session_state["device_session_id"] = None
-
-    get_client_session_id()
-
-    # ✅ نستقبل القيمة من الـ localStorage في الـ session_state
-    st.markdown(
-        """
-        <script>
-        window.addEventListener("message", (event) => {
-            if (event.data && event.data.session_id) {
-                const sessionId = event.data.session_id;
-                window.parent.postMessage(
-                    { type: "streamlit:setSessionState", key: "device_session_id", value: sessionId },
-                    "*"
-                );
-            }
-        });
-        </script>
-        """,
-        unsafe_allow_html=True
-    )
-
     current_unit = st.query_params.get("unit", "Unit 1")
     system_prompt = "You are a professional Egyptian Arabic teacher for English speakers."
+    # ✅ تهيئة التبويب الحالي من session_state أو localStorage عند أول تحميل
+    from streamlit.components.v1 import html
+
+    # لو أول مرة نفتح، نرجع آخر تبويب محفوظ من المتصفح
+    html("""
+    <script>
+    const key = "yassin_tab_choice";
+    const savedTab = window.localStorage.getItem(key) || "📘 Explanation";
+    window.parent.postMessage({ type: "streamlit:setSessionState", key: "selected_tab", value: savedTab }, "*");
+    </script>
+    """, height=0)
+
     # 🧹 تصفير كل المحادثات لما المستخدم يبدّل الدرس
     if "last_loaded_lesson" not in st.session_state or st.session_state["last_loaded_lesson"] != lesson_choice:
         for key in list(st.session_state.keys()):
@@ -1048,42 +1019,6 @@ def lesson_two_tabs(lesson_label):
 
     device_session_id = "local_only"
 
-    # ✅ نحفظ التبويب الحالي لكل متصفح باستخدام localStorage فقط (بدون تغيير التنسيقات)
-    from streamlit.components.v1 import html
-    import uuid
-    # ✅ قراءة التبويب من localStorage في أول تحميل
-    from streamlit.components.v1 import html
-
-    html("""
-    <script>
-    const key = "yassin_tab_choice";
-    let storedTab = window.localStorage.getItem(key);
-    window.parent.postMessage({type: "streamlit:setSessionState", key: "selected_tab", value: storedTab}, "*");
-    // لو أول مرة نفتح، نخزن Explanation كافتراضي
-    if (!storedTab) {
-    window.localStorage.setItem(key, "📘 Explanation");
-    storedTab = "📘 Explanation";
-    }
-
-    // نمرره إلى Streamlit
-    const sendTab = () => {
-    const frame = window.parent;
-    if (frame) {
-        frame.postMessage({type: "streamlit:setSessionState", key: "selected_tab", value: storedTab}, "*");
-    }
-    };
-    sendTab();
-
-    // لما المستخدم يختار تبويب جديد نحدّث التخزين
-    window.addEventListener("message", (event) => {
-    if (event.data && event.data.newTab) {
-        localStorage.setItem(key, event.data.newTab);
-    }
-    });
-    </script>
-    """, height=0)
-
-
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
 
     # نستخدم القيمة اللي جايه من localStorage
@@ -1104,6 +1039,25 @@ def lesson_two_tabs(lesson_label):
         default_index = tab_options.index(st.session_state["selected_tab"])
     except:
         default_index = 0
+    # --- عرض التبويبات ---
+    tab_choice = st.radio(
+        "Select section",
+        ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"],
+        horizontal=True,
+        label_visibility="collapsed",
+        index=["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"].index(st.session_state.get("selected_tab", "📘 Explanation")),
+        key="tab_radio"
+    )
+
+    # --- حفظ التبويب الجديد في localStorage لما المستخدم يغيّره ---
+    html(f"""
+    <script>
+    window.localStorage.setItem("yassin_tab_choice", "{tab_choice}");
+    </script>
+    """, height=0)
+
+    # نحفظه كمان في session_state
+    st.session_state["selected_tab"] = tab_choice
 
     # نعرض التبويبات
     tab_choice = st.radio(
