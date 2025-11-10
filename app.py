@@ -849,6 +849,41 @@ div[role='radiogroup'] label:has(input:checked) svg {
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+/* ✅ منع أي ظل أو تظليل تلقائي حوالين النصوص أو البوكسات */
+html, body, [class*="main"], [class*="stAppViewContainer"], [class*="stApp"], section, div {
+    background-color: #f7fbff !important;   /* ✅ نفس اللون العام */
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+/* ✅ منع تأثير الخلفية الداكنة حوالين النصوص */
+* {
+    background: transparent !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+}
+
+/* ✅ نخلي الخلفية العامة تغطي كل الشاشة بالكامل */
+body {
+    background-color: #f7fbff !important;
+    background-image: none !important;
+    background-size: cover !important;
+    background-attachment: fixed !important;
+}
+
+/* ✅ نخلي التطبيق دايمًا في الوضع الفاتح مهما حصل */
+@media (prefers-color-scheme: dark) {
+    html, body {
+        background-color: #f7fbff !important;
+        color: #111827 !important;
+        color-scheme: light !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 explain_key, practice_key = get_keys_for_lesson(lesson_choice)
 
