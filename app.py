@@ -378,20 +378,27 @@ st.markdown("""
 
 st.markdown("""
 <style>
-/* 🎨 تحسين وضوح النصوص في الوضع الداكن */
+/* 🌙 إصلاح ألوان النص في الوضع الداكن (Dark Mode) */
 @media (prefers-color-scheme: dark) {
-    div[style*='text-align:center'] div[style*='font-size:28px'] {
-        color: #f8fafc !important; /* العنوان */
+    /* العنوان الرئيسي */
+    div[style*='text-align:center'] > div[style*='font-size'] {
+        color: #e5e7eb !important; /* رمادي فاتح */
+        text-shadow: none !important;
     }
-    div[style*='text-align:center'] div[style*='color:#475569'] {
-        color: #e2e8f0 !important; /* النص الفرعي */
+
+    /* الجملة التوضيحية */
+    div[style*='text-align:center'] > div:nth-child(2) {
+        color: #cbd5e1 !important;
     }
-    div[style*='text-align:center'] div[style*='color:#334155'] {
-        color: #f1f5f9 !important; /* Created by... */
+
+    /* السطر اللي فيه Created by */
+    div[style*='text-align:center'] > div:nth-child(3) {
+        color: #f1f5f9 !important;
     }
 }
 </style>
 """, unsafe_allow_html=True)
+
 
 
 st.markdown(
