@@ -821,7 +821,31 @@ def lesson_two_tabs(lesson_label):
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown(f"<div style='text-align:center; margin-bottom:12px;'><h3 style='font-size:20px; font-weight:700; color:#0f172a;'>🧠 {current_unit} — {current_lesson_name}</h3></div>", unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="
+        background-color: #ffffff;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 10px 16px;
+        margin: 25px auto 22px auto;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        text-align: center;
+        max-width: 500px;
+    ">
+        <h3 style="
+            font-size: clamp(18px, 4.5vw, 22px);
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        ">
+            🧠 {current_unit} — {current_lesson_name}
+        </h3>
+    </div>
+    """, unsafe_allow_html=True)
 
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
     if st.session_state.get("selected_tab") == "Grammar":
