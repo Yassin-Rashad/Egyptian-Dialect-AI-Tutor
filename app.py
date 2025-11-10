@@ -677,39 +677,54 @@ def build_full_prompt(base_prompt: str, lesson_content: str) -> str:
 # ---------------------------
 st.markdown("""
 <style>
-/* ✅ تصميم التبويبات بنفس شكل البوكس الأبيض */
+/* ✅ تنسيق التبويبات */
 div[role='radiogroup'] {
     display: flex;
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
     justify-content: center;
-    margin-top: 15px;
-    margin-bottom: 25px;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
 /* الشكل الأساسي */
 div[role='radiogroup'] label {
-    background-color: #ffffff !important;
-    color: #0f172a !important;
+    background-color: #f7fbff !important; /* ✅ نفس لون البوكس الجديد */
+    color: #111827 !important;
     font-weight: 600 !important;
-    border: 2px solid #e2e8f0 !important;
-    border-radius: 18px !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08) !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06) !important; /* ✅ ظل أنعم */
     transition: all 0.25s ease-in-out !important;
-    padding: 16px 22px !important;
-    display: flex !important;
+    padding: 14px 26px !important;
+    display: inline-flex !important;
     align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 10px !important;
-    font-size: 16px !important;
+    justify-content: center !important;
+    gap: 8px !important;
     cursor: pointer;
+    position: relative;
+    white-space: nowrap !important;
+    min-width: 220px;
 }
 
-/* ✅ التأثير عند تمرير الماوس */
+/* 🔹 نص واضح دايمًا */
+div[role='radiogroup'] label * {
+    color: inherit !important;
+}
+
+/* ✅ نخفي أي عناصر داخلية عاملة إطار حوالين الكلام */
+div[role='radiogroup'] label > div {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* ✅ hover */
 div[role='radiogroup'] label:hover {
+    background-color: #eefcf4 !important; /* ✅ لمسة فاتحة خفيفة عند التمرير */
     border-color: #10b981 !important;
-    box-shadow: 0 6px 14px rgba(16,185,129,0.15) !important;
+    box-shadow: 0 4px 8px rgba(16,185,129,0.12) !important;
     transform: translateY(-2px);
 }
 
@@ -717,26 +732,33 @@ div[role='radiogroup'] label:hover {
 div[role='radiogroup'] label:has(input:checked) {
     background: linear-gradient(135deg, #a7f3d0, #6ee7b7) !important;
     border-color: #059669 !important;
-    color: #065f46 !important;
+    color: #ffffff !important; /* ✅ نص أبيض لما يكون الزر متلون */
     font-weight: 700 !important;
-    box-shadow: 0 6px 14px rgba(16,185,129,0.25) !important;
+    box-shadow: 0 4px 10px rgba(16,185,129,0.2) !important;
     transform: scale(1.02);
 }
 
-/* ✅ نص التبويب */
-div[role='radiogroup'] label * {
+/* ✅ الرموز */
+div[role='radiogroup'] label svg,
+div[role='radiogroup'] label span {
     color: inherit !important;
+    fill: inherit !important;
 }
 
 /* ✅ الوضع الداكن */
 @media (prefers-color-scheme: dark) {
     div[role='radiogroup'] label {
-        background-color: #ffffff !important;
-        color: #0f172a !important;
+        background-color: #1e293b !important;
+        color: #f1f5f9 !important; /* ✅ نص فاتح */
+        border-color: #334155 !important;
+    }
+    div[role='radiogroup'] label:hover {
+        background-color: #0f172a !important;
+        border-color: #10b981 !important;
     }
     div[role='radiogroup'] label:has(input:checked) {
         background: linear-gradient(135deg, #a7f3d0, #6ee7b7) !important;
-        color: #065f46 !important;
+        color: #ffffff !important;
     }
 }
 
@@ -749,10 +771,13 @@ div[role='radiogroup'] label * {
 
     div[role='radiogroup'] label {
         width: 100% !important;
-        font-size: 15px !important;
-        padding: 14px 18px !important;
-        border-radius: 16px !important;
-        justify-content: center !important;
+        font-size: 16px !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+    }
+
+    div[role='radiogroup'] label:active {
+        transform: scale(0.98);
     }
 }
 </style>
