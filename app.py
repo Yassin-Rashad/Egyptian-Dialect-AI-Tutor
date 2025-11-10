@@ -1093,9 +1093,31 @@ def lesson_two_tabs(lesson_label):
     except:
         default_index = 0
 
-    git add .
-git commit -m "fix: stable tab persistence using session_state only"
-git push
+    # ✅ استخدم session_state فقط لتخزين التبويب المختار
+    if "selected_tab" not in st.session_state:
+        st.session_state["selected_tab"] = "📘 Explanation"
+
+    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
+
+    # نحدد الفهرس الحالي من session_state
+    try:
+        default_index = tab_options.index(st.session_state["selected_tab"])
+    except:
+        default_index = 0
+
+    # نعرض التبويبات
+    tab_choice = st.radio(
+        "Select section",
+        tab_options,
+        horizontal=True,
+        label_visibility="collapsed",
+        index=default_index,
+        key="tab_radio"
+    )
+
+    # نحفظ التبويب الجديد (من غير rerun)
+    if tab_choice != st.session_state["selected_tab"]:
+        st.session_state["selected_tab"] = tab_choice
 
     # -------- EXPLANATION --------
     if selected_tab == "Explanation":
