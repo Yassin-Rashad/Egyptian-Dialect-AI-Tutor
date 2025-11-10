@@ -376,6 +376,24 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+/* 🎨 تحسين وضوح النصوص في الوضع الداكن */
+@media (prefers-color-scheme: dark) {
+    div[style*='text-align:center'] div[style*='font-size:28px'] {
+        color: #f8fafc !important; /* العنوان */
+    }
+    div[style*='text-align:center'] div[style*='color:#475569'] {
+        color: #e2e8f0 !important; /* النص الفرعي */
+    }
+    div[style*='text-align:center'] div[style*='color:#334155'] {
+        color: #f1f5f9 !important; /* Created by... */
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 st.markdown(
     """
     <style>
