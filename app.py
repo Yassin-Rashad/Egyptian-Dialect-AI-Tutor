@@ -688,12 +688,12 @@ div[role='radiogroup'] {
 
 /* الشكل الأساسي */
 div[role='radiogroup'] label {
-    background-color: #f7fbff !important; /* ✅ نفس لون البوكس الجديد */
+    background-color: #f7fbff !important; /* ✅ لون فاتح ثابت */
     color: #111827 !important;
     font-weight: 600 !important;
     border: 1px solid #e2e8f0 !important;
     border-radius: 14px !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.06) !important; /* ✅ ظل أنعم */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06) !important;
     transition: all 0.25s ease-in-out !important;
     padding: 14px 26px !important;
     display: inline-flex !important;
@@ -722,7 +722,7 @@ div[role='radiogroup'] label > div {
 
 /* ✅ hover */
 div[role='radiogroup'] label:hover {
-    background-color: #eefcf4 !important; /* ✅ لمسة فاتحة خفيفة عند التمرير */
+    background-color: #eefcf4 !important;
     border-color: #10b981 !important;
     box-shadow: 0 4px 8px rgba(16,185,129,0.12) !important;
     transform: translateY(-2px);
@@ -732,7 +732,7 @@ div[role='radiogroup'] label:hover {
 div[role='radiogroup'] label:has(input:checked) {
     background: linear-gradient(135deg, #a7f3d0, #6ee7b7) !important;
     border-color: #059669 !important;
-    color: #ffffff !important; /* ✅ نص أبيض لما يكون الزر متلون */
+    color: #ffffff !important;
     font-weight: 700 !important;
     box-shadow: 0 4px 10px rgba(16,185,129,0.2) !important;
     transform: scale(1.02);
@@ -745,15 +745,15 @@ div[role='radiogroup'] label span {
     fill: inherit !important;
 }
 
-/* ✅ الوضع الداكن */
+/* ✅ الوضع الداكن (نجبره يفضل فاتح حتى في الموبايل) */
 @media (prefers-color-scheme: dark) {
     div[role='radiogroup'] label {
-        background-color: #1e293b !important;
-        color: #f1f5f9 !important; /* ✅ نص فاتح */
-        border-color: #334155 !important;
+        background-color: #f7fbff !important;  /* ✅ نحافظ على الفاتح */
+        color: #111827 !important;
+        border-color: #e2e8f0 !important;
     }
     div[role='radiogroup'] label:hover {
-        background-color: #0f172a !important;
+        background-color: #eefcf4 !important;
         border-color: #10b981 !important;
     }
     div[role='radiogroup'] label:has(input:checked) {
@@ -774,6 +774,7 @@ div[role='radiogroup'] label span {
         font-size: 16px !important;
         text-align: center !important;
         white-space: nowrap !important;
+        background-color: #f7fbff !important; /* ✅ تأكيد اللون الفاتح للموبايل */
     }
 
     div[role='radiogroup'] label:active {
