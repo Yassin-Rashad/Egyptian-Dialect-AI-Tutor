@@ -378,22 +378,22 @@ st.markdown("""
 
 st.markdown("""
 <style>
-/* 🌙 إصلاح ألوان النص في الوضع الداكن (Dark Mode) */
+/* 🌙 إصلاح شامل لألوان النصوص في الوضع الداكن */
 @media (prefers-color-scheme: dark) {
-    /* العنوان الرئيسي */
-    div[style*='text-align:center'] > div[style*='font-size'] {
-        color: #e5e7eb !important; /* رمادي فاتح */
+    /* نخلي كل النصوص داخل العنوان الرئيسي تكون فاتحة وواضحة */
+    div[style*='text-align:center'] * {
+        color: #f1f5f9 !important; /* أبيض مائل للرمادي */
         text-shadow: none !important;
     }
 
-    /* الجملة التوضيحية */
-    div[style*='text-align:center'] > div:nth-child(2) {
-        color: #cbd5e1 !important;
+    /* الزر بتاع واتساب يفضل لونه زي ما هو */
+    div[style*='text-align:center'] a {
+        color: white !important;
     }
 
-    /* السطر اللي فيه Created by */
-    div[style*='text-align:center'] > div:nth-child(3) {
-        color: #f1f5f9 !important;
+    /* الخلفية تفضل شفافة */
+    div[style*='text-align:center'] {
+        background: transparent !important;
     }
 }
 </style>
