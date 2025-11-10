@@ -1101,40 +1101,31 @@ def lesson_two_tabs(lesson_label):
         key=f"tab_choice_{lesson_label}_{uuid.uuid4()}",
         index=default_index
     )
+    # ✅ استخدم session_state فقط لتخزين التبويب المختار
+    if "selected_tab" not in st.session_state:
+        st.session_state["selected_tab"] = "📘 Explanation"
 
-    # نحفظ التبويب الجديد في localStorage بدون refresh
-    st.markdown(f"""
-    <script>
-    window.localStorage.setItem("yassin_tab_choice", "{tab_choice}");
-    </script>
-    """, unsafe_allow_html=True)
-    st.session_state["selected_tab"] = tab_choice
+    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
 
+    # نحدد الفهرس الحالي من session_state
+    try:
+        default_index = tab_options.index(st.session_state["selected_tab"])
+    except:
+        default_index = 0
 
-    # نحدّث localStorage بالتبويب الجديد
-    st.markdown(f"""
-    <script>
-    window.parent.postMessage({{ newTab: "{tab_choice}" }}, "*");
-    </script>
-    """, unsafe_allow_html=True)
+    # نعرض التبويبات
+    tab_choice = st.radio(
+        "Select section",
+        tab_options,
+        horizontal=True,
+        label_visibility="collapsed",
+        index=default_index,
+        key="tab_radio"
+    )
 
-    # ✅ نحدد التبويب الجديد بناءً على الاختيار
-
-    if "Explanation" in tab_choice:
-        selected_tab = "Explanation"
-    elif "Grammar" in tab_choice:
-        selected_tab = "Grammar"
-    else:
-        selected_tab = "Practice"
-
-    if selected_tab != current_tab:
-        st.session_state["selected_tab"] = selected_tab
-        # ✅ نحفظه كمان في localStorage من غير ما نعمل refresh
-        st.markdown(f"""
-        <script>
-        window.localStorage.setItem("yassin_tab_choice", "{selected_tab}");
-        </script>
-        """, unsafe_allow_html=True)
+    # نحفظ التبويب الجديد (من غير rerun)
+    if tab_choice != st.session_state["selected_tab"]:
+        st.session_state["selected_tab"] = tab_choice
 
     # -------- EXPLANATION --------
     if selected_tab == "Explanation":
