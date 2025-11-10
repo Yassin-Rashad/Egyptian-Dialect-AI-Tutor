@@ -20,9 +20,9 @@ st.set_page_config(
     page_title="Egyptian Dialect AI Tutor",
     layout="centered",
     page_icon="🎓",
-    initial_sidebar_state="expanded",
-    theme="light"  # ✅ نجبر Streamlit يحمّل الثيم الفاتح دائمًا
+    initial_sidebar_state="expanded"
 )
+
 
 def running_in_wsl() -> bool:
     return bool(os.environ.get("WSL_DISTRO_NAME") or "microsoft" in platform.uname().release.lower())
