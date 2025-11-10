@@ -971,11 +971,16 @@ def lesson_two_tabs(lesson_label):
     </div>
     """, unsafe_allow_html=True)
 
-    # ✅ Reset tab to default when a new session/device opens
-    if "first_load" not in st.session_state:
+    # ✅ لو أول مرة المستخدم يدخل الموقع على الجهاز ده فقط
+    if "selected_tab" not in st.session_state:
+        # نبدأ دايمًا بتبويب الشرح
         st.session_state["selected_tab"] = "Explanation"
         st.query_params["tab"] = "Explanation"
-        st.session_state["first_load"] = True
+    else:
+        # ✅ نحافظ على التبويب الحالي بعد الريفريش
+        if "tab" in st.query_params:
+            st.session_state["selected_tab"] = st.query_params["tab"]
+
 
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
     if st.session_state.get("selected_tab") == "Grammar":
