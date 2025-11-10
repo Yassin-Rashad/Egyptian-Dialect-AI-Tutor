@@ -624,36 +624,34 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown(f"""
-    <div style='text-align:center; margin-bottom:18px;'>
-    <div style='
-        font-size:28px;
-        font-weight:800;
-        color:#0f172a;
-        --darkreader-inline-color:#f8fafc;
-        color: color-mix(in srgb, currentColor 90%, white);
-    '>
-        Learn Egyptian Dialect — AI Tutor
-    </div>
+<div style='text-align:center; margin-bottom:18px;'>
+  <div style='
+      font-size:28px;
+      font-weight:800;
+      color:#0f172a;
+      --darkreader-inline-color:#f8fafc;
+  '>
+      Learn Egyptian Dialect — AI Tutor
+  </div>
 
-    <div style='
-        color:#475569;
-        font-size:14px;
-        margin-bottom:10px;
-        --darkreader-inline-color:#e2e8f0;
-        color: color-mix(in srgb, currentColor 80%, white);
-    '>
-        Interactive explanation and real-time practice.
-    </div>
+  <div style='
+      color:#475569;
+      font-size:14px;
+      margin-bottom:10px;
+      --darkreader-inline-color:#e2e8f0;
+  '>
+      Interactive explanation and real-time practice.
+  </div>
 
-    <div style='
-        font-size:14px;
-        color:#334155;
-        --darkreader-inline-color:#e5e7eb;
-        color: color-mix(in srgb, currentColor 85%, white);
-    '>
-        Created by <b>Yassin Rashad</b> 🇪🇬 — for Arabic learners around the world 🌍
-    </div>
-    <div style='margin-top:10px; text-align:center;'>
+  <div style='
+      font-size:14px;
+      color:#334155;
+      --darkreader-inline-color:#e5e7eb;
+  '>
+      Created by <b>Yassin Rashad</b> 🇪🇬 — for Arabic learners around the world 🌍
+  </div>
+
+  <div style='margin-top:10px; text-align:center;'>
     <a href="https://wa.me/201064958335?text=Hi%20Yassin!%20I'm%20interested%20in%20your%20Arabic%20lessons."
        target="_blank"
        style='
