@@ -971,6 +971,12 @@ def lesson_two_tabs(lesson_label):
     </div>
     """, unsafe_allow_html=True)
 
+    # ✅ Reset tab to default when a new session/device opens
+    if "first_load" not in st.session_state:
+        st.session_state["selected_tab"] = "Explanation"
+        st.query_params["tab"] = "Explanation"
+        st.session_state["first_load"] = True
+
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
     if st.session_state.get("selected_tab") == "Grammar":
         default_tab = "🧠 Grammar Note"
