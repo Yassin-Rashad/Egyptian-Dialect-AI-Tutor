@@ -1012,7 +1012,14 @@ def lesson_two_tabs(lesson_label):
     else:
         default_tab = "📘 Explanation"
 
-    tab_choice = st.radio("Select section", tab_options, horizontal=True, label_visibility="collapsed", key="lesson_tab_choice", index=tab_options.index(default_tab))
+    tab_choice = st.radio(
+        "Select section",
+        tab_options,
+        horizontal=True,
+        label_visibility="collapsed",
+        key=f"lesson_tab_choice_{lesson_label}",  # ✅ مفتاح فريد لكل درس
+        index=tab_options.index(default_tab)
+    )
 
     if "Explanation" in tab_choice:
         selected_tab = "Explanation"
