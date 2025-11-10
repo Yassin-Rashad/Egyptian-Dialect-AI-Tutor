@@ -1016,9 +1016,6 @@ def lesson_two_tabs(lesson_label):
 
     # ✅ نولّد session فريد لكل جهاز (عشان ما تتداخلش الأجهزة)
     import uuid
-
-    device_session_id = "local_only"
-
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
 
     # نستخدم القيمة اللي جايه من localStorage
@@ -1058,16 +1055,6 @@ def lesson_two_tabs(lesson_label):
 
     # نحفظه كمان في session_state
     st.session_state["selected_tab"] = tab_choice
-
-    # نعرض التبويبات
-    tab_choice = st.radio(
-        "Select section",
-        tab_options,
-        horizontal=True,
-        label_visibility="collapsed",
-        index=default_index,
-        key="tab_radio"
-    )
 
     # نحفظ التبويب الجديد (من غير rerun)
     if tab_choice != st.session_state["selected_tab"]:
