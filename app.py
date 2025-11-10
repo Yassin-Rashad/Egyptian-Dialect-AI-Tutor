@@ -586,39 +586,24 @@ html("""
 <div style="
     background-color: #ffffff;
     border: 2px solid #e2e8f0;
-    border-radius: 18px;
-    padding: 18px 16px;
-    margin-bottom: 22px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    border-radius: 20px;
+    padding: 22px 20px;
+    margin: 40px auto 40px auto;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
     text-align: center;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 650px;
 ">
-    <div style='
-        font-size: 26px;
-        font-weight: 800;
-        color: #0f172a;
-        margin-bottom: 6px;
-    '>
+    <h2 style="font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">
         Learn Egyptian Dialect — AI Tutor
-    </div>
+    </h2>
 
-    <div style='
-        color: #475569;
-        font-size: 15px;
-        margin-bottom: 10px;
-    '>
+    <p style="color: #475569; font-size: 16px; margin-bottom: 12px;">
         Interactive explanation and real-time practice.
-    </div>
+    </p>
 
-    <div style='
-        font-size: 14px;
-        color: #334155;
-        margin-bottom: 12px;
-    '>
+    <p style="font-size: 15px; color: #334155; margin-bottom: 18px;">
         Created by <b>Yassin Rashad</b> 🇪🇬 — for Arabic learners around the world 🌍
-    </div>
+    </p>
 
     <a href="https://wa.me/201064958335?text=Hi%20Yassin!%20I'm%20interested%20in%20your%20Arabic%20lessons."
        target="_blank"
@@ -629,13 +614,13 @@ html("""
          gap:8px;
          background-color:#25D366;
          color:white;
-         padding:10px 22px;
+         padding:12px 26px;
          border-radius:50px;
          text-decoration:none;
          font-weight:700;
          font-size:15px;
          border:2px solid #16a34a;
-         box-shadow:0px 4px 8px rgba(0,0,0,0.2);
+         box-shadow:0px 4px 10px rgba(0,0,0,0.15);
          transition:all 0.3s ease-in-out;
        '
        onmouseover="this.style.backgroundColor='#1ebe5d'"
@@ -646,8 +631,7 @@ html("""
        Contact via WhatsApp
     </a>
 </div>
-""")
-
+""", height=320)
 
 # ---------------------------
 #  LESSON UTILITIES
