@@ -971,15 +971,37 @@ def lesson_two_tabs(lesson_label):
     </div>
     """, unsafe_allow_html=True)
 
-    # ✅ لو أول مرة المستخدم يدخل الموقع على الجهاز ده فقط
+    # ✅ تحديد التبويب الافتراضي عند أول زيارة في الجهاز
     if "selected_tab" not in st.session_state:
-        # نبدأ دايمًا بتبويب الشرح
         st.session_state["selected_tab"] = "Explanation"
-        st.query_params["tab"] = "Explanation"
+
+    # ✅ لو المستخدم غيّر التبويب نحفظه في session فقط (بدون query_params)
+    current_tab = st.session_state["selected_tab"]
+    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
+
+    tab_choice = st.radio(
+        "Select section",
+        tab_options,
+        horizontal=True,
+        label_visibility="collapsed",
+        index=tab_options.index(
+            "📘 Explanation" if current_tab not in tab_options else tab_options[tab_options.index(current_tab)]
+        ),
+        key="lesson_tab_choice"
+    )
+
+    # ✅ نحول اسم التبويب لنص بسيط ونخزّنه محليًا فقط
+    if "Explanation" in tab_choice:
+        selected_tab = "Explanation"
+    elif "Grammar" in tab_choice:
+        selected_tab = "Grammar"
     else:
-        # ✅ نحافظ على التبويب الحالي بعد الريفريش
-        if "tab" in st.query_params:
-            st.session_state["selected_tab"] = st.query_params["tab"]
+        selected_tab = "Practice"
+
+    # ✅ لو المستخدم غيّر التبويب نحفظه محلي فقط من غير URL
+    if selected_tab != st.session_state["selected_tab"]:
+        st.session_state["selected_tab"] = selected_tab
+
 
 
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
