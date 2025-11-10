@@ -714,6 +714,26 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<script>
+setTimeout(() => {
+  try {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (prefersDark) {
+      document.querySelectorAll("div[style*='text-align:center']").forEach(header => {
+        header.style.backgroundColor = "transparent";
+        header.querySelectorAll("*").forEach(el => {
+          el.style.color = "#f8fafc"; // أبيض واضح
+          el.style.textShadow = "none";
+        });
+      });
+    }
+  } catch (e) {
+    console.log("Mobile dark mode fix:", e);
+  }
+}, 1200); // ننتظر ثانية وربع بعد تحميل الصفحة بالكامل
+</script>
+""", unsafe_allow_html=True)
 
 
 # ---------------------------
