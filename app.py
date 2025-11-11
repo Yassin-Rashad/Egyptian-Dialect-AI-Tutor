@@ -1009,39 +1009,34 @@ def lesson_two_tabs(lesson_label):
     </script>
     """, height=0)
 
-    # نقرأ القيمة القادمة من localStorage
-    selected_tab_from_storage = st.session_state.get("selected_tab") or "📘 Explanation"
-
+    # ✅ التبويبات مع حفظ الحالة في URL
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
+
+    # نقرأ التبويب الحالي من URL (لو موجود)
+    current_tab_param = st.query_params.get("tab", "📘 Explanation")
+
+    # نطابقه مع واحدة من التبويبات
+    if current_tab_param not in tab_options:
+        current_tab_param = "📘 Explanation"
 
     tab_choice = st.radio(
         "Select section",
         tab_options,
         horizontal=True,
         label_visibility="collapsed",
-        index=tab_options.index(selected_tab_from_storage) if selected_tab_from_storage in tab_options else 0,
+        index=tab_options.index(current_tab_param),
         key="tab_radio"
     )
 
-    # نحفظ التبويب الجديد كل مرة المستخدم يغيره
-    html(f"""
-    <script>
-    localStorage.setItem("yassin_tab_choice", "{tab_choice}");
-    </script>
-    """, height=0)
-
-    # تحديث القيمة في session_state
+    # ✅ نحفظ التبويب المختار في session_state
     st.session_state["selected_tab"] = tab_choice
 
-    # ✅ حفظ التبويب في localStorage كل مرة المستخدم يبدله
-    html(f"""
-    <script>
-    window.localStorage.setItem("yassin_tab_choice", "{tab_choice}");
-    </script>
-    """, height=0)
-
-    # ✅ تحديث session_state (للتفاعل داخل نفس الجلسة)
-    st.session_state["selected_tab"] = tab_choice
+    # ✅ نحدّث الرابط بالكامل (unit + lesson + tab)
+    st.query_params = {
+        "unit": st.session_state.get("selected_unit", "Unit 1"),
+        "lesson": st.session_state.get("selected_lesson", "Lesson 1"),
+        "tab": tab_choice
+    }
 
     # -------- EXPLANATION --------
     if st.session_state["selected_tab"] == "📘 Explanation":
