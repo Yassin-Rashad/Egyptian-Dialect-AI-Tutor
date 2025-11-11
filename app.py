@@ -931,43 +931,34 @@ explain_key, practice_key = get_keys_for_lesson(lesson_choice)
 
 def lesson_two_tabs(lesson_label):
     from streamlit.components.v1 import html
-    # ✅ Load last selected tab from localStorage per device (before rendering)
-    html("""
-    <script>
-    (function() {
-        const key = "yassin_tab_choice";
-        const savedTab = localStorage.getItem(key) || "📘 Explanation";
-        window.parent.postMessage({
-            type: "streamlit:setSessionState",
-            key: "selected_tab",
-            value: savedTab
-        }, "*");
-    })();
-    </script>
-    """, height=0)
 
     current_unit = st.query_params.get("unit", "Unit 1")
     system_prompt = "You are a professional Egyptian Arabic teacher for English speakers."
-    # ✅ إنشاء المفاتيح الخاصة بالمحادثات
+
+    # ✅ إنشاء مفاتيح المحادثة
     unit_id = current_unit.lower().replace(" ", "")
     explain_history_key = f"{unit_id}_{lesson_label}_explain_history"
     practice_history_key = f"{unit_id}_{lesson_label}_practice_history"
-
-    # ✅ تأكيد وجود السجلات داخل session_state
     ensure_history(explain_history_key, system_prompt)
     ensure_history(practice_history_key, system_prompt)
-    # ✅ إنشاء معرّف فريد لكل جهاز مرة واحدة
-    if "device_id" not in st.session_state:
-        import random, string
-        st.session_state["device_id"] = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
 
-    device_id = st.session_state["device_id"]
+    # ✅ مفتاح التخزين المحلي (لكل وحدة + درس)
+    tab_key_id = f"{current_unit.replace(' ', '_')}_{lesson_label.replace(' ', '_')}"
 
-    # ✅ نحفظ آخر تبويب لكل جهاز على حدة داخل session_state
-    device_tab_key = f"{device_id}_selected_tab"
-    saved_tab = st.session_state.get(device_tab_key, st.query_params.get("tab", "📘 Explanation"))
+    # ✅ تحميل آخر تبويب محفوظ من localStorage
+    html(f"""
+    <script>
+    const tabKey = "yassin_tab_choice_{tab_key_id}";
+    const savedTab = localStorage.getItem(tabKey) || "📘 Explanation";
+    window.parent.postMessage({{
+        type: "streamlit:setSessionState",
+        key: "selected_tab",
+        value: savedTab
+    }}, "*");
+    </script>
+    """, height=0)
 
-    # ✅ تهيئة التبويب الحالي من session_state أو localStorage عند أول تحميل
+    # ✅ تنسيق العنوان بنفس التصميم القديم
     st.markdown(f"""
     <div style="
         background-color: #ffffff;
@@ -994,77 +985,40 @@ def lesson_two_tabs(lesson_label):
     </div>
     """, unsafe_allow_html=True)
 
-    # ✅ التبويبات مع حفظ الحالة في URL
+    # ✅ التبويبات
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
-
-    # ✅ نحفظ التبويب محليًا في المتصفح لكل جهاز باستخدام localStorage
-    from streamlit.components.v1 import html
-
-    html(f"""
-    <script>
-    const tabKey = "yassin_tab_choice_{lesson_label.replace(' ', '_')}";
-    const savedTab = localStorage.getItem(tabKey) || "📘 Explanation";
-
-    // عند أول تحميل نحدث session_state بناءً على القيمة المحلية
-    window.parent.postMessage({{
-    type: "streamlit:setSessionState",
-    key: "selected_tab",
-    value: savedTab
-    }}, "*");
-
-    // كل مرة المستخدم يغير التبويب، نخزن التغيير محليًا
-    window.addEventListener("message", (event) => {{
-    if (event.data?.type === "streamlit:setSessionState" && event.data.key === "selected_tab") {{
-        localStorage.setItem(tabKey, event.data.value);
-    }}
-    }});
-    </script>
-    """, height=0)
-
-
-    # ✅ نحفظ تبويب كل جهاز بشكل منفصل
-    device_tab_key = f"{device_id}_selected_tab"
-
-    # نقرأ آخر تبويب محفوظ للجهاز أو الموجود في الرابط
-    saved_tab = st.session_state.get(device_tab_key, st.query_params.get("tab", "📘 Explanation"))
-
-    # نطابقه مع واحدة من التبويبات
-    if saved_tab not in tab_options:
-        saved_tab = "📘 Explanation"
+    current_tab = st.session_state.get("selected_tab", "📘 Explanation")
 
     tab_choice = st.radio(
         "Select section",
-        ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"],
+        tab_options,
         horizontal=True,
         label_visibility="collapsed",
-        index=["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"].index(
-            st.session_state.get("selected_tab", "📘 Explanation")
-        ),
-        key="tab_radio"
+        index=tab_options.index(current_tab),
+        key=f"tab_radio_{lesson_label}"
     )
 
-    # ✅ Sync tab change to localStorage
+    # ✅ حفظ التبويب في localStorage (لكل وحدة + درس)
     html(f"""
     <script>
-    window.addEventListener("message", (event) => {{
-        if (event.data?.type === "streamlit:setSessionState" && event.data.key === "selected_tab") {{
-            localStorage.setItem("yassin_tab_choice", event.data.value);
-        }}
-    }});
+    const tabKey = "yassin_tab_choice_{tab_key_id}";
+    localStorage.setItem(tabKey, "{tab_choice}");
     </script>
     """, height=0)
 
     st.session_state["selected_tab"] = tab_choice
 
-
-    # -------- EXPLANATION --------
-    if st.session_state["selected_tab"] == "📘 Explanation":
+    # ----------------------------------------
+    # 📘 تبويب الشرح
+    # ----------------------------------------
+    if tab_choice == "📘 Explanation":
         st.markdown("### 📘 Explanation")
         st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
         for msg in st.session_state[explain_history_key]:
             if msg["role"] == "system":
                 continue
             st.chat_message(msg["role"]).markdown(msg["content"])
+
         col1, col2 = st.columns([1, 2])
         with col1:
             if st.button("Start Explanation", key=f"start_explain_{lesson_label}"):
@@ -1075,6 +1029,7 @@ def lesson_two_tabs(lesson_label):
                 assistant_text = get_model_response(st.session_state[explain_history_key], max_tokens=2500)
                 st.session_state[explain_history_key].append({"role": "assistant", "content": assistant_text})
                 st.rerun()
+
         with col2:
             user_input = st.chat_input("Ask about the lesson explanation...", key=f"explain_input_{lesson_label}")
             if user_input:
@@ -1082,22 +1037,23 @@ def lesson_two_tabs(lesson_label):
                 st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # -------- GRAMMAR --------
-    elif st.session_state["selected_tab"] == "🧠 Grammar Note":
+    # ----------------------------------------
+    # 🧠 تبويب القواعد
+    # ----------------------------------------
+    elif tab_choice == "🧠 Grammar Note":
         st.markdown("### 🧠 Grammar Note")
         st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
+
         unit_id = st.query_params.get("unit", "Unit 1").lower().replace(" ", "")
         grammar_file = f"prompts/{unit_id}/{lesson_label.lower()}/{lesson_label.lower().replace(' ', '')}_grammar.txt"
         grammar_content = ""
 
-        # حاول تقرأ من Drive أولًا
         if running_on_cloud():
             service = get_drive_service()
             unit_name = current_unit.lower().replace(" ", "")
             lesson_name = lesson_label.lower().replace(" ", "")
             grammar_file_name = f"{lesson_name}_grammar.txt"
 
-            # 🔹 نجيب ID الوحدة
             unit_results = service.files().list(
                 q=f"(name='{unit_name}' or name='{unit_name.capitalize()}') and mimeType='application/vnd.google-apps.folder' and trashed=false",
                 fields="files(id, name)",
@@ -1113,7 +1069,6 @@ def lesson_two_tabs(lesson_label):
                 parent_id = lesson_id or unit_id
                 grammar_content = read_file_from_drive(grammar_file_name, parent_id)
 
-        # fallback المحلي
         if not grammar_content and os.path.exists(grammar_file):
             with open(grammar_file, "r", encoding="utf-8") as f:
                 grammar_content = f.read().strip()
@@ -1125,12 +1080,15 @@ def lesson_two_tabs(lesson_label):
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # -------- PRACTICE --------
+    # ----------------------------------------
+    # 🧩 تبويب التمارين
+    # ----------------------------------------
     else:
         st.markdown("### 🧩 Practice Exercises")
         st.markdown("<div class='chat-box'>", unsafe_allow_html=True)
         base_practice_prompt = prompts.get("Base Practice Prompt", "")
         lesson_practice_content = prompts.get(f"{lesson_label} Practice ({current_unit})", "")
+
         if not base_practice_prompt.strip():
             st.info("Base practice prompt is missing or empty.")
         elif not lesson_practice_content.strip():
@@ -1140,6 +1098,7 @@ def lesson_two_tabs(lesson_label):
                 if msg["role"] == "system":
                     continue
                 st.chat_message(msg["role"]).markdown(msg["content"])
+
             col1, col2 = st.columns([1, 2])
             with col1:
                 if st.button("Start Practice", key=f"start_practice_{lesson_label}"):
@@ -1148,13 +1107,14 @@ def lesson_two_tabs(lesson_label):
                     assistant_text = get_model_response(st.session_state[practice_history_key], max_tokens=2500)
                     st.session_state[practice_history_key].append({"role": "assistant", "content": assistant_text})
                     st.rerun()
+
             with col2:
                 user_input = st.chat_input("Answer or ask for help...", key=f"practice_input_{lesson_label}")
                 if user_input:
                     append_and_get_chunks(practice_history_key, user_input)
                     st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
 
+        st.markdown("</div>", unsafe_allow_html=True)
 # ---------------------------
 #  MAIN VIEW: General vs Lesson
 # ---------------------------
