@@ -989,25 +989,25 @@ def lesson_two_tabs(lesson_label):
     if current_tab_param not in tab_options:
         current_tab_param = "📘 Explanation"
 
-        tab_choice = st.radio(
-        "Select section",
-        tab_options,
-        horizontal=True,
-        label_visibility="collapsed",
-        index=tab_options.index(saved_tab) if saved_tab in tab_options else 0,
-        key="tab_radio"
-    )
+    tab_choice = st.radio(
+    "Select section",
+    tab_options,
+    horizontal=True,
+    label_visibility="collapsed",
+    index=tab_options.index(saved_tab) if saved_tab in tab_options else 0,
+    key="tab_radio"
+)
 
-    # ✅ نحفظ التبويب المختار للجهاز الحالي فقط
-    st.session_state[device_tab_key] = tab_choice
-    st.session_state["selected_tab"] = tab_choice
+# ✅ نحفظ التبويب المختار للجهاز الحالي فقط
+st.session_state[device_tab_key] = tab_choice
+st.session_state["selected_tab"] = tab_choice
 
-    # ✅ نحدّث الـ query_params بس لو المستخدم غيّر التبويب
-    st.query_params = {
-        "unit": st.session_state.get("selected_unit", "Unit 1"),
-        "lesson": st.session_state.get("selected_lesson", "Lesson 1"),
-        "tab": tab_choice
-    }
+# ✅ نحدّث الـ query_params بس لو المستخدم غيّر التبويب
+st.query_params = {
+    "unit": st.session_state.get("selected_unit", "Unit 1"),
+    "lesson": st.session_state.get("selected_lesson", "Lesson 1"),
+    "tab": tab_choice
+}
 
     # -------- EXPLANATION --------
     if st.session_state["selected_tab"] == "📘 Explanation":
