@@ -982,8 +982,30 @@ def lesson_two_tabs(lesson_label):
     # ✅ التبويبات مع حفظ الحالة في URL
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
 
-    # ✅ التبويبات مع حفظ الحالة في URL
-    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
+    # ✅ نحفظ التبويب محليًا في المتصفح لكل جهاز باستخدام localStorage
+    from streamlit.components.v1 import html
+
+    html(f"""
+    <script>
+    const tabKey = "yassin_tab_choice_{lesson_label.replace(' ', '_')}";
+    const savedTab = localStorage.getItem(tabKey) || "📘 Explanation";
+
+    // عند أول تحميل نحدث session_state بناءً على القيمة المحلية
+    window.parent.postMessage({{
+    type: "streamlit:setSessionState",
+    key: "selected_tab",
+    value: savedTab
+    }}, "*");
+
+    // كل مرة المستخدم يغير التبويب، نخزن التغيير محليًا
+    window.addEventListener("message", (event) => {{
+    if (event.data?.type === "streamlit:setSessionState" && event.data.key === "selected_tab") {{
+        localStorage.setItem(tabKey, event.data.value);
+    }}
+    }});
+    </script>
+    """, height=0)
+
 
     # ✅ نحفظ تبويب كل جهاز بشكل منفصل
     device_tab_key = f"{device_id}_selected_tab"
