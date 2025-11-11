@@ -941,6 +941,17 @@ def lesson_two_tabs(lesson_label):
     # ✅ تأكيد وجود السجلات داخل session_state
     ensure_history(explain_history_key, system_prompt)
     ensure_history(practice_history_key, system_prompt)
+    # ✅ إنشاء معرّف فريد لكل جهاز مرة واحدة
+    if "device_id" not in st.session_state:
+        import random, string
+        st.session_state["device_id"] = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+
+    device_id = st.session_state["device_id"]
+
+    # ✅ نحفظ آخر تبويب لكل جهاز على حدة داخل session_state
+    device_tab_key = f"{device_id}_selected_tab"
+    saved_tab = st.session_state.get(device_tab_key, st.query_params.get("tab", "📘 Explanation"))
+
     # ✅ تهيئة التبويب الحالي من session_state أو localStorage عند أول تحميل
     st.markdown(f"""
     <div style="
@@ -968,47 +979,6 @@ def lesson_two_tabs(lesson_label):
     </div>
     """, unsafe_allow_html=True)
 
-    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
-
-    # ✅ حل نهائي: مزامنة كاملة بين localStorage و session_state و query_params
-    html("""
-    <script>
-    (function() {
-        const tabKey = "yassin_tab_choice";
-        const savedTab = localStorage.getItem(tabKey) || "📘 Explanation";
-
-        // أول ما الصفحة تفتح، نحدّث اللينك فوق لو مش مطابق
-        const url = new URL(window.location);
-        const currentTab = url.searchParams.get("tab");
-        const normalizedSaved = savedTab.replace(/[^a-zA-Z]/g, "");
-
-        if (!currentTab || currentTab !== normalizedSaved) {
-            url.searchParams.set("tab", normalizedSaved);
-            window.history.replaceState(null, "", url.toString());
-        }
-
-        // نبعت القيمة المحفوظة لـ Streamlit عشان يحمّل التبويب الصح
-        window.parent.postMessage({
-            type: "streamlit:setSessionState",
-            key: "selected_tab",
-            value: savedTab
-        }, "*");
-
-        // كل ما المستخدم يغير التبويب، نحفظه ونحدث اللينك
-        window.addEventListener("message", (event) => {
-            if (event.data?.type === "streamlit:setSessionState" && event.data.key === "selected_tab") {
-                const newTab = event.data.value;
-                localStorage.setItem(tabKey, newTab);
-
-                const url = new URL(window.location);
-                url.searchParams.set("tab", newTab.replace(/[^a-zA-Z]/g, ""));
-                window.history.replaceState(null, "", url.toString());
-            }
-        });
-    })();
-    </script>
-    """, height=0)
-
     # ✅ التبويبات مع حفظ الحالة في URL
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
 
@@ -1019,19 +989,20 @@ def lesson_two_tabs(lesson_label):
     if current_tab_param not in tab_options:
         current_tab_param = "📘 Explanation"
 
-    tab_choice = st.radio(
+        tab_choice = st.radio(
         "Select section",
         tab_options,
         horizontal=True,
         label_visibility="collapsed",
-        index=tab_options.index(current_tab_param),
+        index=tab_options.index(saved_tab) if saved_tab in tab_options else 0,
         key="tab_radio"
     )
 
-    # ✅ نحفظ التبويب المختار في session_state
+    # ✅ نحفظ التبويب المختار للجهاز الحالي فقط
+    st.session_state[device_tab_key] = tab_choice
     st.session_state["selected_tab"] = tab_choice
 
-    # ✅ نحدّث الرابط بالكامل (unit + lesson + tab)
+    # ✅ نحدّث الـ query_params بس لو المستخدم غيّر التبويب
     st.query_params = {
         "unit": st.session_state.get("selected_unit", "Unit 1"),
         "lesson": st.session_state.get("selected_lesson", "Lesson 1"),
