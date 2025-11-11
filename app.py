@@ -926,16 +926,6 @@ def lesson_two_tabs(lesson_label):
     current_unit = st.query_params.get("unit", "Unit 1")
     system_prompt = "You are a professional Egyptian Arabic teacher for English speakers."
     # ✅ تهيئة التبويب الحالي من session_state أو localStorage عند أول تحميل
-    st.markdown("""
-    <style>
-    div[role='radiogroup'] input[type='radio'], div[role='radiogroup'] svg { display: none !important; }
-    div[role='radiogroup'] { display: flex; justify-content: center; align-items: center; gap: 28px; margin-bottom: 16px; flex-wrap: nowrap; }
-    div[role='radiogroup'] label { background: #f8fafc; border-radius: 12px; cursor: pointer; font-weight: 500; color: #334155; transition: all 0.25s ease; border: 1px solid transparent; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; padding: 10px 22px; }
-    div[role='radiogroup'] label:hover { background: #ecfdf5; }
-    div[role='radiogroup'] input:checked + div { background: #d1fae5; border: 1px solid #10b981; color: #065f46 !important; font-weight: 600; box-shadow: 0 2px 6px rgba(16,185,129,0.12); }
-    </style>
-    """, unsafe_allow_html=True)
-
     st.markdown(f"""
     <div style="
         background-color: #ffffff;
