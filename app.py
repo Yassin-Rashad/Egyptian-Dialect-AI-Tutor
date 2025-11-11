@@ -970,21 +970,33 @@ def lesson_two_tabs(lesson_label):
 
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
 
-    # ✅ استرجاع آخر تبويب محفوظ من localStorage قبل عرض التبويبات
-    html("""
+    # ✅ مزامنة التبويب بين localStorage و URL query_params
+    html(f"""
     <script>
     const tabKey = "yassin_tab_choice";
     const savedTab = localStorage.getItem(tabKey) || "📘 Explanation";
 
-    // نبعت القيمة دي مباشرة لبايثون
-    window.parent.postMessage({
-        isStreamlitMessage: true,
-        type: "setComponentValue",
+    // نحدث session_state مباشرة
+    window.parent.postMessage({{
+        type: "streamlit:setSessionState",
+        key: "selected_tab",
         value: savedTab
-    }, "*");
+    }}, "*");
+
+    // كل ما المستخدم يغيّر التبويب، نحفظه ونحدث اللينك فوق
+    window.addEventListener("message", (event) => {{
+        if (event.data?.type === "streamlit:setSessionState" && event.data.key === "selected_tab") {{
+            const newTab = event.data.value;
+            localStorage.setItem(tabKey, newTab);
+
+            // ✅ تحديث الرابط بدون إعادة تحميل
+            const url = new URL(window.location);
+            url.searchParams.set("tab", newTab.replace(/[^a-zA-Z]/g, ''));
+            window.history.replaceState(null, "", url.toString());
+        }}
+    }});
     </script>
     """, height=0)
-
     # نقرأ القيمة القادمة من localStorage
     selected_tab_from_storage = st.session_state.get("selected_tab") or "📘 Explanation"
 
