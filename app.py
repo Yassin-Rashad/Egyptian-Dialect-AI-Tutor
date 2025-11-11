@@ -929,157 +929,57 @@ def lesson_two_tabs(lesson_label):
     # ✅ تهيئة التبويب الحالي من session_state أو localStorage عند أول تحميل
     from streamlit.components.v1 import html
 
-    # لو أول مرة نفتح، نرجع آخر تبويب محفوظ من المتصفح
-    html("""
-    <script>
-    const key = "yassin_tab_choice";
-    const savedTab = window.localStorage.getItem(key) || "📘 Explanation";
-    window.parent.postMessage({ type: "streamlit:setSessionState", key: "selected_tab", value: savedTab }, "*");
-    </script>
-    """, height=0)
-
-    # 🧹 تصفير كل المحادثات لما المستخدم يبدّل الدرس
-    if "last_loaded_lesson" not in st.session_state or st.session_state["last_loaded_lesson"] != lesson_choice:
-        for key in list(st.session_state.keys()):
-            if key.endswith("_history"):
-                del st.session_state[key]
-        st.session_state["last_loaded_lesson"] = lesson_choice
-    previous_lesson = st.session_state.get("last_rendered_lesson")
-    current_lesson_name = st.query_params.get("lesson", "Lesson 1")
-    if previous_lesson and previous_lesson != current_lesson_name:
-        st.session_state["selected_tab"] = "Explanation"
-        st.query_params["tab"] = "Explanation"
-    st.session_state["last_rendered_lesson"] = current_lesson_name
-
-    unit_id = current_unit.lower().replace(" ", "")
-    explain_history_key = f"{unit_id}_{lesson_label}_explain_history"
-    practice_history_key = f"{unit_id}_{lesson_label}_practice_history"
-
-    ensure_history(explain_history_key, system_prompt)
-    ensure_history(practice_history_key, system_prompt)
-
-    params = dict(st.query_params)
-    current_tab = st.session_state.get("selected_tab", params.get("tab", "Explanation"))
-
-    st.markdown("""
-    <style>
-    div[role='radiogroup'] input[type='radio'], div[role='radiogroup'] svg { display: none !important; }
-    div[role='radiogroup'] { display: flex; justify-content: center; align-items: center; gap: 28px; margin-bottom: 16px; flex-wrap: nowrap; }
-    div[role='radiogroup'] label { background: #f8fafc; border-radius: 12px; cursor: pointer; font-weight: 500; color: #334155; transition: all 0.25s ease; border: 1px solid transparent; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; padding: 10px 22px; }
-    div[role='radiogroup'] label:hover { background: #ecfdf5; }
-    div[role='radiogroup'] input:checked + div { background: #d1fae5; border: 1px solid #10b981; color: #065f46 !important; font-weight: 600; box-shadow: 0 2px 6px rgba(16,185,129,0.12); }
-    </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown(f"""
-    <div style="
-        background-color: #ffffff;
-        border: 2px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 10px 16px;
-        margin: 25px auto 22px auto;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-        text-align: center;
-        max-width: 500px;
-    ">
-        <h3 style="
-            font-size: clamp(18px, 4.5vw, 22px);
-            font-weight: 700;
-            color: #0f172a;
-            margin: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        ">
-            🧠 {current_unit} — {current_lesson_name}
-        </h3>
-    </div>
-    """, unsafe_allow_html=True)
-
-    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
-
-    # ✅ نجيب التبويب الحالي من session فقط
-    current_tab = st.session_state.get("selected_tab", "Explanation")
-
-    # ✅ نحسب الفهرس (index) بشكل آمن وثابت
-    try:
-        default_index = next(i for i, t in enumerate(tab_options) if current_tab in t)
-    except StopIteration:
-        default_index = 0
-    # ✅ نعمل مفتاح فريد للجهاز الحالي (session id)
-    if "device_id" not in st.session_state:
-        import random, string
-        st.session_state["device_id"] = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-
-    device_id = st.session_state["device_id"]
-
-    # ✅ نولّد session فريد لكل جهاز (عشان ما تتداخلش الأجهزة)
-    import uuid
-    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
-
-    # نستخدم القيمة اللي جايه من localStorage
-    current_tab = st.session_state.get("tab_from_browser", "📘 Explanation")
-    try:
-        default_index = tab_options.index(current_tab)
-    except:
-        default_index = 0
-
-    # ✅ استخدم session_state فقط لتخزين التبويب المختار
-    if "selected_tab" not in st.session_state:
-        st.session_state["selected_tab"] = "📘 Explanation"
-
-    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
-
-    # نحدد الفهرس الحالي من session_state
-    try:
-        default_index = tab_options.index(st.session_state["selected_tab"])
-    except:
-        default_index = 0
-        # ✅ استرجاع آخر تبويب محفوظ من المتصفح قبل عرض التبويبات
+    
+    # ✅ استخدم localStorage لحفظ واسترجاع التبويب محليًا فقط
     from streamlit.components.v1 import html
 
+    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
+
+    # ✅ استرجاع آخر تبويب محفوظ من localStorage
     html("""
     <script>
     const key = "yassin_tab_choice";
     const savedTab = window.localStorage.getItem(key);
     if (savedTab) {
-        window.parent.postMessage({type: "streamlit:setSessionState", key: "selected_tab", value: savedTab}, "*");
+        // نرسل القيمة لـ Streamlit
+        window.parent.postMessage({
+            type: "streamlit:setSessionState",
+            key: "selected_tab",
+            value: savedTab
+        }, "*");
+    } else {
+        // لو مفيش قيمة محفوظة نخليها Explanation
+        window.parent.postMessage({
+            type: "streamlit:setSessionState",
+            key: "selected_tab",
+            value: "📘 Explanation"
+        }, "*");
     }
     </script>
     """, height=0)
 
-    # ✅ استرجاع آخر تبويب محفوظ من المتصفح أو من session
-    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
+    # ✅ تحديد القيمة الحالية للتبويب
+    current_tab = st.session_state.get("selected_tab", "📘 Explanation")
 
-    if "selected_tab" not in st.session_state:
-        st.session_state["selected_tab"] = "📘 Explanation"
-
-    tab_value = st.session_state["selected_tab"]
-
-    # نحاول نجيب التبويب من localStorage أول ما الصفحة تفتح
-    html("""
-    <script>
-    const saved = window.localStorage.getItem("yassin_tab_choice") || "📘 Explanation";
-    window.parent.postMessage({type: "streamlit:setSessionState", key: "selected_tab", value: saved}, "*");
-    </script>
-    """, height=0)
-
-    if tab_value not in tab_options:
-        tab_value = "📘 Explanation"
-
-    index = tab_options.index(tab_value)
-
-
+    # ✅ عرض التبويبات
     tab_choice = st.radio(
         "Select section",
         tab_options,
         horizontal=True,
         label_visibility="collapsed",
-        index=index,
+        index=tab_options.index(current_tab) if current_tab in tab_options else 0,
         key="tab_radio"
     )
 
+    # ✅ حفظ التبويب في localStorage كل مرة المستخدم يبدله
+    html(f"""
+    <script>
+    window.localStorage.setItem("yassin_tab_choice", "{tab_choice}");
+    </script>
+    """, height=0)
+
+    # ✅ تحديث session_state (للتفاعل داخل نفس الجلسة)
+    st.session_state["selected_tab"] = tab_choice
 
     # --- حفظ التبويب الجديد في localStorage لما المستخدم يغيّره ---
     html(f"""
