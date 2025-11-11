@@ -1009,20 +1009,6 @@ def lesson_two_tabs(lesson_label):
     # تحديث القيمة في session_state
     st.session_state["selected_tab"] = tab_choice
 
-
-    # ✅ تحديد القيمة الحالية للتبويب
-    current_tab = st.session_state.get("selected_tab", "📘 Explanation")
-
-    # ✅ عرض التبويبات
-    tab_choice = st.radio(
-        "Select section",
-        tab_options,
-        horizontal=True,
-        label_visibility="collapsed",
-        index=tab_options.index(current_tab) if current_tab in tab_options else 0,
-        key="tab_radio"
-    )
-
     # ✅ حفظ التبويب في localStorage كل مرة المستخدم يبدله
     html(f"""
     <script>
