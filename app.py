@@ -970,36 +970,44 @@ def lesson_two_tabs(lesson_label):
 
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
 
-    # ✅ استرجاع آخر تبويب محفوظ من localStorage عند أول تحميل
+    # ✅ استرجاع آخر تبويب محفوظ من localStorage قبل عرض التبويبات
     html("""
     <script>
-    const key = "yassin_tab_choice";
-    const savedTab = window.localStorage.getItem(key);
-    const defaultTab = "📘 Explanation";
+    const tabKey = "yassin_tab_choice";
+    const savedTab = localStorage.getItem(tabKey) || "📘 Explanation";
 
-    // لو مفيش تبويب محفوظ، نحفظ الافتراضي
-    if (!savedTab) {
-        window.localStorage.setItem(key, defaultTab);
-    }
-
-    // نقرأ التبويب من localStorage
-    const tabToLoad = savedTab || defaultTab;
-
-    // نحدث sessionState
+    // نبعت القيمة دي مباشرة لبايثون
     window.parent.postMessage({
-        type: "streamlit:setSessionState",
-        key: "selected_tab",
-        value: tabToLoad
+        isStreamlitMessage: true,
+        type: "setComponentValue",
+        value: savedTab
     }, "*");
-
-    // ✅ لو التبويب المحمّل مش ظاهر (يعني Streamlit لسه محملش القيمة)، نعيد تحميل الصفحة مرة واحدة
-    const flagKey = "yassin_tab_synced";
-    if (!window.localStorage.getItem(flagKey)) {
-        window.localStorage.setItem(flagKey, "true");
-        setTimeout(() => window.location.reload(), 200);
-    }
     </script>
     """, height=0)
+
+    # نقرأ القيمة القادمة من localStorage
+    selected_tab_from_storage = st.session_state.get("selected_tab") or "📘 Explanation"
+
+    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
+
+    tab_choice = st.radio(
+        "Select section",
+        tab_options,
+        horizontal=True,
+        label_visibility="collapsed",
+        index=tab_options.index(selected_tab_from_storage) if selected_tab_from_storage in tab_options else 0,
+        key="tab_radio"
+    )
+
+    # نحفظ التبويب الجديد كل مرة المستخدم يغيره
+    html(f"""
+    <script>
+    localStorage.setItem("yassin_tab_choice", "{tab_choice}");
+    </script>
+    """, height=0)
+
+    # تحديث القيمة في session_state
+    st.session_state["selected_tab"] = tab_choice
 
 
     # ✅ تحديد القيمة الحالية للتبويب
