@@ -947,7 +947,7 @@ def lesson_two_tabs(lesson_label):
             justify-content: center;
             gap: 8px;
         ">
-            🧠 {current_unit} — {current_lesson_name}
+            🧠 {current_unit} — {lesson_label}
         </h3>
     </div>
     """, unsafe_allow_html=True)
