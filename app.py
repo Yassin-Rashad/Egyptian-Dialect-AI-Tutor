@@ -262,9 +262,13 @@ def load_prompt(unit: str, lesson: str, type_: str = "") -> str:
             f"(name='{unit}' or name='{unit.lower()}' or name='{unit.capitalize()}') "
             f"and mimeType='application/vnd.google-apps.folder' and trashed=false"
         )
-        unit_results = service.files().list(q=unit_query, fields="files(id, name)").execute()
-        unit_folders = unit_results.get("files", [])
-        unit_id = unit_folders[0]["id"] if unit_folders else None
+        try:
+            unit_results = service.files().list(q=unit_query, fields="files(id, name)").execute()
+            unit_folders = unit_results.get("files", [])
+            unit_id = unit_folders[0]["id"] if unit_folders else None
+        except Exception as e:
+            print(f"⚠️ Google Drive error while fetching unit folder: {e}")
+            unit_id = None
 
         lesson_id = None
         if unit_id:
@@ -273,9 +277,13 @@ def load_prompt(unit: str, lesson: str, type_: str = "") -> str:
                 f"(name='{lesson}' or name='{lesson.lower()}' or name='{lesson.capitalize()}') "
                 f"and '{unit_id}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false"
             )
-            lesson_results = service.files().list(q=lesson_query, fields="files(id, name)").execute()
-            lesson_folders = lesson_results.get("files", [])
-            lesson_id = lesson_folders[0]["id"] if lesson_folders else None
+            try:
+                lesson_results = service.files().list(q=lesson_query, fields="files(id, name)").execute()
+                lesson_folders = lesson_results.get("files", [])
+                lesson_id = lesson_folders[0]["id"] if lesson_folders else None
+            except Exception as e:
+                print(f"⚠️ Google Drive error while fetching lesson folder: {e}")
+                lesson_id = None
 
         # 🔹 نحدد الـ parent المناسب ونقرأ الملف
         parent_id = lesson_id or unit_id
