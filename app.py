@@ -982,22 +982,40 @@ def lesson_two_tabs(lesson_label):
     # ✅ التبويبات مع حفظ الحالة في URL
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
 
-    # نقرأ التبويب الحالي من URL (لو موجود)
-    current_tab_param = st.query_params.get("tab", "📘 Explanation")
+    # ✅ التبويبات مع حفظ الحالة في URL
+    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
+
+    # ✅ نحفظ تبويب كل جهاز بشكل منفصل
+    device_tab_key = f"{device_id}_selected_tab"
+
+    # نقرأ آخر تبويب محفوظ للجهاز أو الموجود في الرابط
+    saved_tab = st.session_state.get(device_tab_key, st.query_params.get("tab", "📘 Explanation"))
 
     # نطابقه مع واحدة من التبويبات
-    if current_tab_param not in tab_options:
-        current_tab_param = "📘 Explanation"
+    if saved_tab not in tab_options:
+        saved_tab = "📘 Explanation"
 
-    # ✅ نحط الراديو برا الـ if (علشان دايمًا يتنفّذ)
+    # ✅ إنشاء أداة الاختيار (التبويبات)
     tab_choice = st.radio(
         "Select section",
         tab_options,
         horizontal=True,
         label_visibility="collapsed",
-        index=tab_options.index(saved_tab) if saved_tab in tab_options else 0,
-        key="tab_radio"
+        index=tab_options.index(saved_tab),
+        key=f"tab_radio_{device_id}"  # مفتاح فريد لكل جهاز
     )
+
+    # ✅ نحفظ التبويب للجهاز الحالي فقط
+    st.session_state[device_tab_key] = tab_choice
+    st.session_state["selected_tab"] = tab_choice
+
+    # ✅ نحدث الرابط بناءً على التبويب الجديد (عشان الريفريش يفتح نفس التبويب)
+    st.query_params = {
+        "unit": st.session_state.get("selected_unit", "Unit 1"),
+        "lesson": st.session_state.get("selected_lesson", "Lesson 1"),
+        "tab": tab_choice
+    }
+
 
     # -------- EXPLANATION --------
     if st.session_state["selected_tab"] == "📘 Explanation":
