@@ -969,7 +969,7 @@ def lesson_two_tabs(lesson_label):
         // كمان لما المستخدم يغير الوحدة أو الدرس
         window.addEventListener("hashchange", syncTab);
         window.addEventListener("popstate", syncTab);
-    })();
+    }})();
     </script>
     """, height=0)
 
