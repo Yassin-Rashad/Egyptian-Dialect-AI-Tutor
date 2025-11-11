@@ -931,6 +931,21 @@ explain_key, practice_key = get_keys_for_lesson(lesson_choice)
 
 def lesson_two_tabs(lesson_label):
     from streamlit.components.v1 import html
+    # ✅ Load last selected tab from localStorage per device (before rendering)
+    html("""
+    <script>
+    (function() {
+        const key = "yassin_tab_choice";
+        const savedTab = localStorage.getItem(key) || "📘 Explanation";
+        window.parent.postMessage({
+            type: "streamlit:setSessionState",
+            key: "selected_tab",
+            value: savedTab
+        }, "*");
+    })();
+    </script>
+    """, height=0)
+
     current_unit = st.query_params.get("unit", "Unit 1")
     system_prompt = "You are a professional Egyptian Arabic teacher for English speakers."
     # ✅ إنشاء المفاتيح الخاصة بالمحادثات
@@ -1017,26 +1032,29 @@ def lesson_two_tabs(lesson_label):
     if saved_tab not in tab_options:
         saved_tab = "📘 Explanation"
 
-    # ✅ إنشاء أداة الاختيار (التبويبات)
     tab_choice = st.radio(
         "Select section",
-        tab_options,
+        ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"],
         horizontal=True,
         label_visibility="collapsed",
-        index=tab_options.index(saved_tab),
-        key=f"tab_radio_{device_id}"  # مفتاح فريد لكل جهاز
+        index=["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"].index(
+            st.session_state.get("selected_tab", "📘 Explanation")
+        ),
+        key="tab_radio"
     )
 
-    # ✅ نحفظ التبويب للجهاز الحالي فقط
-    st.session_state[device_tab_key] = tab_choice
-    st.session_state["selected_tab"] = tab_choice
+    # ✅ Sync tab change to localStorage
+    html(f"""
+    <script>
+    window.addEventListener("message", (event) => {{
+        if (event.data?.type === "streamlit:setSessionState" && event.data.key === "selected_tab") {{
+            localStorage.setItem("yassin_tab_choice", event.data.value);
+        }}
+    }});
+    </script>
+    """, height=0)
 
-    # ✅ نحدث الرابط بناءً على التبويب الجديد (عشان الريفريش يفتح نفس التبويب)
-    st.query_params = {
-        "unit": st.session_state.get("selected_unit", "Unit 1"),
-        "lesson": st.session_state.get("selected_lesson", "Lesson 1"),
-        "tab": tab_choice
-    }
+    st.session_state["selected_tab"] = tab_choice
 
 
     # -------- EXPLANATION --------
