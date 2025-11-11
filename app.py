@@ -933,6 +933,14 @@ def lesson_two_tabs(lesson_label):
     from streamlit.components.v1 import html
     current_unit = st.query_params.get("unit", "Unit 1")
     system_prompt = "You are a professional Egyptian Arabic teacher for English speakers."
+    # ✅ إنشاء المفاتيح الخاصة بالمحادثات
+    unit_id = current_unit.lower().replace(" ", "")
+    explain_history_key = f"{unit_id}_{lesson_label}_explain_history"
+    practice_history_key = f"{unit_id}_{lesson_label}_practice_history"
+
+    # ✅ تأكيد وجود السجلات داخل session_state
+    ensure_history(explain_history_key, system_prompt)
+    ensure_history(practice_history_key, system_prompt)
     # ✅ تهيئة التبويب الحالي من session_state أو localStorage عند أول تحميل
     st.markdown(f"""
     <div style="
