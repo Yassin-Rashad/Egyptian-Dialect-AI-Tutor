@@ -929,7 +929,42 @@ def lesson_two_tabs(lesson_label):
     # ✅ تهيئة التبويب الحالي من session_state أو localStorage عند أول تحميل
     from streamlit.components.v1 import html
 
-    
+    st.markdown("""
+    <style>
+    div[role='radiogroup'] input[type='radio'], div[role='radiogroup'] svg { display: none !important; }
+    div[role='radiogroup'] { display: flex; justify-content: center; align-items: center; gap: 28px; margin-bottom: 16px; flex-wrap: nowrap; }
+    div[role='radiogroup'] label { background: #f8fafc; border-radius: 12px; cursor: pointer; font-weight: 500; color: #334155; transition: all 0.25s ease; border: 1px solid transparent; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; padding: 10px 22px; }
+    div[role='radiogroup'] label:hover { background: #ecfdf5; }
+    div[role='radiogroup'] input:checked + div { background: #d1fae5; border: 1px solid #10b981; color: #065f46 !important; font-weight: 600; box-shadow: 0 2px 6px rgba(16,185,129,0.12); }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div style="
+        background-color: #ffffff;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 10px 16px;
+        margin: 25px auto 22px auto;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        text-align: center;
+        max-width: 500px;
+    ">
+        <h3 style="
+            font-size: clamp(18px, 4.5vw, 22px);
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        ">
+            🧠 {current_unit} — {current_lesson_name}
+        </h3>
+    </div>
+    """, unsafe_allow_html=True)
+
     # ✅ استخدم localStorage لحفظ واسترجاع التبويب محليًا فقط
     from streamlit.components.v1 import html
 
