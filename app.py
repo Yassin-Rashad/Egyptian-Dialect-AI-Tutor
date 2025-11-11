@@ -970,25 +970,34 @@ def lesson_two_tabs(lesson_label):
 
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
 
-    # ✅ استرجاع آخر تبويب محفوظ من localStorage
+    # ✅ استرجاع آخر تبويب محفوظ من localStorage عند أول تحميل
     html("""
     <script>
     const key = "yassin_tab_choice";
-    const savedTab = window.localStorage.getItem(key) || "📘 Explanation";
+    const savedTab = window.localStorage.getItem(key);
+    const defaultTab = "📘 Explanation";
 
-    // ✅ نحدث الحالة فور تحميل الصفحة
+    // لو مفيش تبويب محفوظ، نحفظ الافتراضي
+    if (!savedTab) {
+        window.localStorage.setItem(key, defaultTab);
+    }
+
+    // نقرأ التبويب من localStorage
+    const tabToLoad = savedTab || defaultTab;
+
+    // نحدث sessionState
     window.parent.postMessage({
         type: "streamlit:setSessionState",
         key: "selected_tab",
-        value: savedTab
+        value: tabToLoad
     }, "*");
 
-    // ✅ نحفظ التبويب كل مرة المستخدم يبدّله
-    window.addEventListener("message", (event) => {
-        if (event.data?.type === "streamlit:setSessionState" && event.data.key === "selected_tab") {
-            window.localStorage.setItem(key, event.data.value);
-        }
-    });
+    // ✅ لو التبويب المحمّل مش ظاهر (يعني Streamlit لسه محملش القيمة)، نعيد تحميل الصفحة مرة واحدة
+    const flagKey = "yassin_tab_synced";
+    if (!window.localStorage.getItem(flagKey)) {
+        window.localStorage.setItem(flagKey, "true");
+        setTimeout(() => window.location.reload(), 200);
+    }
     </script>
     """, height=0)
 
