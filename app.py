@@ -923,12 +923,9 @@ explain_key, practice_key = get_keys_for_lesson(lesson_choice)
 
 def lesson_two_tabs(lesson_label):
     from streamlit.components.v1 import html
-    import uuid, json
     current_unit = st.query_params.get("unit", "Unit 1")
     system_prompt = "You are a professional Egyptian Arabic teacher for English speakers."
     # ✅ تهيئة التبويب الحالي من session_state أو localStorage عند أول تحميل
-    from streamlit.components.v1 import html
-
     st.markdown("""
     <style>
     div[role='radiogroup'] input[type='radio'], div[role='radiogroup'] svg { display: none !important; }
@@ -964,9 +961,6 @@ def lesson_two_tabs(lesson_label):
         </h3>
     </div>
     """, unsafe_allow_html=True)
-
-    # ✅ استخدم localStorage لحفظ واسترجاع التبويب محليًا فقط
-    from streamlit.components.v1 import html
 
     tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
 
@@ -1015,20 +1009,6 @@ def lesson_two_tabs(lesson_label):
 
     # ✅ تحديث session_state (للتفاعل داخل نفس الجلسة)
     st.session_state["selected_tab"] = tab_choice
-
-    # --- حفظ التبويب الجديد في localStorage لما المستخدم يغيّره ---
-    html(f"""
-    <script>
-    window.localStorage.setItem("yassin_tab_choice", "{tab_choice}");
-    </script>
-    """, height=0)
-
-    # نحفظه كمان في session_state
-    st.session_state["selected_tab"] = tab_choice
-
-    # نحفظ التبويب الجديد (من غير rerun)
-    if tab_choice != st.session_state["selected_tab"]:
-        st.session_state["selected_tab"] = tab_choice
 
     # -------- EXPLANATION --------
     if st.session_state["selected_tab"] == "📘 Explanation":
