@@ -974,24 +974,24 @@ def lesson_two_tabs(lesson_label):
     html("""
     <script>
     const key = "yassin_tab_choice";
-    const savedTab = window.localStorage.getItem(key);
-    if (savedTab) {
-        // نرسل القيمة لـ Streamlit
-        window.parent.postMessage({
-            type: "streamlit:setSessionState",
-            key: "selected_tab",
-            value: savedTab
-        }, "*");
-    } else {
-        // لو مفيش قيمة محفوظة نخليها Explanation
-        window.parent.postMessage({
-            type: "streamlit:setSessionState",
-            key: "selected_tab",
-            value: "📘 Explanation"
-        }, "*");
-    }
+    const savedTab = window.localStorage.getItem(key) || "📘 Explanation";
+
+    // ✅ نحدث الحالة فور تحميل الصفحة
+    window.parent.postMessage({
+        type: "streamlit:setSessionState",
+        key: "selected_tab",
+        value: savedTab
+    }, "*");
+
+    // ✅ نحفظ التبويب كل مرة المستخدم يبدّله
+    window.addEventListener("message", (event) => {
+        if (event.data?.type === "streamlit:setSessionState" && event.data.key === "selected_tab") {
+            window.localStorage.setItem(key, event.data.value);
+        }
+    });
     </script>
     """, height=0)
+
 
     # ✅ تحديد القيمة الحالية للتبويب
     current_tab = st.session_state.get("selected_tab", "📘 Explanation")
