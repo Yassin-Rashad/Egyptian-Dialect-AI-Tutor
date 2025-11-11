@@ -994,7 +994,7 @@ def lesson_two_tabs(lesson_label):
         tab_options,
         horizontal=True,
         label_visibility="collapsed",
-        index=tab_options.index(current_tab),
+        index=tab_options.index(current_tab) if current_tab in tab_options else 0,
         key=f"tab_radio_{lesson_label}"
     )
 
