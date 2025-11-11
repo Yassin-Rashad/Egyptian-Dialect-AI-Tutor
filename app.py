@@ -935,26 +935,41 @@ def lesson_two_tabs(lesson_label):
     current_unit = st.query_params.get("unit", "Unit 1")
     system_prompt = "You are a professional Egyptian Arabic teacher for English speakers."
 
-    # ✅ إنشاء مفاتيح المحادثة
+    # ✅ مفاتيح المحادثة
     unit_id = current_unit.lower().replace(" ", "")
     explain_history_key = f"{unit_id}_{lesson_label}_explain_history"
     practice_history_key = f"{unit_id}_{lesson_label}_practice_history"
     ensure_history(explain_history_key, system_prompt)
     ensure_history(practice_history_key, system_prompt)
 
-    # ✅ مفتاح التخزين المحلي (لكل وحدة + درس)
+    # ✅ مفتاح فريد لكل وحدة + درس
     tab_key_id = f"{current_unit.replace(' ', '_')}_{lesson_label.replace(' ', '_')}"
 
-    # ✅ تحميل آخر تبويب محفوظ من localStorage
+    # ✅ سكربت ذكي لاسترجاع التبويب لكل وحدة ودرس بشكل مستقل
     html(f"""
     <script>
-    const tabKey = "yassin_tab_choice_{tab_key_id}";
-    const savedTab = localStorage.getItem(tabKey) || "📘 Explanation";
-    window.parent.postMessage({{
-        type: "streamlit:setSessionState",
-        key: "selected_tab",
-        value: savedTab
-    }}, "*");
+    (function() {{
+        const unit = "{current_unit}";
+        const lesson = "{lesson_label}";
+        const tabKey = "yassin_tab_choice_" + unit.replace(/\\s+/g, "_") + "_" + lesson.replace(/\\s+/g, "_");
+        const savedTab = localStorage.getItem(tabKey) || "📘 Explanation";
+
+        // نحدث التبويب أول ما الصفحة تجهز أو الوحدة تتغير
+        function syncTab() {{
+            window.parent.postMessage({{
+                type: "streamlit:setSessionState",
+                key: "selected_tab",
+                value: savedTab
+            }}, "*");
+        }}
+
+        // أول تحميل
+        syncTab();
+
+        // كمان لما المستخدم يغير الوحدة أو الدرس
+        window.addEventListener("hashchange", syncTab);
+        window.addEventListener("popstate", syncTab);
+    })();
     </script>
     """, height=0)
 
