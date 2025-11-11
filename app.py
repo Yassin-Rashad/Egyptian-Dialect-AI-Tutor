@@ -930,48 +930,32 @@ div[role='radiogroup'] label:has(input:checked) {
 explain_key, practice_key = get_keys_for_lesson(lesson_choice)
 
 def lesson_two_tabs(lesson_label):
-    from streamlit.components.v1 import html
-
     current_unit = st.query_params.get("unit", "Unit 1")
     system_prompt = "You are a professional Egyptian Arabic teacher for English speakers."
 
-    # ✅ مفاتيح المحادثة
     unit_id = current_unit.lower().replace(" ", "")
     explain_history_key = f"{unit_id}_{lesson_label}_explain_history"
     practice_history_key = f"{unit_id}_{lesson_label}_practice_history"
     ensure_history(explain_history_key, system_prompt)
     ensure_history(practice_history_key, system_prompt)
 
-    # ✅ مفتاح فريد لكل وحدة + درس
-    tab_key_id = f"{current_unit.replace(' ', '_')}_{lesson_label.replace(' ', '_')}"
+    # ✅ نحافظ على التبويب الحالي من session_state أو نخليه الشرح افتراضي
+    current_tab = st.session_state.get("selected_tab", "📘 Explanation")
 
-    # ✅ سكربت ذكي لاسترجاع التبويب لكل وحدة ودرس بشكل مستقل
-    html(f"""
-    <script>
-    (function() {{
-        const unit = "{current_unit}";
-        const lesson = "{lesson_label}";
-        const tabKey = "yassin_tab_choice_" + unit.replace(/\\s+/g, "_") + "_" + lesson.replace(/\\s+/g, "_");
-        const savedTab = localStorage.getItem(tabKey) || "📘 Explanation";
+    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
 
-        // نحدث التبويب أول ما الصفحة تجهز أو الوحدة تتغير
-        function syncTab() {{
-            window.parent.postMessage({{
-                type: "streamlit:setSessionState",
-                key: "selected_tab",
-                value: savedTab
-            }}, "*");
-        }}
+    tab_choice = st.radio(
+        "Select section",
+        tab_options,
+        horizontal=True,
+        label_visibility="collapsed",
+        index=tab_options.index(current_tab) if current_tab in tab_options else 0,
+        key="tab_radio"
+    )
 
-        // أول تحميل
-        syncTab();
-
-        // كمان لما المستخدم يغير الوحدة أو الدرس
-        window.addEventListener("hashchange", syncTab);
-        window.addEventListener("popstate", syncTab);
-    }})();
-    </script>
-    """, height=0)
+    # ✅ نحفظه في session_state + نحدّث الرابط علشان يفضل ثابت بعد الريفريش
+    st.session_state["selected_tab"] = tab_choice
+    st.query_params["tab"] = tab_choice
 
     # ✅ تنسيق العنوان بنفس التصميم القديم
     st.markdown(f"""
@@ -999,29 +983,6 @@ def lesson_two_tabs(lesson_label):
         </h3>
     </div>
     """, unsafe_allow_html=True)
-
-    # ✅ التبويبات
-    tab_options = ["📘 Explanation", "🧠 Grammar Note", "🧩 Practice Exercises"]
-    current_tab = st.session_state.get("selected_tab", "📘 Explanation")
-
-    tab_choice = st.radio(
-        "Select section",
-        tab_options,
-        horizontal=True,
-        label_visibility="collapsed",
-        index=tab_options.index(current_tab) if current_tab in tab_options else 0,
-        key=f"tab_radio_{lesson_label}"
-    )
-
-    # ✅ حفظ التبويب في localStorage (لكل وحدة + درس)
-    html(f"""
-    <script>
-    const tabKey = "yassin_tab_choice_{tab_key_id}";
-    localStorage.setItem(tabKey, "{tab_choice}");
-    </script>
-    """, height=0)
-
-    st.session_state["selected_tab"] = tab_choice
 
     # ----------------------------------------
     # 📘 تبويب الشرح
