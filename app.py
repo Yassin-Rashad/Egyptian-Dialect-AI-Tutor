@@ -390,11 +390,11 @@ def load_prompts_from_cache() -> dict:
 # ---------------------------
 #  LOAD PROMPTS (SMART SWITCH)
 # ---------------------------
-if os.path.exists(CACHE_FILE):
-    prompts = load_prompts_from_cache()
-else:
-    prompts = load_all_units()
-    save_prompts_to_cache(prompts)
+prompts = load_prompts_from_cache()
+if not prompts:
+    with st.spinner("⏳ Loading course data from Google Drive..."):
+        prompts = load_all_units()
+        save_prompts_to_cache(prompts)
 
 if not base_explanation_prompt:
     base_explanation_prompt = load_prompt("base", "explanation", "prompt")
