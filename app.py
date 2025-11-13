@@ -23,6 +23,15 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+import uuid
+
+# ---------------------------
+# UNIQUE SESSION PER DEVICE
+# ---------------------------
+if "session_id" not in st.session_state:
+    st.session_state["session_id"] = uuid.uuid4().hex
+
+
 # ✅ Force Light Theme Globally
 st.markdown("""
 <style>
