@@ -751,6 +751,16 @@ div[role='radiogroup'] {
     flex-wrap: wrap;
 }
 
+/* ✨ اجبار التابات تكون في صف واحد على الكمبيوتر */
+@media (min-width: 769px) {
+    div[role='radiogroup'] {
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: center !important;
+        gap: 22px !important;
+    }
+}
+
 /* الشكل الأساسي */
 div[role='radiogroup'] label {
     background-color: #f7fbff !important; /* ✅ لون فاتح ثابت */
